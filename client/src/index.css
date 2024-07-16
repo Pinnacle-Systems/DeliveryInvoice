@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+
+html,
+body,
+label {
+  font-family: 'Roboto', sans-serif;
+  z-index: 0;
+}
+
+.Select {
+  width: 444px !important;
+  margin-right: 5px;
+  z-index: 0 !important;
+}
+
+.Select.is-open {
+  z-index: 1 !important;
+}
+
+.Select-menu {
+  position: fixed !important;
+  width: 440px !important;
+  margin: 1px;
+}
+
+@media print {
+  html {}
+}
+
+@layer base {
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+
+@layer utilities {
+  .container-w-h {
+    min-height: 90%;
+    max-height: 90%;
+  }
+
+  .custom-circle {
+    @apply bg-blue-900;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+  }
+
+  .logo-heading {
+    @apply text-sm md:text-xl text-white font-bold;
+  }
+
+  .page-heading {
+    @apply bg-green-600 text-white;
+  }
+
+  .nav-bar-bg {
+    @apply bg-green-600;
+  }
+
+  .nav-item {
+    @apply text-white text-sm;
+  }
+
+  .logo-footer {
+    @apply text-sm text-white bg-green-600 font-bold;
+  }
+
+  .nav-dropdown-bg {
+    @apply bg-white hover:bg-gray-200 text-xs text-black;
+  }
+
+  .bg-theme {
+    @apply bg-gray-50;
+  }
+
+  .heading {
+    @apply text-lg text-black font-bold;
+  }
+
+  .sub-heading {
+    @apply text-xs text-gray-500 font-bold;
+  }
+
+
+  .frame {
+    @apply border-2;
+  }
+
+  .data {
+    @apply text-xs;
+  }
+
+  .stick-bg {
+    @apply bg-gray-100;
+  }
+
+  .input-field {
+    @apply text-black h-6 w-5/6;
+  }
+
+  .table-header {
+    @apply text-black text-sm bg-gray-100 border-2;
+  }
+
+  .table-row {
+    @apply even:bg-gray-50 odd:bg-gray-300 text-black text-xs;
+  }
+
+  .table-data-input {
+    @apply bg-transparent focus:bg-yellow-200;
+  }
+
+  .table-data {
+    @apply border-x border-gray-400 cursor-pointer;
+  }
+
+  .sub-navbar {
+    @apply border rounded text-green-600 font-bold p-1 text-sm
+  }
+
+  .sub-navbar-active {
+    @apply bg-blue-900 text-white rounded p-1 text-sm
+  }
+
+  .button-border {
+    @apply border rounded border-gray-400;
+  }
+
+  .pushable {
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  .front {
+    border-radius: 12px;
+    transform: translateY(-6px);
+  }
+
+  .pushable:active .front {
+    transform: translateY(-2px);
+  }
+}
+
+
+.select-all-on-touch {
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+.print {
+  border: none;
+  margin-top: 2rem;
+}
+
+.bor th {
+  border: none;
+  margin-top: 2rem;
+
+}
+
+.bor td {
+  border: none;
+  margin-top: 2rem;
+
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}
