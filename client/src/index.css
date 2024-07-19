@@ -10,6 +10,9 @@ label {
   font-family: 'Roboto', sans-serif;
   z-index: 0;
 }
+.table-data{
+  font-family: 'Roboto', sans-serif;
+}
 
 .Select {
   width: 444px !important;
@@ -47,7 +50,7 @@ label {
   }
 
   .custom-circle {
-    @apply bg-blue-900;
+    @apply bg-emerald-900;
     height: 30px;
     width: 30px;
     border-radius: 50%;
@@ -58,11 +61,11 @@ label {
   }
 
   .page-heading {
-    @apply bg-green-600 text-white;
+    @apply bg-emerald-800    text-white;
   }
 
   .nav-bar-bg {
-    @apply bg-green-600;
+    @apply bg-emerald-900;
   }
 
   .nav-item {
@@ -70,7 +73,7 @@ label {
   }
 
   .logo-footer {
-    @apply text-sm text-white bg-green-600 font-bold;
+    @apply text-sm text-white bg-emerald-800    font-bold;
   }
 
   .nav-dropdown-bg {
@@ -82,7 +85,7 @@ label {
   }
 
   .heading {
-    @apply text-lg text-black font-bold;
+    @apply text-lg text-white font-bold;
   }
 
   .sub-heading {
@@ -111,7 +114,7 @@ label {
   }
 
   .table-row {
-    @apply even:bg-gray-50 odd:bg-gray-300 text-black text-xs;
+    @apply even:bg-white odd:bg-gray-200 text-black text-xs;
   }
 
   .table-data-input {
@@ -127,7 +130,7 @@ label {
   }
 
   .sub-navbar-active {
-    @apply bg-blue-900 text-white rounded p-1 text-sm
+    @apply bg-emerald-900 text-white rounded p-1 text-sm
   }
 
   .button-border {

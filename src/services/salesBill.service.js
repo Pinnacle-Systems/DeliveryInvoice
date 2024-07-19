@@ -54,7 +54,7 @@ function manualFilterSearchData(searchBillDate, data) {
 
 
 async function get(req) {
-    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate ,isProfitReport} = req.query
+    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate ,isProfitReport,isOn} = req.query
     let data;
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
@@ -71,31 +71,30 @@ async function get(req) {
         data = await prisma.$queryRaw`
 SELECT 
     product.name AS Product,
-    SUM(qty) as Qty,
+    SUM(salesBillItems.qty) AS Qty,
     (SELECT 
-            SUM(e.amount)
+            SUM(subQty * subPrice) 
         FROM
             (SELECT 
-                saleprice, SUM(qty), (saleprice * SUM(qty)) AS amount
+                 SUM(sub.qty) AS subQty,
+                 SUM(sub.qty * sub.price) AS subPrice
             FROM
-                salesBillItems sub
-                LEFT JOIN
-            Salesbill salesbill ON salesbill.id = sub.salesBillId
+                SalesBillItems sub
+                LEFT JOIN SalesBill subBill ON subBill.id = sub.salesBillId
             WHERE
-                sub.productId = salesbillitems.productId AND  salesbill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-               
+                sub.productId = salesBillItems.productId 
+                AND subBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+            ) AS e
+    ) AS TotalAmount
+FROM
+    SalesBillItems salesBillItems
+    LEFT JOIN SalesBill salebill ON salebill.id = salesBillItems.salesBillId
+    LEFT JOIN product ON product.id = salesBillItems.productId
+WHERE
+    salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+GROUP BY 
+    salesBillItems.productId, product.name;
 
-            GROUP BY sub.saleprice) e) AS Amount
-            FROM
-            SalesBillItems salesBillItems 
-  
-                LEFT JOIN 
-                SalesBill salebill ON salebill.id=salesBillItems.salesBillId
-        LEFT JOIN
-    product ON product.id = salesBillItems.productId
-    WHERE
-                salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime} 
-GROUP BY salesBillItems.productId , product.name;
 
         `;
         return { statusCode: 0, data };
@@ -107,27 +106,31 @@ GROUP BY salesBillItems.productId , product.name;
             where: {
                 companyId: companyId ? parseInt(companyId) : undefined,
                 active: active ? Boolean(active) : undefined,
-                docId: Boolean(searchDocId) ?
-                    {
-                        contains: searchDocId
-                    }
-                    : undefined,
-                name: Boolean(searchCustomerName) ? {
+                isOn: typeof(isOn) === "undefined" ? undefined : JSON.parse(isOn),
+                docId: searchDocId ? {
+                    contains: searchDocId
+                } : undefined,
+                name: searchCustomerName ? {
                     contains: searchCustomerName
                 } : undefined,
                 supplier: {
-                    name: Boolean(searchCustomerName) ? { contains: searchCustomerName } : undefined
+                    name: searchCustomerName ? { contains: searchCustomerName } : undefined
                 }
             },
             include: {
                 SalesBillItems: {
                     select: {
                         qty: true,
-                        salePrice: true
+                    }
+                },
+                supplier: {
+                    select: {
+                        name: true
                     }
                 }
             }
         });
+        
     }
 
 
@@ -149,6 +152,13 @@ async function getOne(id) {
             id: parseInt(id)
         },
         include: {
+            supplier: {
+                select: {
+                    name: true,
+                    contactMobile:true,
+                    contactPersonName: true,
+                }
+            },
             SalesBillItems: {
                 select: {
                     id: true,
@@ -158,6 +168,7 @@ async function getOne(id) {
                             name: true
                         }
                     },
+                   
                     productCategoryId: true,
                     ProductCategory: {
                         select: {
@@ -176,10 +187,9 @@ async function getOne(id) {
                     },
                     productId: true,
                     qty: true,
-                    // price: true,
+                    price: true,
                     uomId: true,
                     stockQty: true,
-                    salePrice: true
                 }
             }
         }
@@ -222,75 +232,70 @@ async function getSearch(req) {
 }
 
 
-
-async function createSalesBillItems(tx, salesBillItems, salesBill) {
-
+async function createSalesBillItems(tx, salesBillItems, salesBill, isOn) {
     const promises = salesBillItems.map(async (item) => {
-        return await tx.salesBillItems.create({
-            data: {
-                salesBillId: parseInt(salesBill.id),
-                productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
-                productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
-                productId: item?.productId ? parseInt(item.productId) : undefined,
-                qty: item?.qty ? parseFloat(item.qty) : 0.000,
-                stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
-                // price: item?.price ? parseFloat(item.price) : 0.000,
-                uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
-                Stock: {
-                    create: {
-                        inOrOut: "Out",
-                        productId: item?.productId ? parseInt(item.productId) : undefined,
-                        qty: 0 - parseFloat(item.qty),
-                        branchId: parseInt(salesBill.branchId),
-                        uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                        salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
-                    }
+        const baseData = {
+            salesBillId: parseInt(salesBill.id),
+            productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
+            productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
+            productId: item?.productId ? parseInt(item.productId) : undefined,
+            qty: item?.qty ? parseFloat(item.qty) : 0.000,
+            stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
+            price: item?.price ? parseFloat(item.price) : 0.000,
+        };
+
+        if (isOn) {
+            baseData.Stock = {
+                create: {
+                    inOrOut: "Out",
+                    productId: item?.productId ? parseInt(item.productId) : undefined,
+                    qty: 0 - parseFloat(item.qty),
+                    branchId: parseInt(salesBill.branchId),
                 }
-            }
-        })
-    }
-    )
-    return Promise.all(promises)
+            };
+        }
+
+        return await tx.salesBillItems.create({ data: baseData });
+    });
+
+    return Promise.all(promises);
 }
+
 
 
 
 
 async function create(body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, name } = await body
+    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn } = await body
     let newDocId = await getNextDocId(branchId)
     await prisma.$transaction(async (tx) => {
         data = await tx.salesBill.create(
             {
                 data: {
                     docId: newDocId,
-                    address, place, name,
+                    address, place,supplierId: parseInt(supplierId),
                     contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
-                    companyId: parseInt(companyId), active,
+                    companyId: parseInt(companyId),
                     dueDate: dueDate ? new Date(dueDate) : undefined,
                     branchId: parseInt(branchId),
+                    isOn
 
                 }
             })
-        await createSalesBillItems(tx, salesBillItems, data)
+        await createSalesBillItems(tx, salesBillItems, data,isOn)
 
     })
     return { statusCode: 0, data };
 }
 
-
-
-
-async function updateSalesBillItems(tx, salesBillItems, salesBill) {
+async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
     let removedItems = salesBill.SalesBillItems.filter(oldItem => {
-        let result = salesBillItems.find(newItem => newItem.id === oldItem.id)
-        if (result) return false
-        return true
-    })
+        let result = salesBillItems.find(newItem => newItem.id === oldItem.id);
+        return !result;
+    });
 
-    let removedItemsId = removedItems.map(item => parseInt(item.id))
+    let removedItemsId = removedItems.map(item => parseInt(item.id));
 
     await tx.SalesBillItems.deleteMany({
         where: {
@@ -298,9 +303,16 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill) {
                 in: removedItemsId
             }
         }
-    })
+    });
 
     const promises = salesBillItems.map(async (item) => {
+        const stockData = isOn ? {
+            inOrOut: "Out",
+            productId: item?.productId ? parseInt(item.productId) : undefined,
+            qty: 0 - parseFloat(item.qty),
+            branchId: parseInt(salesBill.branchId),
+        } : undefined;
+
         if (item?.id) {
             return await tx.salesBillItems.update({
                 where: {
@@ -313,22 +325,9 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill) {
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
-                    // price: item?.price ? parseFloat(item.price) : 0.000,
-                    uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                    salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
-                    Stock: {
-                        update: {
-                            inOrOut: "Out",
-                            productId: item?.productId ? parseInt(item.productId) : undefined,
-                            qty: 0 - parseFloat(item.qty),
-                            branchId: parseInt(salesBill.branchId),
-                            uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                            salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
-
-                        }
-                    }
+                    Stock: isOn ? { update: stockData } : undefined
                 }
-            })
+            });
         } else {
             return await tx.salesBillItems.create({
                 data: {
@@ -339,28 +338,18 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill) {
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
                     price: item?.price ? parseFloat(item.price) : 0.000,
-                    uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-
-                    Stock: {
-                        create: {
-                            inOrOut: "Out",
-                            productId: item?.productId ? parseInt(item.productId) : undefined,
-                            qty: 0 - parseFloat(item.qty),
-                            branchId: parseInt(salesBill.branchId),
-                            uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-
-                        }
-                    }
+                    Stock: isOn ? { create: stockData } : undefined
                 }
-            })
+            });
         }
-    })
-    return Promise.all(promises)
+    });
+
+    return Promise.all(promises);
 }
 
 async function update(id, body) {
     let data
-    const { dueDate, address, place, salesBillItems, companyId, branchId, active, name, contactMobile } = await body
+    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile,isOn } = await body
     const dataFound = await prisma.salesBill.findUnique({
         where: {
             id: parseInt(id)
@@ -374,7 +363,7 @@ async function update(id, body) {
             },
             data: {
                 address, place,
-                companyId: parseInt(companyId), active,
+                companyId: parseInt(companyId), 
                 dueDate: dueDate ? new Date(dueDate) : undefined,
                 branchId: parseInt(branchId),
                 name,
@@ -384,7 +373,7 @@ async function update(id, body) {
                 SalesBillItems: true
             }
         })
-        await updateSalesBillItems(tx, salesBillItems, data)
+        await updateSalesBillItems(tx, salesBillItems, data,isOn)
     })
     return { statusCode: 0, data };
 };

@@ -43,7 +43,7 @@ export const TextInput = ({ name, type, value, setValue, readOnly, className, re
     return (
         <div className='grid grid-cols-1 md:grid-cols-3 items-center md:my-0.5 md:px-1 data gap-1'>
             <label className={`md:text-start flex ${className}`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
-            <input onBlur={onBlur} tabIndex={tabIndex ? tabIndex : undefined} type={type} disabled={disabled} required={required} className='input-field focus:outline-none md:col-span-2 border-gray-500 border rounded' value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
+            <input onBlur={onBlur} tabIndex={tabIndex ? tabIndex : undefined} type={type} disabled={disabled} required={required} className='input-field focus:outline-none md:col-span-2 border-emerald-800 border-2 rounded' value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
         </div>
     )
 }
@@ -61,7 +61,7 @@ export const DisabledInput = ({ name, type, value, className = "", textClassName
     return (
         <div className={`grid grid-cols-1 md:grid-cols-3 items-center md:my-0.5 md:px-1 data  ${className}`}>
             <label className={`md:text-start flex ${className} `}>{name}</label>
-            <input tabIndex={tabIndex ? tabIndex : undefined} type={type} className={`input-field ${textClassName} focus:outline-none md:col-span-2 border border-gray-500 rounded`} value={value} disabled />
+            <input tabIndex={tabIndex ? tabIndex : undefined} type={type} className={`input-field ${textClassName} focus:outline-none md:col-span-2 border-2 border-emerald-800 p-1 rounded`} value={value} disabled />
         </div>
     )
 }
@@ -94,7 +94,7 @@ export const DropdownInput = ({ name, beforeChange = () => { }, onBlur = null, o
             <select
                 onBlur={onBlur}
                 autoFocus={autoFocus} tabIndex={tabIndex ? tabIndex : undefined} defaultValue={defaultValue} id='dd'
-                required={required} name="name" className='input-field border border-gray-500 md:col-span-2 col-span-1 rounded'
+                required={required} name="name" className='input-field border-2 border-emerald-800 md:col-span-2 col-span-1 rounded'
                 value={value} onChange={(e) => { beforeChange(); handleOnChange(e); }} disabled={readOnly}>
                 <option value="" hidden={!clear}>Select</option>
                 {options.map((option, index) => <option key={index} value={option.value} >
@@ -114,7 +114,7 @@ export const LongDropdownInput = ({ name, options, value, setValue, defaultValue
         <div className='grid grid-cols-12 items-center md:my-1 md:px-1 data'>
             <label className={`text-start col-span-2 `}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
             <select tabIndex={tabIndex ? tabIndex : undefined} defaultValue={defaultValue} id='dd' required={required} name="name"
-                className={`border border-gray-500 h-6 rounded ${className} col-span-10`} value={value} onChange={(e) => { handleOnChange(e); }} disabled={readOnly}>
+                className={`border-2 border-emerald-800 h-6 rounded ${className} col-span-10`} value={value} onChange={(e) => { handleOnChange(e); }} disabled={readOnly}>
                 <option value="">Select</option>
                 {options.map((option, index) => <option key={index} value={option.value} >
                     {option.show}

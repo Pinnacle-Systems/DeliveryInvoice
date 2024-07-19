@@ -6,6 +6,7 @@ import { showEntries } from '../../../Utils/DropdownData';
 import secureLocalStorage from 'react-secure-storage';
 import { findFromList, getDateFromDateTimeToDisplay, pageNumberToReactPaginateIndex, reactPaginateIndexToPageNumber } from '../../../Utils/helper';
 import ReactPaginate from 'react-paginate';
+import ToggleButton from "./ToggleButton ";
 
 
 import { useGetSalesBillQuery } from '../../../redux/services/SalesBillService';
@@ -23,6 +24,9 @@ const PurchaseBillFormReport = ({
   const [searchCustomerName, setSearchCustomerName] = useState("");
   const [searchBuyerName, setSearchBuyerName] = useState("");
   const [searchPackageName, setSearchPackageName] = useState("");
+  const [searchSupplierName, setSearchSupplierName] = useState("");
+  const [isOn, setIsOn] = useState(false);
+
   const [dataPerPage, setDataPerPage] = useState("10");
   const [totalCount, setTotalCount] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -41,7 +45,7 @@ const PurchaseBillFormReport = ({
     branchId, companyId
   };
 
-  const { data: allData, isLoading, isFetching } = useGetSalesBillQuery({ params: { branchId, ...searchFields, pagination: true, dataPerPage, pageNumber: currentPageNumber } });
+  const { data: allData, isLoading, isFetching } = useGetSalesBillQuery({ params: { branchId, ...searchFields, pagination: true, dataPerPage, pageNumber: currentPageNumber,isOn } });
 
 
   const { data: supplierList, isLoading: isSupplierLoading, isFetching: isSupplierFetching } =
@@ -142,12 +146,25 @@ const PurchaseBillFormReport = ({
                     type="text"
                     className="text-black  h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
                     placeholder="Search"
-                    value={searchCustomerName}
+                    value={searchSupplierName}
                     onChange={(e) => {
-                      setSearchCustomerName(e.target.value);
+                      setSearchSupplierName(e.target.value);
                     }}
                   />
                 </th>
+                <th>
+                <div
+                    className={`ml-5 border-2 ml-24 ${
+                      isOn ? "border-emerald-800" : "border-red-800"
+                    } w-48 rounded-xl p-1`}
+                  >
+                    <ToggleButton
+                      label={isOn ? "Confirmed" : "Not Confirmed"}
+                      isOn={isOn}
+                      setIsOn={setIsOn}
+                    />
+                  </div>
+                  </th>
                 {/* <th
                   className="border-2  top-0 stick-bg"
                 >
@@ -193,7 +210,9 @@ const PurchaseBillFormReport = ({
                     <td className='py-1'> {(index + 1) + (dataPerPage * (currentPageNumber - 1))}</td>
                     <td className='py-1'> {dataObj.docId}</td>
                     <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.createdAt)} </td>
-                    <td className='py-1'>{dataObj.name}</td>
+                    <td className='py-1'>{dataObj.supplier.name}</td>
+                    <td className='py-1'>{dataObj.isOn ? 'CONFIRMED':'NOTCONFIRMED'}</td>
+
                     {/* <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.dueDate)}</td> */}
 
                   </tr>

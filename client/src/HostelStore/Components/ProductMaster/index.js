@@ -29,9 +29,7 @@ export default function Form() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [active, setActive] = useState(true);
-  const [productBrandId, setProductBrandId] = useState("");
   const [uomId, setUomId] = useState("")
-  const [productCategoryId, setProductCategoryId] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
   const [ProductUomPriceDetails, setProductUomPriceDetails] = useState([]);
@@ -49,11 +47,7 @@ export default function Form() {
 
 
 
-  const { data: productBrandList } =
-    useGetProductBrandQuery({ params });
 
-  const { data: productCategoryList } =
-    useGetProductCategoryQuery({ params });
 
   const { data: uomList } = useGetUomQuery({ params })
   const syncFormWithDb = useCallback(
@@ -63,8 +57,6 @@ export default function Form() {
       setName(data?.name ? data.name : "");
       setCode(data?.code ? data.code : "");
       setActive(id ? (data?.active ? data.active : false) : true);
-      setProductBrandId(data?.productBrandId ? data.productBrandId : "");
-      setProductCategoryId(data?.productCategoryId ? data.productCategoryId : "");
       setUomId(data?.uomId ? data?.uomId : "");
       setProductUomPriceDetails(data?.ProductUomPriceDetails ? data.ProductUomPriceDetails : [])
       childRecord.current = data?.childRecord ? data?.childRecord : 0;
@@ -77,7 +69,7 @@ export default function Form() {
 
 
   const data = {
-    name, code, productBrandId, productCategoryId, companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId"), active, id, ProductUomPriceDetails
+    name, code,companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId"), active, id, ProductUomPriceDetails
   }
 
 
@@ -198,8 +190,7 @@ export default function Form() {
               <fieldset className='frame my-1'>
                 <legend className='sub-heading'>Product Info</legend>
                 <div className='grid grid-cols-3 my-2'>
-                  <DropdownInput name="Product Category" options={dropDownListObject(id ? productCategoryList.data : productCategoryList.data.filter(item => item.active), "name", "id")} value={productCategoryId} setValue={setProductCategoryId} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                  <DropdownInput name="Product Brand" options={dropDownListObject(id ? productBrandList.data : productBrandList.data.filter(item => item.active), "name", "id")} value={productBrandId} setValue={setProductBrandId} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                 
                   <TextInput name="Product Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
 
                   <div className="grid grid-cols-2">

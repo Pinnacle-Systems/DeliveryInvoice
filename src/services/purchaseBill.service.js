@@ -125,34 +125,18 @@ async function getOne(id) {
             PoBillItems: {
                 select: {
                     id: true,
-                    productBrandId: true,
-                    ProductBrand: {
-                        select: {
-                            name: true
-                        }
-                    },
-                    productCategoryId: true,
-                    ProductCategory: {
-                        select: {
-                            name: true
-                        }
-                    },
+                  
                     Product: {
                         select: {
                             name: true
                         }
                     },
-                    Uom: {
-                        select: {
-                            name: true
-                        }
-                    },
+                 
                     productId: true,
                     qty: true,
+                    box: true,
                     price: true,
-                    uomId: true,
                     stockQty: true,
-                    salePrice: true
                 }
             }
         }
@@ -198,14 +182,12 @@ async function createpoBillItems(tx, poBillItems, purchaseBill) {
         return await tx.poBillItems.create({
             data: {
                 purchaseBillId: parseInt(purchaseBill.id),
-                productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
-                productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
+                box: item?.box ? parseFloat(item.box) : 0.000,
                 productId: item?.productId ? parseInt(item.productId) : undefined,
                 qty: item?.qty ? parseFloat(item.qty) : 0.000,
                 price: item?.price ? parseFloat(item.price) : 0.000,
                 uomId: item?.uomId ? parseFloat(item.uomId) : undefined,
                 stockQty: item?.stockQty ? parseFloat(item.stockQty) : undefined,
-                salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
 
                 Stock: {
                     create: {
@@ -213,8 +195,6 @@ async function createpoBillItems(tx, poBillItems, purchaseBill) {
                         productId: item?.productId ? parseInt(item.productId) : undefined,
                         qty: parseFloat(item.qty),
                         branchId: parseInt(purchaseBill.branchId),
-                        uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                        salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
 
                     }
                 }
@@ -279,22 +259,18 @@ async function updatePoBillItems(tx, poBillItems, purchaseBill) {
                 },
                 data: {
                     purchaseBillId: parseInt(purchaseBill.id),
-                    productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
-                    productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
+                    box: item?.box ? parseFloat(item.box) : 0.000,
                     price: item?.price ? parseFloat(item.price) : 0.000,
                     uomId: item?.uomId ? parseFloat(item.uomId) : undefined,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : undefined,
-                    salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
                     Stock: {
                         update: {
                             inOrOut: "In",
                             productId: item?.productId ? parseInt(item.productId) : undefined,
                             qty: parseFloat(item.qty),
                             branchId: parseInt(purchaseBill.branchId),
-                            uomId: item?.uomId ? parseInt(item.uomId) : undefined,
-                            salePrice: item?.salePrice ? parseFloat(item.salePrice) : 0.000,
                         }
                     }
                 }

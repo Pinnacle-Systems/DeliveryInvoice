@@ -372,9 +372,8 @@ model Uom {
   companyId              Int?
   Product                Product[]
   ProductUomPriceDetails ProductUomPriceDetails[]
-  PoBillItems            PoBillItems[]
+
   PoReturnItems          PoReturnItems[]
-  Stock                  Stock[]
   SalesBillItems         SalesBillItems[]
   SalesReturn            SalesReturn[]
   SalesReturnItems       SalesReturnItems[]
@@ -438,21 +437,19 @@ model PoBillItems {
   id                     Int                      @id @default(autoincrement())
   PurchaseBill           PurchaseBill?            @relation(fields: [purchaseBillId], references: [id], onDelete: Cascade)
   purchaseBillId         Int?
-  ProductBrand           ProductBrand?            @relation(fields: [productBrandId], references: [id], onDelete: Restrict)
-  productBrandId         Int?
-  ProductCategory        ProductCategory?         @relation(fields: [productCategoryId], references: [id], onDelete: Restrict)
-  productCategoryId      Int?
+  box                    Float?
   Product                Product?                 @relation(fields: [productId], references: [id])
   productId              Int?
   qty                    Float?
   price                  Float?
   PoReturnItems          PoReturnItems[]
-  Uom                    Uom?                     @relation(fields: [uomId], references: [id], onDelete: Restrict)
-  uomId                  Int?
   ProductUomPriceDetails ProductUomPriceDetails[]
   Stock                  Stock?
   stockQty               Float?
-  salePrice              Float?
+  ProductBrand           ProductBrand?            @relation(fields: [productBrandId], references: [id])
+  productBrandId         Int?
+  ProductCategory        ProductCategory?         @relation(fields: [productCategoryId], references: [id])
+  productCategoryId      Int?
 }
 
 model PurchaseReturn {
@@ -512,9 +509,7 @@ model Stock {
   poReturnItemsId    Int?              @unique
   SalesReturnItems   SalesReturnItems? @relation(fields: [salesReturnItemsId], references: [id], onDelete: Cascade)
   salesReturnItemsId Int?              @unique
-  Uom                Uom?              @relation(fields: [uomId], references: [id])
-  uomId              Int?
-  salePrice          Float?
+
 }
 
 model SalesBill {
@@ -535,6 +530,9 @@ model SalesBill {
   SalesReturn    SalesReturn[]
   contactMobile  BigInt?
   name           String?
+  isOn           Boolean          @default(false)
+  price          Float?
+
 }
 
 model SalesBillItems {
@@ -554,7 +552,6 @@ model SalesBillItems {
   SalesReturnItems  SalesReturnItems[]
   Uom               Uom?               @relation(fields: [uomId], references: [id], onDelete: Restrict)
   uomId             Int?
-  salePrice         Float?
 }
 
 model SalesReturn {

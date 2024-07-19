@@ -104,6 +104,7 @@ export default function Form() {
     (data) => {
 
       if (id) setReadOnly(true);
+      else setReadOnly(false)
       if (data?.createdAt) setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
       if (data?.docId) {
         setDocId(data.docId);

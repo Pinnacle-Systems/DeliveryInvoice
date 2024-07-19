@@ -29,7 +29,8 @@
     "pm2-windows-startup": "^1.0.3",
     "react-paginate": "^8.2.0",
     "react-to-print": "^2.15.1",
-    "socket.io": "^4.6.1"
+    "socket.io": "^4.6.1",
+    "styled-components": "^6.1.12"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

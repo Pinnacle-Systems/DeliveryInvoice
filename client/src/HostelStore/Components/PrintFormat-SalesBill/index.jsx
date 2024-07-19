@@ -6,7 +6,8 @@ import moment from 'moment';
 import { useGetProductQuery } from '../../../redux/services/ProductMasterService';
 
 
-export default function   Form({ poBillItems, innerRef, date, name,id, contactMobile,  docId }) {
+export default function   Form({ poBillItems, innerRef, date, data,id,  docId }) {
+  console.log(data,"name")
   const currTime = new Date().toLocaleTimeString();
 
 
@@ -36,7 +37,7 @@ export default function   Form({ poBillItems, innerRef, date, name,id, contactMo
 
       <hr className="border-t-2 border-dashed border-gray-600 w-full " />
 
-      <div className=' text-center   text-sm mt-1 pl-2  grid grid-cols-2 w-45'>
+      <div className=' text-center   text-sm mt-1 pl-2  grid grid-cols-3 w-45'>
         <div className=' text-start py-2 text-sm'>
           <span className="font-bold col-span-1">Bill.No</span>
           <span>:</span>
@@ -55,9 +56,21 @@ export default function   Form({ poBillItems, innerRef, date, name,id, contactMo
         <div className=' text-start py-2 text-sm'>
           <span className="font-bold col-span-1">Sl.Name</span>
           <span>: </span>
-          <span className='col-span-2'>{name}</span>
+          <span className='col-span-2'>{data?.supplier?.name}</span>
         </div>
+        <div className=' text-start py-2 text-sm'>
+          <span className="font-bold col-span-1">ContactNumber</span>
+          <span>:</span>
+          <span className='col-span-2'>{data?.supplier?.contactMobile}</span>
+        </div>
+        <div className=' text-start py-2 text-sm'>
+          <span className="font-bold col-span-1">ContactPerson</span>
+          <span>: </span>
+          <span className='col-span-2'>{data?.supplier?.contactPersonName}</span>
+        </div>
+        
       </div>
+      
       <div class="flex items-center">
         <hr className="border-t-2 border-dashed border-gray-600 w-full " />
 
@@ -101,10 +114,10 @@ export default function   Form({ poBillItems, innerRef, date, name,id, contactMo
                   {item?.qty}
                 </td>
                 <td className="table-data text-sm text-center px-1 p-2">
-                  {item.salePrice}
+                  {item.price}
                 </td>
                 <td className="table-data text-sm text-center px-1 p-2">
-                  {item.salePrice * item.qty}
+                  {item.price * item.qty}
                 </td>
               </tr>
             )}
@@ -112,7 +125,7 @@ export default function   Form({ poBillItems, innerRef, date, name,id, contactMo
             <tr className="border-b-2 border-dashed border-gray-600 "></tr>
             <tr className='bg-blue-200   font-bold bor '>
               <td className="table-data text-lg text-center w-10 font-bold p-3" colSpan={4}>Total</td>
-              <td className="table-data text-lg  text-center pr-1">{getTotal("qty", "salePrice").toFixed(2)}</td>
+              <td className="table-data text-lg  text-center pr-1">{getTotal("qty", "price").toFixed(2)}</td>
             </tr>
 
           </tbody>

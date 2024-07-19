@@ -180,26 +180,12 @@ const SalesRegister = () => {
                                                                 className="  top-0 stick-bg w-10">
                                                                 S. no.
                                                             </th>
-                                                            <th
-                                                                className="  top-0 stick-bg table-data "
-                                                            >
-                                                                Pro category
-
-                                                            </th>
-                                                            <th
-                                                                className="  top-0 stick-bg table-data "
-                                                            >
-                                                                Pro Brand
-
-                                                            </th>
+                                                         
                                                             <th
                                                                 className="  top-0 stick-bg ">
                                                                 Product
                                                             </th>
-                                                            <th
-                                                                className="  top-0 stick-bg ">
-                                                                UOM type
-                                                            </th>
+                                                         
 
                                                             <th className="  top-0 stick-bg table-data">
                                                                 <label>Qty</label>
@@ -208,7 +194,7 @@ const SalesRegister = () => {
                                                             <th
                                                                 className="  top-0 stick-bg table-data "
                                                             >
-                                                                <label>Sales  Price</label>
+                                                                <label>Price</label>
 
                                                             </th>
                                                             <th className="  top-0 stick-bg table-data">
@@ -224,9 +210,6 @@ const SalesRegister = () => {
                                                             <tr key={index}>
                                                                 <td className='border-2 border-gray-400'>{index + 1}</td>
                                                                 <td className='border-2 border-gray-400'>{poItem.Product.name}</td>
-                                                                <td className='border-2 border-gray-400'>{poItem.ProductBrand.name}</td>
-                                                                <td className='border-2 border-gray-400'>{poItem.ProductCategory.name}</td>
-                                                                <td className='border-2 border-gray-400'>{poItem.Uom.name}</td>
                                                                 <td className='py-1 text-right border-2 border-gray-400'>{poItem.qty}</td>
                                                                 <td className='py-1 text-right border-2 border-gray-400'>{poItem.salePrice}</td>
                                                                 <td className='py-1 text-right border-2 border-gray-400'>{(poItem.salePrice * poItem.qty).toFixed(2)}</td>

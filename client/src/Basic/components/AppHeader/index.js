@@ -13,7 +13,7 @@ import { GLOBE_ICON } from "../../../icons";
 import { useGetPageGroupQuery } from "../../../redux/services/PageGroupMasterServices";
 import MultiLevelDropDown from "../../../UiComponents/MultiSelectDropDown";
 
-import Anugraha from "../../../assets/anugraha.png"
+import Anugraha from "../../../assets/fish.png"
 import { Dropdown } from "react-multi-select-component";
 import PageSearch from "./PageSearch";
 
@@ -127,7 +127,7 @@ const AppHeader = ({ setIsGlobalOpen, setLogout }) => {
       <nav className="nav-bar-bg flex md:items-center flex-wrap p-">
         <div className="logo-heading flex flex-shrink-0 mr-6 break-words">
           <div className="flex bg-white rounded px-1 m-1 text-black items-end text-2xl">
-            <img src={Anugraha} className="h-10 w-48" />
+            <img src={Anugraha} className="h-12 w-20 rounded-xl" />
             {/* <span className="flex font-semibold break-words">{APP_NAME} </span> */}
           </div>
         </div>

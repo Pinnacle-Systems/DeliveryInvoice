@@ -252,26 +252,12 @@ const PurchaseRegister = () => {
                                 className="  top-0 stick-bg w-10">
                                 S.no.
                               </th>
-                              <th
-                                className="  top-0 stick-bg table-data "
-                              >
-                                Pro category
-
-                              </th>
-                              <th
-                                className="  top-0 stick-bg table-data "
-                              >
-                                Pro Brand
-
-                              </th>
+                             
                               <th
                                 className="  top-0 stick-bg ">
                                 Product
                               </th>
-                              <th
-                                className="  top-0 stick-bg ">
-                                UOM type
-                              </th>
+                             
                               <th className="  top-0 stick-bg table-data">
                                 <label>Qty</label>
                               </th>
@@ -294,10 +280,7 @@ const PurchaseRegister = () => {
                             {(singleData?.data?.PoBillItems ? singleData?.data?.PoBillItems : []).map((poItem, index) => (
                               <tr key={index}>
                                 <td className='border-2 border-gray-400'>{index + 1}</td>
-                                <td className='border-2 border-gray-400'>{poItem?.ProductCategory?.name ? poItem?.ProductCategory?.name : ""}</td>
-                                <td className='border-2 border-gray-400'>{poItem?.ProductBrand?.name ? poItem?.ProductBrand?.name : ""}</td>
                                 <td className='border-2 border-gray-400'>{poItem?.Product?.name ? poItem?.Product?.name : ""}</td>
-                                <td className='border-2 border-gray-400'>{poItem?.Uom?.name ? poItem?.Uom?.name : ""}</td>
                                 <td className='py-1 text-right border-2 border-gray-400'>{poItem?.qty ? poItem?.qty : ""}</td>
                                 <td className='py-1 text-right border-2 border-gray-400'>{poItem?.price ? parseFloat(poItem?.price).toFixed(2) : 0}</td>
                                 <td className='py-1 text-right border-2 border-gray-400'>{(poItem?.price * poItem?.qty).toFixed(2)}</td>
@@ -313,9 +296,9 @@ const PurchaseRegister = () => {
                     </Fragment>
                   ))}
 
-                  <tr className='py-2 w-full table-row bg-blue-400'>
-                    <td colSpan={5} className='text-center border-2 border-gray-500 font-bold text-sm bg-blue-400'>Total</td>
-                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(totalAmount).toFixed(2)}</td>
+                  <tr className='py-2 w-full table-row bg-emerald-600'>
+                    <td colSpan={5} className='text-center border-2 border-gray-500 font-bold text-sm bg-emerald-400'>Total</td>
+                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>{parseFloat(totalAmount).toFixed(2)}</td>
 
                   </tr>
                 </tbody>

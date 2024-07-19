@@ -90,7 +90,7 @@ async function create(body) {
     const data = await prisma.product.create(
         {
             data: {
-                name, companyId: parseInt(companyId), productBrandId: parseInt(productBrandId), productCategoryId: parseInt(productCategoryId), active, ProductUomPriceDetails: { createMany: { data: uomData } }
+                name, companyId: parseInt(companyId), active, ProductUomPriceDetails: { createMany: { data: uomData } }
             }
         }
     )

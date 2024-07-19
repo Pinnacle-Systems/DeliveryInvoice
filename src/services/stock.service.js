@@ -95,21 +95,17 @@ async function get(req) {
         data = await prisma.$queryRaw`
         SELECT
     stock.productId,
-    stock.uomId,
     product.name,
     sum(qty) as sum,
-    uom.name as uom
 FROM 
     stock
 LEFT JOIN
     product ON product.Id = stock.productId
-LEFT JOIN 
-    uom ON uom.Id = stock.uomId 
+
 WHERE 
     stock.branchId = ${branchId}
 GROUP BY
-    stock.productId,
-    stock.uomId;
+    stock.productId;
         `;
         let totalCount = data.length;
         if (pagination) {
@@ -121,17 +117,13 @@ GROUP BY
     if (stockReport) {
         data = await prisma.$queryRaw`
  SELECT product.name AS Product,
-             SUM(qty)as Stock ,saleprice as "SaleRate", uom.name as Uom,  (saleprice * SUM(qty)) AS "SaleValue"
+             SUM(qty)as Stock ,saleprice as "SaleRate",  (saleprice * SUM(qty)) AS "SaleValue"
             FROM
                 Stock sub
                 LEFT JOIN
                 product ON product.id = sub.productId
-                LEFT JOIN uom
-                on uom.id = sub.uomId
-                WHERE
-           product.id = sub.productId
-            GROUP BY sub.saleprice,sub.productId , product.name, sub.uomId, uom.name
-            having Stock > 0
+                
+            
             order by product.name`;
         let totalCount = data.length;
         if (pagination) {
@@ -149,7 +141,7 @@ GROUP BY
                 },
             } : undefined,
         },
-        by: ["productId", 'uomId'],
+        by: ["productId"],
         _sum: {
             qty: true,
         },
@@ -167,40 +159,25 @@ GROUP BY
 
 
 async function getOne(id, query) {
-    const { productId, uomId, salePrice } = query;
+    const { productId } = query;
+    console.log(productId, "productId");
     let data;
 
-    if (salePrice) {
+    try {
         data = await prisma.$queryRaw`
             SELECT
                 SUM(qty) AS stockQty,
-                salePrice,
                 productId
             FROM
                 stock
             WHERE 
                 stock.productId = ${productId}
-                AND stock.uomId = ${uomId}
-                AND stock.salePrice = ${salePrice}
             GROUP BY
-                productId,
-                salePrice;
-        `;
-    } else {
-        data = await prisma.$queryRaw`
-            SELECT
-                SUM(qty) AS stockQty,
-                salePrice,
                 productId
-            FROM
-                stock
-            WHERE 
-                stock.productId = ${productId}
-                AND stock.uomId = ${uomId}
-            GROUP BY
-                productId,
-                salePrice;
         `;
+    } catch (error) {
+        console.error("Database query error: ", error);
+        throw new Error("Failed to fetch stock data");
     }
 
     if (!data || data.length === 0) {

@@ -22,7 +22,7 @@ const Portion = ({ ProductUomPriceDetails, setProductUomPriceDetails, readonly }
     }
     return (
         <div  >
-            <table className="border border-gray-500 w-[10rem]">
+            <table className="border border-gray-500 w-[20rem]">
                 <thead className="border border-gray-500">
                     <tr>
                         <th className="border border-gray-500 w-24 text-xs p-0.5">UOM type </th>
@@ -53,7 +53,7 @@ const Portion = ({ ProductUomPriceDetails, setProductUomPriceDetails, readonly }
                                 </select>
                             </td>
                             <td className="border border-gray-500 text-xs text-center ">
-                                <input className='w-5' type="number" value={value.price} onChange={(e) => { handleOnChange(valueIndex, "price", e.target.value); }} />
+                                <input className='w-24 p-1' type="number" value={value.price} onChange={(e) => { handleOnChange(valueIndex, "price", e.target.value); }} />
                             </td>
                             {!readonly &&
                                 <td className="border border-gray-500 text-xs text-center">
