@@ -72,6 +72,7 @@ async function get(req) {
 SELECT 
     product.name AS Product,
     SUM(salesBillItems.qty) AS Qty,
+    SUM(salesBillItems.price) AS price,
     (SELECT 
             SUM(subQty * subPrice) 
         FROM
@@ -121,6 +122,7 @@ GROUP BY
                 SalesBillItems: {
                     select: {
                         qty: true,
+                        price:true,
                     }
                 },
                 supplier: {
@@ -267,7 +269,7 @@ async function createSalesBillItems(tx, salesBillItems, salesBill, isOn) {
 
 async function create(body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn } = await body
+    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn,netBillValue } = await body
     let newDocId = await getNextDocId(branchId)
     await prisma.$transaction(async (tx) => {
         data = await tx.salesBill.create(
@@ -279,7 +281,7 @@ async function create(body) {
                     companyId: parseInt(companyId),
                     dueDate: dueDate ? new Date(dueDate) : undefined,
                     branchId: parseInt(branchId),
-                    isOn
+                    isOn,netBillValue:parseInt(netBillValue)
 
                 }
             })
@@ -314,7 +316,7 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
         } : undefined;
 
         if (item?.id) {
-            return await tx.salesBillItems.update({
+            const salesBillItem = await tx.salesBillItems.update({
                 where: {
                     id: parseInt(item.id)
                 },
@@ -325,11 +327,36 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
-                    Stock: isOn ? { update: stockData } : undefined
                 }
             });
+
+            if (isOn) {
+                const existingStock = await tx.Stock.findUnique({
+                    where: {
+                        salesBillItemsId: parseInt(item.id)
+                    }
+                });
+
+                if (existingStock) {
+                    await tx.Stock.update({
+                        where: {
+                            id: existingStock.id
+                        },
+                        data: stockData
+                    });
+                } else {
+                    await tx.Stock.create({
+                        data: {
+                            ...stockData,
+                            salesBillItemsId: salesBillItem.id
+                        }
+                    });
+                }
+            }
+
+            return salesBillItem;
         } else {
-            return await tx.salesBillItems.create({
+            const newSalesBillItem = await tx.salesBillItems.create({
                 data: {
                     salesBillId: parseInt(salesBill.id),
                     productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
@@ -338,9 +365,19 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
                     price: item?.price ? parseFloat(item.price) : 0.000,
-                    Stock: isOn ? { create: stockData } : undefined
                 }
             });
+
+            if (isOn) {
+                await tx.Stock.create({
+                    data: {
+                        ...stockData,
+                        salesBillItemsId: newSalesBillItem.id
+                    }
+                });
+            }
+
+            return newSalesBillItem;
         }
     });
 
@@ -348,13 +385,14 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
 }
 
 async function update(id, body) {
-    let data
-    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile,isOn } = await body
+    let data;
+    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile, isOn,netBillValue } = await body;
+    console.log(netBillValue,"netBill")
     const dataFound = await prisma.salesBill.findUnique({
         where: {
             id: parseInt(id)
         }
-    })
+    });
     if (!dataFound) return NoRecordFound("salesBill");
     await prisma.$transaction(async (tx) => {
         data = await tx.salesBill.update({
@@ -363,20 +401,26 @@ async function update(id, body) {
             },
             data: {
                 address, place,
-                companyId: parseInt(companyId), 
+                companyId: parseInt(companyId),
                 dueDate: dueDate ? new Date(dueDate) : undefined,
                 branchId: parseInt(branchId),
-                name,
+                name,isOn,
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
+                netBillValue: parseInt(netBillValue)
             },
+
+
+
+
             include: {
                 SalesBillItems: true
             }
-        })
-        await updateSalesBillItems(tx, salesBillItems, data,isOn)
-    })
+        });
+        await updateSalesBillItems(tx, salesBillItems, data, isOn);
+    });
     return { statusCode: 0, data };
 };
+
 
 async function remove(id) {
     const data = await prisma.salesBill.delete({

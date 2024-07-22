@@ -161,13 +161,13 @@ export default function Form() {
     return false;
   }
 
-  function getTotal(field1, field2) {
-    const total = poBillItems.reduce((accumulator, current) => {
+    function getTotal(field1, field2) {
+      const total = poBillItems.reduce((accumulator, current) => {
 
-      return accumulator + parseFloat(current[field1] && current[field2] ? current[field1] * current[field2] : 0)
-    }, 0)
-    return parseFloat(total)
-  }
+        return accumulator + parseFloat(current[field1] && current[field2] ? current[field1] * current[field2] : 0)
+      }, 0)
+      return parseFloat(total)
+    }
 
 
   const validateNetBillValue = () => {

@@ -3,10 +3,12 @@ import { useGetStockByIdQuery } from '../../../redux/services/StockService';
 import { toast } from 'react-toastify';
 
 const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly,date, item,id }) => {
+    console.log(poBillItems,"idforstock")
+
     const { data: singleProduct } = useGetStockByIdQuery({
         params: {
             productId,
-            createdAt: id ? date : undefined,
+            salesBillItemsId :id
 
         }
     }, { skip: !productId,id });
@@ -94,6 +96,12 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly,da
                     disabled
                 />
             </td>
+            <td className="table-data w-44 flex items-center justify-center">
+    <button className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded">
+        Add Stock
+    </button>
+</td>
+
         </>
     );
 };

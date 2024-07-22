@@ -6,16 +6,12 @@ import moment from 'moment';
 import { useGetProductQuery } from '../../../redux/services/ProductMasterService';
 
 
-export default function   Form({ poBillItems, innerRef, date, data,id,  docId }) {
-  console.log(data,"name")
+export default function   Form({ poBillItems, innerRef, date, data,id,  docId,isOn }) {
   const currTime = new Date().toLocaleTimeString();
-
 
   const branchId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "currentBranchId"
   )
-
-
 
   const params = { companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId") }
 
@@ -33,7 +29,10 @@ export default function   Form({ poBillItems, innerRef, date, data,id,  docId })
 
   return (
     <div className=" w-full  small-print" id='poPrint' ref={innerRef}>
-      <h1 className='text-center text-2xl font-semibold mt-3'>CASH BILL</h1>
+
+     <h1 className='text-center text-2xl font-semibold mt-3'>
+      {isOn ? "CASH BILL" : "QUOTATION"} 
+    </h1>
 
       <hr className="border-t-2 border-dashed border-gray-600 w-full " />
 

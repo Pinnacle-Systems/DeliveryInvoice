@@ -57,20 +57,15 @@ const PoBillItems = ({ purchaseOrderDetails, purchaseOrderId, id, readOnly, setP
 
             <div className={` relative w-full overflow-y-auto py-1`}>
                 <table className=" border border-gray-500 text-xs table-auto  w-full">
-                    <thead className='bg-blue-200 top-0 border-b border-gray-500'>
+                    <thead className='bg-emerald-800 text-white text-sm p-2 top-0 border-b border-gray-500'>
                         <tr className=''>
-                            <th className="table-data  w-2 text-center p-0.5">S.no</th>
-                            <th className="table-data ">Product Brand</th>
-                            <th className="table-data ">Product Category</th>
+                            <th className="table-data  w-2 text-center p-2">S.no</th>
+                            <th className="table-data p-2 ">Product Name</th>
+                            <th className="table-data p-2 w-20">sales.Qty</th>
 
+                            <th className="table-data p-2  w-20">Bal.Qty</th>
 
-                            <th className="table-data ">Product Name</th>
-                            <th className="table-data ">UOM Type</th>
-                            <th className="table-data  w-20">sales.Qty</th>
-
-                            <th className="table-data  w-20">Bal.Qty</th>
-
-                            <th className="table-data  w-16 p-0.5">Ret.Qty</th>
+                            <th className="table-data p-2 w-16 ">Ret.Qty</th>
 
 
                         </tr>
@@ -85,18 +80,9 @@ const PoBillItems = ({ purchaseOrderDetails, purchaseOrderId, id, readOnly, setP
                                     {index + 1}
                                 </td>
 
-
-                                <td className='table-data'>
-                                    {item.Product?.ProductBrand?.name}
-                                </td>
-                                <td className='table-data'>
-                                    {item.Product?.ProductCategory?.name}
-                                </td>
-                                <td className='table-data'>
+                                 <td className='table-data'>
                                     {item.Product.name}
                                 </td>
-                                <td>{getProductUomPriceDetails(item.productId).map((uom) => uom.Uom.name)}</td>
-
                                 <td className='table-data text-right pr-1'>
                                     {item?.salesQty}
 
@@ -141,11 +127,7 @@ const PoBillItems = ({ purchaseOrderDetails, purchaseOrderId, id, readOnly, setP
                                 <td className="table-data"></td>
                                 <td className="table-data"></td>
                                 <td className="table-data"></td>
-                                <td className="table-data   "></td>
-                                <td className="table-data   "></td>
-                                <td className="table-data   "></td>
-                                <td className="table-data   "></td>
-                                <td className="table-data   "></td>
+                            
 
 
 

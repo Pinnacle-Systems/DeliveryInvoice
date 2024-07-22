@@ -220,6 +220,7 @@ export default function Form() {
       saveData();
     }
   }
+  console.log(purchaseBillData,"purchaseBillData")
 
   const onNew = () => {
     setId("");
@@ -310,7 +311,19 @@ export default function Form() {
                   <DisabledInput name="Place" value={place} required={true} readOnly={readOnly} />
                   <DateInput name="Due Date" value={dueDate} setValue={setDueDate} required={true} readOnly={readOnly} /> */}
                   {/* <DisabledInput name={"Purchase Order"} value={purchaseOrderDetails ? purchaseOrderDetails.data.docId : ""} /> */}
-                  <DropdownInput name="Sales Bill" options={dropDownListObject(id ? purchaseBillData.data : purchaseBillData.data, "docId", "id")} value={purchaseOrderId} setValue={setPurchaseOrderId} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                  <DropdownInput 
+  name="Sales Bill" 
+  options={dropDownListObject(
+    (id ? purchaseBillData.data : purchaseBillData.data).filter(item => item.isOn == true),
+    "docId", 
+    "id"
+  )} 
+  value={purchaseOrderId} 
+  setValue={setPurchaseOrderId} 
+  required={true} 
+  readOnly={readOnly} 
+  disabled={(childRecord.current > 0)} 
+/>
 
                   <button className="w-24 ml-16 p-1 text-xs bg-green-400 rounded hover:bg-lime-600 font-semibold transition hover:text-white"
                     onClick={() => {

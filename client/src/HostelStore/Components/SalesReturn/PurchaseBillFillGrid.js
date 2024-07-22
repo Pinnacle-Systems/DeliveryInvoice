@@ -55,12 +55,7 @@ const PurchaseBillFillGrid = ({ poReturnItems, setPoReturnItems, setPurchaseBill
                         uomId: element.uomId,
                         Product: {
                             name: element.Product.name,
-                            ProductBrand: {
-                                name: element.ProductBrand.name
-                            },
-                            ProductCategory: {
-                                name: element.ProductCategory.name,
-                            },
+                            
                         },
                         salesQty: element.qty,
                         alreadyReturnQty: element.alreadyReturnQty
@@ -73,6 +68,7 @@ const PurchaseBillFillGrid = ({ poReturnItems, setPoReturnItems, setPurchaseBill
         });
 
     }
+     console.log(purchaseBillItems,"purchaseBillItems")
 
 
     const isItemSelected = (id) => {
@@ -105,14 +101,9 @@ const PurchaseBillFillGrid = ({ poReturnItems, setPoReturnItems, setPurchaseBill
                     <thead className='bg-green-300 top-0 border-b border-gray-500'>
                         <tr className=''>
                             <th className="table-data w-10"></th>
-                            <th className="table-data  w-2 text-center p-0.5">S.no</th>
-                            <th className="table-data ">Product Brand<span className="text-red-500 p-0.5">*</span></th>
-                            <th className="table-data ">Product Category<span className="text-red-500 p-0.5">*</span></th>
-
 
                             <th className="table-data ">Product Name<span className="text-red-500 p-5">*</span></th>
 
-                            <th className="table-data ">UOM type<span className="text-red-500 p-5">*</span></th>
                             <th className="table-data  w-20">Qty<span className="text-red-500 p-0.5">*</span></th>
                             <th className="table-data  w-16">Price<span className="text-red-500 p-0.5">*</span></th>
                             <th className="table-data  w-16 p-0.5">Amount</th>
@@ -130,23 +121,8 @@ const PurchaseBillFillGrid = ({ poReturnItems, setPoReturnItems, setPurchaseBill
                                     <input type='checkbox' checked={isItemSelected(item.id)} />
                                 </td>
                                 <td className="table-data w-2 text-left px-1 py-1">
-                                    {index + 1}
+                                    {item.Product.name}
                                 </td>
-
-                                <td className='table-data'>
-
-                                    {item?.ProductBrand?.name}
-
-                                </td>
-                                <td className='table-data'>
-                                    {item?.ProductCategory?.name}
-
-                                </td>
-                                <td className='table-data'>
-                                    {item?.Product?.name}
-
-                                </td>
-                                <td>{getProductUomPriceDetails(item.productId).map((uom) => uom.Uom.name)}</td>
 
                                 <td className='table-data text-right pr-1'>
                                     {item?.qty}

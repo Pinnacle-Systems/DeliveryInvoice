@@ -78,7 +78,6 @@ export async function getPcsStock(req) {
 }
 
 async function get(req) {
-
     const {
         branchId,
         fromDate,
@@ -159,22 +158,42 @@ GROUP BY
 
 
 async function getOne(id, query) {
-    const { productId } = query;
-    console.log(productId, "productId");
+
+    const { productId,salesBillItemsId } = query;
+    console.log(salesBillItemsId, "salesBillId");
+
     let data;
 
     try {
-        data = await prisma.$queryRaw`
+        if(salesBillItemsId)
+        {
+            data = await prisma.$queryRaw`
+             SELECT
+                SUM(qty) AS stockQty,
+                productId
+            FROM
+                stock
+            WHERE 
+
+                stock.productId = ${productId}  AND (stock.id < (select max(id) from stock where salesBillItemsId = ${salesBillItemsId}))
+            GROUP BY
+                productId
+        `;
+        }
+        else{
+            data = await prisma.$queryRaw`
             SELECT
                 SUM(qty) AS stockQty,
                 productId
             FROM
                 stock
             WHERE 
-                stock.productId = ${productId}
+                stock.productId = ${productId} 
             GROUP BY
                 productId
         `;
+        }
+      
     } catch (error) {
         console.error("Database query error: ", error);
         throw new Error("Failed to fetch stock data");

@@ -13,7 +13,8 @@ import { CLOSE_ICON, DOUBLE_NEXT_ICON } from "../../../icons";
 import CompanyMaster from "../CompanyMaster";
 import { useState } from "react";
 import useOutsideClick from "../../../CustomHooks/handleOutsideClick";
-import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister, SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit } from "../../../HostelStore/Components";
+import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
+   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail } from "../../../HostelStore/Components";
 
 const ActiveTabList = () => {
   const openTabs = useSelector((state) => state.openTabs);
@@ -53,6 +54,7 @@ const ActiveTabList = () => {
     "MONTHLY PURCHASE REPORT": <MonthlyPurchase />,
     "CURRENT STOCK": <CurrentStock />,
     "PROFIT REPORT" :<MonthlyProfit/>,
+    "PAYMENT DETAIL" : <PaymentDetail />
   };
   const innerWidth = window.innerWidth;
   const itemsToShow = innerWidth / 130;

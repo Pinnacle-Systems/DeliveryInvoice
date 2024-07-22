@@ -117,11 +117,11 @@ const PoBillItems = ({
     <>
       <div className={` relative w-full overflow-y-auto py-1`}>
         <table className=" border border-gray-500 text-xs table-auto  w-full">
-          <thead className="bg-emerald-800 text-white font-thin tracking-wider text-sm top-0 border-b border-gray-500">
+          <thead className="bg-emerald-800 p-1 text-white font-thin tracking-wider text-sm top-0 border-b border-gray-500">
             <tr className="">
               <th className="table-data  w-2 text-center p-0.5">S.no</th>
                           <th className="table-data ">
-                Product Name<span className="text-red-500 p-5">*</span>
+                Product Name<span className="text-red-500 p-0.5">*</span>
               </th>
            
               <th className="table-data  w-20">Stock.Qty</th>
@@ -134,6 +134,8 @@ const PoBillItems = ({
               </th>
 
               <th className="table-data  w-16 p-0.5">Amount</th>
+              <th className="table-data  w-16 p-0.5">Add Stock</th>
+
               {!readOnly && (
                 <th className="table-data  w-16 p-0.5">
                   {" "}
@@ -167,7 +169,7 @@ const PoBillItems = ({
                 </td>
                 <SalesPrice
                   handleSalePriceChange={handleSalePriceChange}
-                  id={id}
+                  id={item.id}
                   date={date}
                   item={item}
                   readOnly={readOnly}

@@ -532,6 +532,8 @@ model SalesBill {
   name           String?
   isOn           Boolean          @default(false)
   price          Float?
+  netBillValue   Int?
+
 
 }
 
