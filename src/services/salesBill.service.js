@@ -54,55 +54,49 @@ function manualFilterSearchData(searchBillDate, data) {
 
 
 async function get(req) {
-    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate ,isProfitReport,isOn} = req.query
+    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate, isProfitReport, isOn } = req.query;
     let data;
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
 
-
-    if(isProfitReport){
-       
-        data=await profitReport(startDateStartTime,endDateEndTime)
+    if (isProfitReport) {
+        data = await profitReport(startDateStartTime, endDateEndTime);
         return { statusCode: 0, data };
     }
-
 
     if (salesReport) {
         data = await prisma.$queryRaw`
-SELECT 
-    product.name AS Product,
-    SUM(salesBillItems.qty) AS Qty,
-    SUM(salesBillItems.price) AS price,
-    (SELECT 
-            SUM(subQty * subPrice) 
-        FROM
-            (SELECT 
-                 SUM(sub.qty) AS subQty,
-                 SUM(sub.qty * sub.price) AS subPrice
+            SELECT 
+                product.name AS Product,
+                SUM(salesBillItems.qty) AS Qty,
+                SUM(salesBillItems.price) AS price,
+                (SELECT 
+                        SUM(subQty * subPrice) 
+                    FROM
+                        (SELECT 
+                            SUM(sub.qty) AS subQty,
+                            SUM(sub.qty * sub.price) AS subPrice
+                        FROM
+                            SalesBillItems sub
+                            LEFT JOIN SalesBill subBill ON subBill.id = sub.salesBillId
+                        WHERE
+                            sub.productId = salesBillItems.productId 
+                            AND subBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+                        ) AS e
+                ) AS TotalAmount
             FROM
-                SalesBillItems sub
-                LEFT JOIN SalesBill subBill ON subBill.id = sub.salesBillId
+                SalesBillItems salesBillItems
+                LEFT JOIN SalesBill salebill ON salebill.id = salesBillItems.salesBillId
+                LEFT JOIN product ON product.id = salesBillItems.productId
             WHERE
-                sub.productId = salesBillItems.productId 
-                AND subBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-            ) AS e
-    ) AS TotalAmount
-FROM
-    SalesBillItems salesBillItems
-    LEFT JOIN SalesBill salebill ON salebill.id = salesBillItems.salesBillId
-    LEFT JOIN product ON product.id = salesBillItems.productId
-WHERE
-    salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-GROUP BY 
-    salesBillItems.productId, product.name;
-
-
+                salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+            GROUP BY 
+                salesBillItems.productId, product.name
+            ORDER BY 
+                salebill.createdAt DESC;
         `;
         return { statusCode: 0, data };
-    }
-
-
-    else {
+    } else {
         data = await prisma.salesBill.findMany({
             where: {
                 companyId: companyId ? parseInt(companyId) : undefined,
@@ -122,7 +116,7 @@ GROUP BY
                 SalesBillItems: {
                     select: {
                         qty: true,
-                        price:true,
+                        price: true,
                     }
                 },
                 supplier: {
@@ -130,21 +124,24 @@ GROUP BY
                         name: true
                     }
                 }
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
-        
     }
 
-
-    data = manualFilterSearchData(searchBillDate, data)
-    const totalCount = data.length
+    data = manualFilterSearchData(searchBillDate, data);
+    const totalCount = data.length;
 
     if (pagination) {
-        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)
+        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage);
     }
-    let newDocId = await getNextDocId(branchId)
+
+    let newDocId = await getNextDocId(branchId);
     return { statusCode: 0, nextDocId: newDocId, data, totalCount };
 }
+
 
 
 async function getOne(id) {

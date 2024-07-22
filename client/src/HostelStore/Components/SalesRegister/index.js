@@ -56,6 +56,7 @@ const SalesRegister = () => {
             setTotalNetBillValue(totalNetBill);
         }
     }, [purData]);
+    console.log(purData,"purData")
 
 
     // const { data: allData, isLoading: isAllDataLoading, isFetching: isAllDataFetching } = ({
@@ -85,10 +86,9 @@ const SalesRegister = () => {
 
     const tableRef = useRef(null);
 
-
     let totalAmount = 0;
     for (const obj of purData) {
-        totalAmount += (obj?.SalesBillItems || []).reduce((a, c) => a + (parseFloat(c.qty) * parseFloat(c.salePrice)), 0);
+        totalAmount += (obj?.SalesBillItems || []).reduce((a, c) => a + (parseFloat(c.qty) * parseFloat(c.price)), 0);
     }
 
 
@@ -131,7 +131,7 @@ const SalesRegister = () => {
 
                                     </th>
                                     <th className="  top-0 stick-bg table-data">
-                                        <label>Sale Amount</label>
+                                        <label>NetBill Amount</label>
 
                                     </th>
                                 </tr>
@@ -163,7 +163,7 @@ const SalesRegister = () => {
                                                 <td className='py-1 text-left border-2 border-gray-400'> {getDateFromDateTimeToDisplay(dataObj?.createdAt)}</td>
                                                 <td className='py-1 text-left border-2 border-gray-400'>{dataObj?.supplier  ? dataObj.supplier.name: "Sales"} </td>
                                                 <td className='py-1 text-right px-1 border-2 border-gray-400 '>
-                                                    <SaleAmount id={dataObj.id} />
+                                                {dataObj?.netBillValue  ? dataObj.netBillValue:0}
                                                 </td>
                                             </tr>
 
@@ -174,33 +174,33 @@ const SalesRegister = () => {
 
                                                 <table class=" border text-xs  w-screen mt-1">
 
-                                                    <thead className=" table-header">
+                                                    <thead className=" table-header ">
                                                         <tr className='h-2'>
                                                             <th
-                                                                className="  top-0 stick-bg w-10">
+                                                                className="  top-0 w-10 bg-emerald-500">
                                                                 S. no.
                                                             </th>
                                                          
                                                             <th
-                                                                className="  top-0 stick-bg ">
+                                                                className="  top-0 bg-emerald-500 ">
                                                                 Product
                                                             </th>
                                                          
 
-                                                            <th className="  top-0 stick-bg table-data">
+                                                            <th className="  top-0 bg-emerald-500 table-data">
                                                                 <label>Qty</label>
                                                             </th>
 
                                                             <th
-                                                                className="  top-0 stick-bg table-data "
+                                                                className="  top-0 bg-emerald-500 table-data "
                                                             >
                                                                 <label>Price</label>
 
                                                             </th>
-                                                            <th className="  top-0 stick-bg table-data">
+                                                            <th className="  top-0 bg-emerald-500 table-data">
                                                                 <label>Total Amt</label>
                                                             </th>
-                                                            <th className="  top-0 stick-bg table-data">
+                                                            <th className="  top-0 bg-emerald-500 table-data">
                                                                 Return Qty
                                                             </th>
                                                         </tr>
@@ -211,8 +211,8 @@ const SalesRegister = () => {
                                                                 <td className='border-2 border-gray-400'>{index + 1}</td>
                                                                 <td className='border-2 border-gray-400'>{poItem.Product.name}</td>
                                                                 <td className='py-1 text-right border-2 border-gray-400'>{poItem.qty}</td>
-                                                                <td className='py-1 text-right border-2 border-gray-400'>{poItem.salePrice}</td>
-                                                                <td className='py-1 text-right border-2 border-gray-400'>{(poItem.salePrice * poItem.qty).toFixed(2)}</td>
+                                                                <td className='py-1 text-right border-2 border-gray-400'>{poItem.price}</td>
+                                                                <td className='py-1 text-right border-2 border-gray-400'>{(poItem.price * poItem.qty).toFixed(2)}</td>
                                                                 <td className='py-1 text-right border-2 border-gray-400 pr-5'>{poItem.alreadyReturnQty}</td>
                                                             </tr>
                                                         ))}
@@ -223,8 +223,8 @@ const SalesRegister = () => {
                                         </Fragment>
                                     ))}
                                     <tr className='py-2 w-full table-row bg-blue-400'>
-                                        <td colSpan={4} className='text-center border-2 border-gray-500 font-bold text-sm bg-blue-400'>Total</td>
-                                        <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(totalAmount).toFixed(2)}</td>
+                                        <td colSpan={4} className='text-center border-2 border-gray-500 font-bold text-sm bg-emerald-400'>Total</td>
+                                        <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>{parseFloat(totalAmount).toFixed(2)}</td>
                                     </tr>
                                 </tbody>
                             }
