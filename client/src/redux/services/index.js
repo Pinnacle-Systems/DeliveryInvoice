@@ -18,11 +18,15 @@ export { default as productMasterApi } from "./ProductMasterService";
 export { default as partyMasterApi } from "./PartyMasterService";
 export { default as partyCategoryMasterApi } from './PartyCategoryServices'
 export { default as purchaseBillApi } from './PurchaseBillService'
+export { default as openingStockApi } from './OpeningStockService'
+
 export { default as stockApi } from './StockService'
 export { default as salesBillApi } from './SalesBillService'
 export { default as purchaseReturnApi } from './PurchaseReturnService'
 export { default as salesReturnApi } from './SalesReturnService'
 export { default as uomMasterApi } from "./UomMasterService"
+export { default as PayOutApi } from './PayOut.Services';
+
 
 
 

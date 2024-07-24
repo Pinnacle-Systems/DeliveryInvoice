@@ -17,4 +17,8 @@ export {default as MonthlyPurchase}  from './MonthlyPurchaseReport'
 export {default as CurrentStock}  from './CurrentStock'
 export {default as MonthlyProfit} from './MonthlyProfitReport'
 export { default as PaymentDetail } from './PaymentDetail'
+export { default as OpeningStock } from './OpeningStock'
+export { default as QuatationStock } from './QuatationStock'
+
+
 

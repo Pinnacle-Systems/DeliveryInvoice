@@ -4,16 +4,11 @@ import {
   countryMasterApi, pageMasterApi, stateMasterApi,
   cityMasterApi, departmentMasterApi, employeeCategoryMasterApi,
   finYearMasterApi, rolesMasterApi, employeeMasterApi, userMasterApi,
-  branchMasterApi, companyMasterApi, pageGroupMasterApi, productBrandMasterApi, productCategoryMasterApi, productMasterApi, partyMasterApi, partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi
+  branchMasterApi, companyMasterApi, pageGroupMasterApi, productBrandMasterApi, productCategoryMasterApi, productMasterApi, partyMasterApi,
+   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,PayOutApi,openingStockApi
 } from "./services"
 
-
-
-
-
-
-
-const commonReducers = {
+const commonReducers = {  
   openTabs,
   countryMaster: countryMasterApi.reducer,
   pageMaster: pageMasterApi.reducer,
@@ -32,8 +27,13 @@ const commonReducers = {
   productCategoryMaster: productCategoryMasterApi.reducer,
   productMaster: productMasterApi.reducer,
   partyMaster: partyMasterApi.reducer,
+  [PayOutApi.reducerPath]: PayOutApi.reducer,
+  [openingStockApi.reducerPath]: openingStockApi.reducer,
+
+
   partyCategoryMaster: partyCategoryMasterApi.reducer,
   purchaseBill: purchaseBillApi.reducer,
+
   stock: stockApi.reducer,
   salesBill: salesBillApi.reducer,
   purchaseReturn: purchaseReturnApi.reducer,
@@ -57,9 +57,12 @@ pageGroupMasterApi.middleware,
 productBrandMasterApi.middleware,
 productCategoryMasterApi.middleware,
 productMasterApi.middleware,
+PayOutApi.middleware,
 partyMasterApi.middleware,
 partyCategoryMasterApi.middleware,
 purchaseBillApi.middleware,
+openingStockApi.middleware,
+
 stockApi.middleware,
 salesBillApi.middleware,
 purchaseReturnApi.middleware,

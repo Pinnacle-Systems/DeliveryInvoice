@@ -15,10 +15,12 @@ import {
   productCategory,
   product,
   purchaseBill,
+  OpeningStock,
   stock,
   salesBill,
   purchaseReturn,
   salesReturn,
+  payOut,
   uom
 } from './src/routes/index.js';
 
@@ -81,11 +83,15 @@ app.use("/productBrand", productBrand);
 app.use("/productCategory", productCategory);
 app.use("/product", product);
 app.use("/purchaseBill", purchaseBill);
+app.use("/OpeningStock", OpeningStock);
+
 app.use("/stock", stock);
 app.use("/salesBill", salesBill);
 app.use("/purchaseReturn", purchaseReturn)
 app.use("/salesReturn", salesReturn)
 app.use('/uom', uom)
+app.use("/payOut", payOut);
+
 
 
 

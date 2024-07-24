@@ -76,62 +76,72 @@ export async function getPcsStock(req) {
     }
     return { statusCode: 0, data, totalCount };
 }
-
 async function get(req) {
     const {
         branchId,
         fromDate,
         productId,
         searchProduct,
-        pagination = false, dataPerPage = 5, pageNumber = 1,
+        pagination = false, 
+        dataPerPage = 5, 
+        pageNumber = 1,
         stockData,
         stockReport,
     } = req.query;
 
     let data;
+    let totalCount;
 
     if (stockData) {
         data = await prisma.$queryRaw`
         SELECT
-    stock.productId,
-    product.name,
-    sum(qty) as sum,
-FROM 
-    stock
-LEFT JOIN
-    product ON product.Id = stock.productId
-
-WHERE 
-    stock.branchId = ${branchId}
-GROUP BY
-    stock.productId;
+            stock.productId,
+            product.name,
+            SUM(stock.qty) AS sum
+        FROM 
+            stock
+        LEFT JOIN
+            product ON product.id = stock.productId
+        WHERE 
+            stock.branchId = ${parseInt(branchId)}
+        GROUP BY
+            stock.productId;
         `;
-        let totalCount = data.length;
+        totalCount = data.length;
         if (pagination) {
-            data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage);
+            data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
         }
         return { statusCode: 0, data, totalCount };
     }
 
     if (stockReport) {
         data = await prisma.$queryRaw`
- SELECT product.name AS Product,
-             SUM(qty)as Stock ,saleprice as "SaleRate",  (saleprice * SUM(qty)) AS "SaleValue"
-            FROM
-                Stock sub
-                LEFT JOIN
-                product ON product.id = sub.productId
-                
-            
-            order by product.name`;
-        let totalCount = data.length;
+        SELECT
+            product.name AS Product,
+            SUM(stock.qty) AS Stock,
+            saleprice AS "SaleRate",
+            (saleprice * SUM(stock.qty)) AS "SaleValue"
+        FROM
+            stock
+        LEFT JOIN
+            product ON product.id = stock.productId
+        GROUP BY
+            product.name, saleprice
+        ORDER BY
+            product.name;
+        `;
+        totalCount = data.length;
         if (pagination) {
-            data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage);
+            data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
         }
         return { statusCode: 0, data, totalCount };
     }
 
     data = await xprisma.stock.groupBy({
+        by: ["productId"],
+        _sum: {
+            qty: true,
+        },
         where: {
             productId: productId ? parseInt(productId) : undefined,
             Product: searchProduct ? {
@@ -140,19 +150,45 @@ GROUP BY
                 },
             } : undefined,
         },
-        by: ["productId"],
-        _sum: {
-            qty: true,
+    });
+
+    // Fetch product names separately
+    const productIds = data.map(item => item.productId);
+    const products = await xprisma.product.findMany({
+        where: {
+            id: {
+                in: productIds,
+            },
+        },
+        select: {
+            id: true,
+            name: true,
         },
     });
-    data = data.filter(item => !(item._sum.qty === 0));
-    let totalCount = data.length;
+
+    // Map product names to the grouped data
+    data = data.map(item => ({
+        ...item,
+        Product: products.find(product => product.id === item.productId)?.name || null,
+    }));
+
+    // Filter out entries where the sum is zero
+    data = data.filter(item => item._sum.qty !== 0);
+    totalCount = data.length;
+
+    const QuatationStock = await prisma.$queryRaw`
+    SELECT sbi.productId, SUM(sbi.qty) AS TotalQty
+    FROM SalesBillItems sbi
+    JOIN SalesBill sb ON sbi.salesBillId = sb.id
+    WHERE sb.isOn = 0
+    GROUP BY sbi.productId
+    `;
 
     if (pagination) {
-        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage);
+        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
     }
 
-    return { statusCode: 0, data, totalCount };
+    return { statusCode: 0, data, totalCount, QuatationStock };
 }
 
 

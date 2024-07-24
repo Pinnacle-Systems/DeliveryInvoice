@@ -213,7 +213,7 @@ const PoBillItems = ({ id, readOnly, setPoBillItems, poBillItems }) => {
               </td>
             </tr>
           ))}
-          <tr className="bg-emerald-800 font-thin text-white text-sm tracking-wider w-full border border-gray-400 h-7 font-bold">
+          <tr className="bg-emerald-800 font-thin text-white tracking-wider text-sm w-full border border-gray-400 h-7 font-bold">
             <td className="table-data text-center w-10 font-bold" colSpan={5}>
               Total
             </td>

@@ -128,4 +128,8 @@ export const salesTypes = [
     { show: "WHOLE SALE", value: "WHOLESALE" },
     { show: "RETAIL", value: "RETAIL" },
 ]
+export const PaymentType = [
+    { show: "PURCHAS BILL", value: "PURCHSEBILL" },
+    { show: "SALES BILL", value: "SALESBILL" },
+]
 

@@ -7,6 +7,9 @@ export function getYearShortCode(year) {
   return `${new Date(year).getFullYear().toString().slice(2)}`
 }
 export const getDateFromDateTime = (dateTime) => moment.utc(dateTime).format("DD-MM-YYYY")
+export function getYearShortCodeForFinYear(fromDate, toDate) {
+  return `${new Date(fromDate).getFullYear().toString().slice(2)}-${new Date(toDate).getFullYear().toString().slice(2)}`
+}
 
 
 export function getItemFullNameFromShortCode(shortCode) {

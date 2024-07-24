@@ -14,7 +14,7 @@ import CompanyMaster from "../CompanyMaster";
 import { useState } from "react";
 import useOutsideClick from "../../../CustomHooks/handleOutsideClick";
 import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
-   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail } from "../../../HostelStore/Components";
+   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail,OpeningStock,QuatationStock } from "../../../HostelStore/Components";
 
 const ActiveTabList = () => {
   const openTabs = useSelector((state) => state.openTabs);
@@ -54,7 +54,9 @@ const ActiveTabList = () => {
     "MONTHLY PURCHASE REPORT": <MonthlyPurchase />,
     "CURRENT STOCK": <CurrentStock />,
     "PROFIT REPORT" :<MonthlyProfit/>,
-    "PAYMENT DETAIL" : <PaymentDetail />
+    "PAYMENT DETAIL" : <PaymentDetail />,
+    "OPENING STOCK"   : <OpeningStock />,
+    "QUATATION STOCK"  : <QuatationStock />
   };
   const innerWidth = window.innerWidth;
   const itemsToShow = innerWidth / 130;

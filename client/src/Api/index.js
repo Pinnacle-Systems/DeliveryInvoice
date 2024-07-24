@@ -15,12 +15,15 @@ export const FIN_YEAR_API = "finYear";
 export const EMPLOYEE_CATEGORY_API = "employeeCategories";
 
 export const PARTY_CATEGORY_API = "partyCategories"
+export const PAYOUT_API = "payOut"
 
 export const PARTY_API = "party"
 export const PRODUCT_BRAND_API = "productBrand"
 export const PRODUCT_CATEGORY_API = "productCategory"
 export const PRODUCT_API = "product"
 export const PURCHASE_BILL_API = "purchaseBill"
+export const OPENINGSTOCK_API = "OpeningStock"
+
 export const STOCK_API = "stock"
 export const SALES_BILL_API = "salesBill"
 export const PURCHASE_RETURN_API = "purchaseReturn"
