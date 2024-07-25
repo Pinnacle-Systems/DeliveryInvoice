@@ -28,10 +28,13 @@ const MonthlySales = () => {
   let salesList = salesData ? salesData.data : []
 
   let totalAmount = 0;
-  for (const obj of salesList) {
-    totalAmount += obj.Amount;
-  }
 
+  salesList.forEach(item => {
+    totalAmount += item.Qty * item.AvgPrice
+  })
+  console.log(totalAmount,"totalAmount")
+
+ 
   const numericFields = ["Qty", "Amount"];
   return (
 
@@ -108,7 +111,7 @@ const MonthlySales = () => {
                     )}
 
                     <tr className='py-2 w-full table-row bg-blue-400'>
-                      <td colSpan={5} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>Total</td>
+                      <td colSpan={6} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>Total</td>
                       <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>{parseFloat(totalAmount).toFixed(2)}</td>
 
                     </tr>
