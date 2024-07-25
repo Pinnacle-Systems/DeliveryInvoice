@@ -66,25 +66,26 @@ async function get(req) {
 
     if (salesReport) {
       data = await prisma.$queryRaw`
-    SELECT 
-        DATE(salesBill.createdAt) AS Date,
-        party.name AS Party,
-        product.name AS Product,
-        SUM(salesBillItems.qty) AS Qty,
-        AVG(salesBillItems.price) AS AvgPrice,
-        SUM(salesBillItems.qty * salesBillItems.price) AS TotalPrice
-    FROM 
-        salesBillItems
-    JOIN 
-        product ON salesBillItems.productId = product.id
-    JOIN 
-        salesBill ON salesBill.id = salesBillItems.salesBillId
-    JOIN 
-        party ON party.id = salesBill.supplierId
-    WHERE 
-        salesBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-    GROUP BY 
-        DATE(salesBill.createdAt), party.name, product.name
+SELECT 
+    DATE(salesBill.createdAt) AS Date,
+    party.name AS Party,
+    product.name AS Product,
+    SUM(salesBillItems.qty) AS Qty,
+    FORMAT(AVG(salesBillItems.price), 2) AS AvgPrice,
+    SUM(salesBillItems.qty) * FORMAT(AVG(salesBillItems.price), 2) AS TotalPrice
+FROM 
+    salesBillItems
+JOIN 
+    product ON salesBillItems.productId = product.id
+JOIN 
+    salesBill ON salesBill.id = salesBillItems.salesBillId
+JOIN 
+    party ON party.id = salesBill.supplierId
+WHERE 
+    salesBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+    AND salesBill.isOn = '1'
+GROUP BY 
+    DATE(salesBill.createdAt), party.name, product.name
 
     `;
     
