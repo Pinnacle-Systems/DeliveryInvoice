@@ -45,7 +45,7 @@ const MonthlySales = () => {
      
            
 
-      <div className='bg-gray-300 min-h-screen' >
+      <div className='bg-gray-200 min-h-screen' >
         <div className='w-full h-full p-1'>
           <div className='flex items-center justify-between page-heading p-2 font-bold'>
             <h1 className=''>Monthly Sales Report</h1>
@@ -68,7 +68,7 @@ const MonthlySales = () => {
               salesList.length !== 0 ?
                 <table className='w-2/4 m-auto border-2 border-gray-900 text-xs'>
                   <thead>
-                    <tr className='bg-blue-400 border-2 border-gray-700 sticky top-0 py-2'>
+                    <tr className='bg-emerald-400 border-2 border-gray-700 sticky top-0 py-2'>
                       <th className='w-12'>S.No</th>
                       {Object.keys(salesList[0]).map((heading, i) =>
                         <th className='p-2 border border-gray-500 text-sm' key={i}>
@@ -82,15 +82,23 @@ const MonthlySales = () => {
                       <>
                         <tr key={i} className='py-2 w-full table-row'>
                           <td className='text-center border border-gray-500'>{i + 1}</td>
-                          {Object.keys(data).map((heading, i) =>
-                            <>
+                          {Object.keys(data).map((heading, i) => (
+                           <td
+                             key={i}
+                             className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}
+                           >
+                             {heading === "Amount" ? (
+                               parseFloat(data[heading]).toFixed(2)
+                             ) : heading === "Date" ? (
+                              new Date(data[heading]).toISOString().split('T')[0]
+                             ) : (
+                                data[heading]
+                             )}
 
-                              <td key={i} className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}>
-                                {heading == "Amount" ? parseFloat(data[heading]).toFixed(2) : (data[heading])}
-                              </td>
-                            </>
+                           </td>
+                          
+                         ))}
 
-                          )}
 
 
                         </tr>
@@ -100,8 +108,8 @@ const MonthlySales = () => {
                     )}
 
                     <tr className='py-2 w-full table-row bg-blue-400'>
-                      <td colSpan={3} className='text-center border-2 border-gray-700 font-bold text-sm bg-blue-400'>Total</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(totalAmount).toFixed(2)}</td>
+                      <td colSpan={5} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>Total</td>
+                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>{parseFloat(totalAmount).toFixed(2)}</td>
 
                     </tr>
                   </tbody>

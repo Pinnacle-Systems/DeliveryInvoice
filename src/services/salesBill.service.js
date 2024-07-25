@@ -65,38 +65,34 @@ async function get(req) {
     }
 
     if (salesReport) {
-        data = await prisma.$queryRaw`
-            SELECT 
-                product.name AS Product,
-                SUM(salesBillItems.qty) AS Qty,
-                SUM(salesBillItems.price) AS price,
-                (SELECT 
-                        SUM(subQty * subPrice) 
-                    FROM
-                        (SELECT 
-                            SUM(sub.qty) AS subQty,
-                            SUM(sub.qty * sub.price) AS subPrice
-                        FROM
-                            SalesBillItems sub
-                            LEFT JOIN SalesBill subBill ON subBill.id = sub.salesBillId
-                        WHERE
-                            sub.productId = salesBillItems.productId 
-                            AND subBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-                        ) AS e
-                ) AS TotalAmount
-            FROM
-                SalesBillItems salesBillItems
-                LEFT JOIN SalesBill salebill ON salebill.id = salesBillItems.salesBillId
-                LEFT JOIN product ON product.id = salesBillItems.productId
-            WHERE
-                salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-            GROUP BY 
-                salesBillItems.productId, product.name
-            ORDER BY 
-                salebill.createdAt DESC;
-        `;
+      data = await prisma.$queryRaw`
+    SELECT 
+        DATE(salesBill.createdAt) AS Date,
+        party.name AS Party,
+        product.name AS Product,
+        SUM(salesBillItems.qty) AS Qty,
+        AVG(salesBillItems.price) AS AvgPrice,
+        SUM(salesBillItems.qty * salesBillItems.price) AS TotalPrice
+    FROM 
+        salesBillItems
+    JOIN 
+        product ON salesBillItems.productId = product.id
+    JOIN 
+        salesBill ON salesBill.id = salesBillItems.salesBillId
+    JOIN 
+        party ON party.id = salesBill.supplierId
+    WHERE 
+        salesBill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+    GROUP BY 
+        DATE(salesBill.createdAt), party.name, product.name
+
+    `;
+    
+
         return { statusCode: 0, data };
-    } else {
+    }
+    
+     else {
         data = await prisma.salesBill.findMany({
             where: {
                 companyId: companyId ? parseInt(companyId) : undefined,
