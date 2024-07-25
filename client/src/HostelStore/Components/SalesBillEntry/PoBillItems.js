@@ -20,6 +20,7 @@ const PoBillItems = ({
   poBillItems,
   date,
   readonly,
+  isOn
 }) => {
   const params = {
     companyId: secureLocalStorage.getItem(
@@ -179,6 +180,8 @@ const PoBillItems = ({
                   poBillItems={poBillItems}
                   uomId={item.uomId}
                   qty={item.qty}
+                  isOn ={isOn}
+                  
                 />
                 {!readOnly && (
                   <td className="border border-gray-500 text-xs text-center">

@@ -30,7 +30,8 @@
     "react-paginate": "^8.2.0",
     "react-to-print": "^2.15.1",
     "socket.io": "^4.6.1",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.12",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

@@ -1,48 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { useGetStockByIdQuery } from '../../../redux/services/StockService';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
-const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly,date, item,id }) => {
-    console.log(poBillItems,"idforstock")
-
+const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, item, id,isOn }) => {
     const { data: singleProduct } = useGetStockByIdQuery({
         params: {
             productId,
-            salesBillItemsId :id
-
+            salesBillItemsId: id,isOn
         }
-    }, { skip: !productId,id });
-
+    }, { skip: !productId, id });
 
     const [salePrice, setSalePrice] = useState([]);
 
     useEffect(() => {
-        if (singleProduct && singleProduct.data) {
+        if (singleProduct?.data) {
             setSalePrice(singleProduct.data);
         }
     }, [singleProduct]);
 
     const handleInputChange = (value, index, field, stockQty) => {
-        const newBlend = JSON.parse(JSON.stringify(poBillItems));
-        newBlend[index][field] = value;
+        const updatedItems = [...poBillItems];
+        updatedItems[index][field] = value;
 
         if (field === "qty" && parseFloat(stockQty) < parseFloat(value)) {
             toast.info("Sales Qty cannot be more than Stock Qty", { position: 'top-center' });
             return;
         }
 
-        setPoBillItems(newBlend);
+        setPoBillItems(updatedItems);
     };
 
-    let stockQty = salePrice.find(i => i.salePrice === poBillItems[index]?.salePrice)?.stockQty;
-    stockQty = stockQty ? stockQty : 0;
+    let stockQty = salePrice.find(i => i.salePrice === poBillItems[index]?.salePrice)?.stockQty || 0;
+
+    const navigate = useNavigate();
+
+    const handleButtonClick = () => {
+        navigate('/OPENING STOCK'); 
+    };
 
     return (
         <>
             <td className='table-data'>
-                <>
-                    {stockQty}
-                </>
+                {stockQty}
             </td>
             <td className="table-data w-44">
                 <input
@@ -97,11 +97,13 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly,da
                 />
             </td>
             <td className="table-data w-44 flex items-center justify-center">
-    <button className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded">
-        Add Stock
-    </button>
-</td>
-
+                <button
+                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded"
+                    onClick={handleButtonClick}
+                >
+                    Add Stock
+                </button>
+            </td>
         </>
     );
 };

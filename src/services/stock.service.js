@@ -92,6 +92,22 @@ async function get(req) {
     let data;
     let totalCount;
 
+    // Fetch QuatationStock data once
+    const quatationStockData = await prisma.$queryRaw`
+    SELECT sbi.productId, SUM(sbi.qty) AS TotalQty
+    FROM SalesBillItems sbi
+    JOIN SalesBill sb ON sbi.salesBillId = sb.id
+    WHERE sb.isOn = 0
+    GROUP BY sbi.productId
+    `;
+    console.log(quatationStockData,"quatationStockData")
+
+    // Convert QuatationStock data into a map for easy lookup
+    const quatationStockMap = new Map(
+        quatationStockData.map(item => [item.productId, item.TotalQty])
+    );
+    console.log(quatationStockMap,"quatationStockMap")
+
     if (stockData) {
         data = await prisma.$queryRaw`
         SELECT
@@ -107,6 +123,12 @@ async function get(req) {
         GROUP BY
             stock.productId;
         `;
+        // Integrate QuatationStock data
+        data = data.map(item => ({
+            ...item,
+            QuatationStock: quatationStockMap.get(item.productId) || 0
+        }));
+
         totalCount = data.length;
         if (pagination) {
             data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
@@ -130,6 +152,12 @@ async function get(req) {
         ORDER BY
             product.name;
         `;
+        // Add QuatationStock data to each item in the report
+        data = data.map(item => ({
+            ...item,
+            QuatationStock: quatationStockMap.get(item.productId) || 0
+        }));
+
         totalCount = data.length;
         if (pagination) {
             data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
@@ -170,38 +198,45 @@ async function get(req) {
     data = data.map(item => ({
         ...item,
         Product: products.find(product => product.id === item.productId)?.name || null,
+        QuatationStock: quatationStockMap.get(item.productId) || 0
     }));
 
     // Filter out entries where the sum is zero
     data = data.filter(item => item._sum.qty !== 0);
     totalCount = data.length;
 
-    const QuatationStock = await prisma.$queryRaw`
-    SELECT sbi.productId, SUM(sbi.qty) AS TotalQty
-    FROM SalesBillItems sbi
-    JOIN SalesBill sb ON sbi.salesBillId = sb.id
-    WHERE sb.isOn = 0
-    GROUP BY sbi.productId
-    `;
-
     if (pagination) {
         data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
     }
 
-    return { statusCode: 0, data, totalCount, QuatationStock };
+    return { statusCode: 0, data, totalCount };
 }
+
 
 
 
 async function getOne(id, query) {
 
-    const { productId,salesBillItemsId } = query;
-    console.log(salesBillItemsId, "salesBillId");
-
+    const { productId,salesBillItemsId,isOn } = query;
+    isOn: typeof(isOn) === "undefined" ? undefined : JSON.parse(isOn)
     let data;
 
     try {
-        if(salesBillItemsId)
+         if(isOn == 'false'){
+            data = await prisma.$queryRaw`
+            SELECT
+               SUM(qty) AS stockQty,
+               productId
+           FROM
+               stock
+           WHERE 
+
+               stock.productId = ${productId} 
+           GROUP BY
+               productId
+       `;
+         }
+     else if(salesBillItemsId)
         {
             data = await prisma.$queryRaw`
              SELECT
@@ -216,6 +251,7 @@ async function getOne(id, query) {
                 productId
         `;
         }
+        
         else{
             data = await prisma.$queryRaw`
             SELECT
