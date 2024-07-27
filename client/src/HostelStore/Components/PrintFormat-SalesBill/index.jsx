@@ -1,136 +1,291 @@
-import React from 'react'
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
+import numberToWords from 'number-to-words';
+import logo from "../../../assets/armlogo0.jpg";
 import secureLocalStorage from 'react-secure-storage';
-
-import { findFromList, getDateFromDateTime } from '../../../Utils/helper';
 import moment from 'moment';
-  import { useGetProductQuery } from '../../../redux/services/ProductMasterService';
+import { findFromList } from '../../../Utils/helper';
 
-
-export default function   Form({ poBillItems, innerRef, date, data,id,  docId,isOn }) {
+export default function Form({ poBillItems = [], innerRef, date, data, id, docId, isOn }) {
   const currTime = new Date().toLocaleTimeString();
-
   const branchId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "currentBranchId"
-  )
+  );
 
-  const params = { companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId") }
-
-  const { data: productList } =
-  useGetProductQuery({ params });
-
-  
   function getTotal(field1, field2) {
+    if (!poBillItems.length) return 0;
     const total = poBillItems.reduce((accumulator, current) => {
-
-      return accumulator + parseFloat(current[field1] && current[field2] ? current[field1] * current[field2] : 0)
-    }, 0)
-    return parseFloat(total)
+      return accumulator + parseFloat(current[field1] && current[field2] ? current[field1] * current[field2] : 0);
+    }, 0);
+    return parseFloat(total);
   }
 
+  const totalAmount = getTotal("qty", "price").toFixed(2);
+
   return (
-    <div className=" w-full  small-print" id='poPrint' ref={innerRef}>
-
-     <h1 className='text-center text-2xl font-semibold mt-3'>
-      {isOn ? "CASH BILL" : "QUOTATION"} 
-    </h1>
-
-      <hr className="border-t-2 border-dashed border-gray-600 w-full " />
-
-      <div className=' text-center   text-sm mt-1 pl-2  grid grid-cols-3 w-45'>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">Bill.No</span>
-          <span>:</span>
-          <span className='col-span-2'> {docId} </span>
-        </div>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">Bill.Date</span>
-          <span>:</span>
-          <span className='col-span-2'>{moment(date).format("DD-MM-YYYY")}</span>
-        </div>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">Time</span>
-          <span>:</span>
-          <span className='col-span-2'>{currTime}</span>
-        </div>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">Sl.Name</span>
-          <span>: </span>
-          <span className='col-span-2'>{data?.supplier?.name}</span>
-        </div>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">ContactNumber</span>
-          <span>:</span>
-          <span className='col-span-2'>{data?.supplier?.contactMobile}</span>
-        </div>
-        <div className=' text-start py-2 text-sm'>
-          <span className="font-bold col-span-1">ContactPerson</span>
-          <span>: </span>
-          <span className='col-span-2'>{data?.supplier?.contactPersonName}</span>
-        </div>
-        
-      </div>
-      
-      <div class="flex items-center">
-        <hr className="border-t-2 border-dashed border-gray-600 w-full " />
-
-      </div>
-      <div className='w-full  grid  p-1'>
-        <table className="print  text-sm table-auto  w-full ">
-          <thead className='bg-blue-200 top-0'>
-            <tr className='border-none bor'>
-              <th className=" table-data text-sm  w-6 text-center p-0.5">S.no</th>
-
-
-
-              <th className=" table-data w-96 text-sm text-left p-2">Product Name</th>
-
-
-              <th className="table-data text-sm  w-24 p-2">Qty</th>
-
-              <th className="table-data  text-sm w-20 p-2">Rate</th>
-
-
-
-              <th className="table-data text-sm w-20 p-0.5">Amount</th>
-
-
-
-            </tr>
-          </thead>
-          <tr className="border-b-2 border-dashed border-gray-600 p-3"></tr>
-          <tbody className='overflow-y-auto h-full w-full '>
-
-
-            {(poBillItems ? poBillItems.filter(item => item?.Product?.name || item?.productId) : []).map((item, index) =>
-              <tr key={index} className="w-full table-row bor ">
-                <td className="table-data text-sm w-6 text-center px-1 py-3">
-                  {index + 1}
-                </td>
-                <td className="table-data text-sm  text-left px-1 p-2">
-                  {id ? item?.Product?.name :findFromList(item?.productId,productList?.data,"name")}
-                </td>
-                <td className="table-data text-sm  text-center px-1 p-2">
-                  {item?.qty}
-                </td>
-                <td className="table-data text-sm text-center px-1 p-2">
-                  {item.price}
-                </td>
-                <td className="table-data text-sm text-center px-1 p-2">
-                  {item.price * item.qty}
-                </td>
-              </tr>
-            )}
-
-            <tr className="border-b-2 border-dashed border-gray-600 "></tr>
-            <tr className='bg-blue-200   font-bold bor '>
-              <td className="table-data text-lg text-center w-10 font-bold p-3" colSpan={4}>Total</td>
-              <td className="table-data text-lg  text-center pr-1">{getTotal("qty", "price").toFixed(2)}</td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
-
-    </div >
-  )
+    <Document>
+      <Page style={styles.page}>
+        <View style={styles.headerContainer}>
+          <Image style={styles.logo} src={logo} />
+          <Text style={styles.title}>
+            {isOn ? "INVOICE" : "QUOTATION"}
+          </Text>
+          <View style={styles.billInfoContainer}>
+            <Text style={styles.infoText2}>
+              <Text style={styles.bold}>Bill.No</Text>: {docId || 'N/A'}
+            </Text>
+            <Text style={styles.infoText}>
+              <Text style={styles.bold}>Bill.Date</Text>: {moment(date).format("DD-MM-YYYY")}
+            </Text>
+            <Text style={styles.infoText}>
+              <Text style={styles.bold}>Time</Text>: {currTime}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.container}>
+          <View style={styles.infoWrapper}>
+            <View style={styles.fromInfoContainer}>
+              <Text style={styles.infoText1}>
+                <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></Svg>
+                <Text style={styles.bold}></Text> ARM BROTHERS
+              </Text>
+              <Text style={styles.infoText}>
+                <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></Svg>
+                <Text style={styles.bold}></Text> FISH MERCHANT & ALL FISH COMMISSION AGENT
+              </Text>
+              <Text style={styles.infoText}>
+                <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></Svg>
+                <Text style={styles.bold}></Text> 29, KANGEYAM CROSS ROAD, TIRUPUR-4
+              </Text>
+              <Text style={styles.infoText}>
+                <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></Svg>
+                <Text style={styles.bold}></Text> 8220468448, 8300022602, 9940806009, 6381644996
+              </Text>
+            </View>
+            <View style={styles.toInfoContainer}>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Supplier Name</Text>: {data?.supplier?.name || 'N/A'}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Contact Number</Text>: {data?.supplier?.contactMobile || 'N/A'}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Contact Person</Text>: {data?.supplier?.contactPersonName || 'N/A'}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Address</Text>: {data?.supplier?.address   || 'N/A'}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Pincode</Text>: {data?.supplier?.pincode || 'N/A'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.tableContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderCell}>S.no</Text>
+              <Text style={styles.tableHeaderCell}>Name of Item</Text>
+              <Text style={styles.tableHeaderCell}>Qty</Text>
+              <Text style={styles.tableHeaderCell}>Rate</Text>
+              <Text style={styles.tableHeaderCell}>Amount</Text>
+            </View>
+            {(poBillItems || []).map((item, index) => (
+              <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowOdd]}>
+                <Text style={styles.tableCell}>{index + 1}</Text>
+                <Text style={styles.tableCell}>
+                  {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
+                </Text>
+                <Text style={styles.tableCell}>{item?.qty || 0}</Text>
+                <Text style={styles.tableCell}>{item?.price || 0}</Text>
+                <Text style={styles.tableCell}>{(item.price * item.qty).toFixed(2)}</Text>
+              </View>
+            ))}
+            <View style={styles.tableFooter}>
+              <Text style={styles.tableFooterCell}>Total</Text>
+              <Text style={styles.tableFooterCell1}>{totalAmount}</Text>
+            </View>
+          </View>
+          <View style={styles.amountInWordsContainer}>
+            <Text style={styles.amountInWordsText}>
+              <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M4 4h16v16H4V4zm1.5 1.5v3H6v-3h2v3h1.5v-3h2v3h1.5v-3h2v3h1.5v-3H18v6h-6v-1.5H7.5V18h-2v-6H6v3H4.5v-6H6v1.5h2V6H6V4.5H5.5z" /></Svg>
+              Amount in Words: {numberToWords.toWords(parseFloat(totalAmount)).toUpperCase()}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Thank you for your business!</Text>
+          <Text style={styles.footerText}>Contact us:  fishmarinelife786@gmail.com</Text>
+          <Text style={styles.footerText}>Phone: 8220468448</Text>
+        </View>
+      </Page>
+    </Document>
+  );
 }
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 15,
+  },
+  container: {
+    width: '100%',
+    padding: 5,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#0381EF',
+    paddingBottom: 2,
+    marginBottom: 5,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0381EF',
+    flex: 1,
+  },
+  billInfoContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  infoWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  fromInfoContainer: {
+    width: '45%',
+  },
+  toInfoContainer: {
+    width: '45%',
+  },
+  infoText: {
+    fontSize: 10,
+    marginVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  infoText1: {
+    fontSize: 12,
+    marginVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    color: '#0381EF',
+  },
+  infoText2: {
+    fontSize: 10,
+    marginVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FC8B02',
+    padding: 5,
+    borderRadius: 10
+
+  },
+  icon: {
+    marginRight: 6,
+    width: 12,
+    height: 12,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#0381EF',
+    marginVertical: 4,
+  },
+  tableContainer: {
+    marginTop: 4,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#FC8B02',
+    padding: 4,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#000',
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    padding: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tableRowOdd: {
+    backgroundColor: '#F5F5F5',
+  },
+  tableCell: {
+    flex: 1,
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  tableFooter: {
+    flexDirection: 'row',
+    padding: 4,
+    borderTopWidth: 1,
+    borderTopColor: '#000',
+    backgroundColor: '#FC8B02',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tableFooterCell: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  tableFooterCell1: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    paddingRight: 42,
+  },
+  amountInWordsContainer: {
+    marginTop: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#0381EF',
+    paddingTop: 4,
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  amountInWordsText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#003366',
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    flex: 1,
+    paddingBottom: 6,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 15,
+    left: 15,
+    right: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#0381EF',
+    paddingVertical: 4,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 10,
+    color: '#003366',
+    textAlign: 'center',
+  },
+});

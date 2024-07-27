@@ -153,6 +153,8 @@ async function getOne(id) {
                     name: true,
                     contactMobile:true,
                     contactPersonName: true,
+                    address:true,
+                    pincode:true,
                 }
             },
             SalesBillItems: {

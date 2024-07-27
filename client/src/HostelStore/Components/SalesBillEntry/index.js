@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import secureLocalStorage from "react-secure-storage";
+import { PDFViewer } from '@react-pdf/renderer';
+import tw from "../../../Utils/tailwind-react-pdf";
 
 import FormHeader from "../../../Basic/components/FormHeader";
 import { toast } from "react-toastify";
@@ -8,11 +10,10 @@ import {
   CheckBox,
   DropdownInput,
   DisabledInput,
-  LongDisabledInput,
-  DateInput,
 } from "../../../Inputs";
 import ReportTemplate from "../../../Basic/components/ReportTemplate";
 import { RetailPrintFormatFinishedGoodsSales } from "..";
+
 import {
   useGetSalesBillQuery,
   useGetSalesBillByIdQuery,
@@ -22,12 +23,11 @@ import {
 } from "../../../redux/services/SalesBillService";
 import { dropDownListObject } from "../../../Utils/contructObject";
 import {
-  findFromList,
+
   getDateFromDateTime,
-  isGridDatasValid,
+  
 } from "../../../Utils/helper";
 import {
-  useGetPartyByIdQuery,
   useGetPartyQuery,
 } from "../../../redux/services/PartyMasterService";
 import PoBillItems from "./PoBillItems";
@@ -38,6 +38,7 @@ import { useDispatch } from "react-redux";
 import { useReactToPrint } from "@etsoo/reactprint";
 import PrintReportOpen from "./PrintReportOpen";
 import ToggleButton from "./ToggleButton ";
+
 const MODEL = "Sales Bill Entry";
 
 export default function Form() {
@@ -46,34 +47,22 @@ export default function Form() {
   const [date, setDate] = useState(getDateFromDateTime(today));
   const [docId, setDocId] = useState("");
   const [isOn, setIsOn] = useState(false);
-  const [ netBillValue,setNetBillValue ] = useState("")
+  const [netBillValue, setNetBillValue] = useState("");
   const [contactMobile, setContactMobile] = useState("");
   const [place, setPlace] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [printModalOpen, setPrintModalOpen] = useState(false);
   const [formReport, setFormReport] = useState(false);
   const [supplierId, setSupplierId] = useState("");
   const [readOnly, setReadOnly] = useState(false);
   const [id, setId] = useState("");
   const [amount, setAmount] = useState("");
   const [active, setActive] = useState(false);
-  const [fillGrid, setFillGrid] = useState(false);
-
-  const [text, setText] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [poBillItems, setPoBillItems] = useState([]);
-  const [purchaseMaterials, setPurchaseMaterials] = useState([]);
+
   const [printReportOpen, setPrintReportOpen] = useState(false);
   const childRecord = useRef(0);
-  // const [showPopup, setShowPopup] = useState(false);
-
-  // const togglePopup = () => {
-  //   setShowPopup(!showPopup);
-  // };
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-    documentTitle: docId,
-    pageStyle: ``,
-  });
 
   const branchId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "currentBranchId"
@@ -128,7 +117,7 @@ export default function Form() {
       setContactMobile(data?.contactMobile ? data.contactMobile : "");
       setPlace(data?.place ? data.place : "");
       setPoBillItems(data?.SalesBillItems ? data.SalesBillItems : []);
-      setNetBillValue(data?.netBillValue? data.netBillValue:'0')
+      setNetBillValue(data?.netBillValue ? data.netBillValue : '0');
       setDueDate(
         data?.dueDate ? moment.utc(data?.dueDate).format("YYYY-MM-DD") : ""
       );
@@ -141,11 +130,6 @@ export default function Form() {
   useEffect(() => {
     syncFormWithDb(singleData?.data);
   }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
-
-  //  useEffect(()=>{
-  //        setContactMobile(singleSupplier?.data ? singleSupplier.data.contactMobile :"");
-  //        setPlace(singleSupplier?.data ? singleSupplier.data?.City?.name :"")
-  //  },[singleSupplier,isSingleSupplierFetching,isSingleSupplierLoading,supplierId])
 
   const data = {
     branchId,
@@ -165,7 +149,6 @@ export default function Form() {
     active,
     id,
   };
-  console.log(singleData?.data, "fyhf");
 
   const validateData = (data) => {
     return true;
@@ -176,8 +159,6 @@ export default function Form() {
       let returnData = await callback(data).unwrap();
       if (returnData.statusCode === 0) {
         setPrintReportOpen(true);
-        // setId("")
-        // syncFormWithDb(undefined)
         toast.success(text + "Successfully");
       } else {
         toast.error(returnData?.message);
@@ -190,21 +171,30 @@ export default function Form() {
       console.log("handle");
     }
   };
-  const validateNetBillValue = () => {
 
-    if (getTotal("qty", "price").toFixed(2) === parseFloat(netBillValue).toFixed(2)) {
+  const validateNetBillValue = () => {
+    if (
+      getTotal("qty", "price").toFixed(2) === parseFloat(netBillValue).toFixed(2)
+    ) {
       return true;
     }
     return false;
-  }
+  };
 
   function getTotal(field1, field2) {
     const total = poBillItems.reduce((accumulator, current) => {
-
-      return accumulator + parseFloat(current[field1] && current[field2] ? current[field1] * current[field2] : 0)
-    }, 0)
-    return parseFloat(total)
+      return (
+        accumulator +
+        parseFloat(
+          current[field1] && current[field2]
+            ? current[field1] * current[field2]
+            : 0
+        )
+      );
+    }, 0);
+    return parseFloat(total);
   }
+
   const saveData = () => {
     if (!validateData(data)) {
       toast.info("Please fill all required fields...!", {
@@ -213,8 +203,10 @@ export default function Form() {
       return;
     }
     if (!validateNetBillValue()) {
-      toast.info("Net Bill Value Not Matching Total Amount...!", { position: "top-center" })
-      return
+      toast.info("Net Bill Value Not Matching Total Amount...!", {
+        position: "top-center",
+      });
+      return;
     }
     if (!window.confirm("Are you sure save the details ...?")) {
       return;
@@ -269,12 +261,15 @@ export default function Form() {
     "dataObj.name",
     "dataObj.active ? ACTIVE : INACTIVE",
   ];
+  const handlePrint = () => {
+    setPrintModalOpen(true); 
+  }
 
   function openPrint(value) {
     if (value) {
-      return handlePrint();
+      handlePrint();
     } else {
-      return onNew();
+      onNew();
     }
   }
 
@@ -301,6 +296,22 @@ export default function Form() {
       onKeyDown={handleKeyDown}
       className="md:items-start md:justify-items-center grid h-full bg-theme"
     >
+
+        <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >
+        <PDFViewer style={tw("w-full h-full")}>
+          <RetailPrintFormatFinishedGoodsSales
+            contactMobile={contactMobile}
+            data={id ? singleData?.data : "Null"}
+            date={id ? singleData?.data?.createdAt : date}
+            id={id}
+            isOn={isOn}
+            poBillItems={poBillItems}
+            readOnly={readOnly}
+            docId={docId ? docId : ""}
+          />
+        </PDFViewer>
+      </Modal>
+
       <Modal
         isOpen={formReport}
         onClose={() => setFormReport(false)}
@@ -352,15 +363,12 @@ export default function Form() {
                     readOnly={readOnly}
                   />
                   <DisabledInput
-                    name="Bill. 
-                           Date"
+                    name="Bill. Date"
                     value={date}
                     type={"Date"}
                     required={true}
                     readOnly={readOnly}
                   />
-
-                  {/* <DropdownInput name="Supplier" options={dropDownListObject(id ? supplierList.data : supplierList.data.filter(value => value.isSupplier).filter(item => item.active), "name", "id")} value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} /> */}
                   <DropdownInput
                     name="Customer"
                     options={dropDownListObject(
@@ -378,7 +386,13 @@ export default function Form() {
                     readOnly={readOnly}
                     disabled={childRecord.current > 0}
                   />
-                  <TextInput name={"NetBillValue"} value={netBillValue} setValue={setNetBillValue} readOnly={readOnly} required />
+                  <TextInput
+                    name={"NetBillValue"}
+                    value={netBillValue}
+                    setValue={setNetBillValue}
+                    readOnly={readOnly}
+                    required
+                  />
                   <div
                     className={`ml-5 border-2 ml-24 ${
                       isOn ? "border-emerald-800" : "border-red-800"
@@ -391,77 +405,6 @@ export default function Form() {
                       readOnly={readOnly}
                     />
                   </div>
-                  {/* <button
-                    className="bg-emerald-800 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={togglePopup}
-                  >
-                    Show Bill Details
-                  </button>
-
-                  {showPopup && (
-                    <div
-                      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                      onClick={togglePopup}
-                    >
-                      <div
-                        className="relative bg-green-400 p-6 rounded shadow-lg w-80"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span
-                          className="absolute top-2 right-4 text-xl cursor-pointer"
-                          onClick={togglePopup}
-                        >
-                          &times;
-                        </span>
-                        <table className="min-w-full mt-5">
-                          <thead>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-2xl mb-4 underline p-4 bg-gray-100"
-                              >
-                                Bill Details
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td className="p-4 border-b border-gray-200">
-                                Bill Amount:
-                              </td>
-                              <td className="p-4 border-b border-gray-200 pl-10">
-                                $100
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="p-4 border-b border-gray-200">
-                              Pending Amount
-                              </td>
-                              <td className="p-4 border-b border-gray-200 pl-10">
-                                $40
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="p-4 border-b border-gray-200">
-                                Pay Amount:
-                              </td>
-                              <td className="p-4 border-b border-gray-200 pl-10">
-                              <input className="w-24 p-2 rounded " />
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="p-4 border-b border-gray-200">
-                                Balance Amount:
-                              </td>
-                              <td className="p-4 border-b border-gray-200 pl-10">
-                                $40
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )} */}
                 </div>
               </fieldset>
               <fieldset className="frame rounded-tr-lg rounded-bl-lg rounded-br-lg my-1 w-full border border-gray-400 md:pb-5 flex flex-1 overflow-auto">
@@ -472,22 +415,9 @@ export default function Form() {
                   readOnly={readOnly}
                   poBillItems={poBillItems}
                   setPoBillItems={setPoBillItems}
-                  isOn = {isOn}
+                  isOn={isOn}
                 />
               </fieldset>
-              <div className="hidden">
-                <RetailPrintFormatFinishedGoodsSales
-                  innerRef={componentRef}
-                  contactMobile={contactMobile}
-                  data={id ? singleData?.data : "Null"}
-                  date={id ? singleData?.data?.createdAt : date}
-                  id={id}
-                  isOn = {isOn}
-                  poBillItems={poBillItems}
-                  readOnly={readOnly}
-                  docId={docId ? docId : ""}
-                />
-              </div>
             </div>
           </div>
         </div>

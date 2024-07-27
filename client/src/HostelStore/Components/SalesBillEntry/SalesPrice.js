@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useGetStockByIdQuery } from '../../../redux/services/StockService';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { push } from '../../../redux/features/opentabs';
+
 
 const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, item, id,isOn }) => {
     const { data: singleProduct } = useGetStockByIdQuery({
@@ -10,7 +13,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
             salesBillItemsId: id,isOn
         }
     }, { skip: !productId, id });
-
+    const dispatch = useDispatch()
     const [salePrice, setSalePrice] = useState([]);
 
     useEffect(() => {
@@ -36,7 +39,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
     const navigate = useNavigate();
 
     const handleButtonClick = () => {
-        navigate('/OPENING STOCK'); 
+       dispatch(push({id:32, name:'OPENING STOCK'}))
     };
 
     return (
@@ -97,13 +100,13 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
                 />
             </td>
             <td className="table-data w-44 flex items-center justify-center">
-                <button
-                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded"
-                    onClick={handleButtonClick}
-                >
-                    Add Stock
-                </button>
-            </td>
+            <button
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded"
+                onClick={handleButtonClick}
+            >
+                Add Stock
+            </button>
+        </td>
         </>
     );
 };
