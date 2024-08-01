@@ -306,7 +306,6 @@ export default function Form() {
             id={id}
             isOn={isOn}
             poBillItems={poBillItems}
-            readOnly={readOnly}
             docId={docId ? docId : ""}
           />
         </PDFViewer>
@@ -412,7 +411,7 @@ export default function Form() {
                 <PoBillItems
                   date={singleData?.data?.createdAt}
                   id={id}
-                  readOnly={readOnly}
+                  readOnly = {readOnly}
                   poBillItems={poBillItems}
                   setPoBillItems={setPoBillItems}
                   isOn={isOn}

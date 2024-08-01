@@ -5,15 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { push } from '../../../redux/features/opentabs';
 
-
-const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, item, id,isOn }) => {
+const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, item, id, isOn }) => {
     const { data: singleProduct } = useGetStockByIdQuery({
         params: {
             productId,
-            salesBillItemsId: id,isOn
+            salesBillItemsId: id,
+            isOn
         }
     }, { skip: !productId, id });
-    const dispatch = useDispatch()
+    
+    const dispatch = useDispatch();
     const [salePrice, setSalePrice] = useState([]);
 
     useEffect(() => {
@@ -23,8 +24,9 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
     }, [singleProduct]);
 
     const handleInputChange = (value, index, field, stockQty) => {
-        const updatedItems = [...poBillItems];
-        updatedItems[index][field] = value;
+        const updatedItems = poBillItems.map((item, i) => 
+            i === index ? { ...item, [field]: value } : item
+        );
 
         if (field === "qty" && parseFloat(stockQty) < parseFloat(value)) {
             toast.info("Sales Qty cannot be more than Stock Qty", { position: 'top-center' });
@@ -39,7 +41,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
     const navigate = useNavigate();
 
     const handleButtonClick = () => {
-       dispatch(push({id:32, name:'OPENING STOCK'}))
+        dispatch(push({ id: 32, name: 'OPENING STOCK' }));
     };
 
     return (
@@ -53,7 +55,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
                     className="text-right rounded py-1 px-1 w-full table-data-input"
                     onFocus={(e) => e.target.select()}
                     value={item.qty || ""}
-                    disabled={readOnly}
+                    readOnly={readOnly}
                     onChange={(e) =>
                         handleInputChange(e.target.value, index, "qty", stockQty)
                     }
@@ -73,7 +75,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
                     className="text-right rounded py-1 px-1 w-full table-data-input"
                     onFocus={(e) => e.target.select()}
                     value={item.price || ""}
-                    disabled={readOnly}
+                    readOnly={readOnly}
                     onChange={(e) =>
                         handleInputChange(e.target.value, index, "price")
                     }
@@ -100,13 +102,13 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
                 />
             </td>
             <td className="table-data w-44 flex items-center justify-center">
-            <button
-                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded"
-                onClick={handleButtonClick}
-            >
-                Add Stock
-            </button>
-        </td>
+                <button
+                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1 mt-2 px-4 border-b-4 border-emerald-700 hover:border-emerald-500 rounded"
+                    onClick={handleButtonClick}
+                >
+                    Add Stock
+                </button>
+            </td>
         </>
     );
 };

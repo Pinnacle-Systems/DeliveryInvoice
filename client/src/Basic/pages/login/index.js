@@ -113,7 +113,7 @@ const Login = () => {
       <div className="flex justify-center items-center bg-transparent flex-col h-screen relative perspective-1000">
         <img
           className="absolute w-full h-full object-cover"
-          src="https://t4.ftcdn.net/jpg/02/16/47/33/360_F_216473351_FCLq1pZQOBFrgcyPBphKvBd8Z5wjD1dI.jpg"
+          src="https://t4.ftcdn.net/jpg/06/32/63/01/360_F_632630156_8zKtJvbvqqT7JENj6iBoKePuMi71fVOs.jpg"
           alt="Background"
         />
         <div className="relative w-full h-full bg-black bg-opacity-50 flex flex-col items-center justify-center">

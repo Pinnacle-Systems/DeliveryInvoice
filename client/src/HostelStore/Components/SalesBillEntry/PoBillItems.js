@@ -19,9 +19,9 @@ const PoBillItems = ({
   setPoBillItems,
   poBillItems,
   date,
-  readonly,
   isOn
 }) => {
+  console.log(readOnly,"readOnlyt")
   const params = {
     companyId: secureLocalStorage.getItem(
       sessionStorage.getItem("sessionId") + "userCompanyId"
