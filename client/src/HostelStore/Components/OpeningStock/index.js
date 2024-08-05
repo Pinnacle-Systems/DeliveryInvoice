@@ -136,7 +136,7 @@ export default function Form() {
     dueDate,
     address,
     place,date,
-    poBillItems: poBillItems.filter(item => item.qty != 0 && item.price != 0),
+    poBillItems: poBillItems.filter(item => item.qty != 0),
     companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId"), active, id
   }
 

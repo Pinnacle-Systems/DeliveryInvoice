@@ -127,8 +127,6 @@ async function getOne(id) {
                     productId: true,
                     qty: true,
                     box: true,
-                    price: true,
-                    stockQty: true,
                 }
             }
         }
@@ -158,7 +156,7 @@ async function getSearch(req) {
     return { statusCode: 0, data: data };
 }
 async function createpoBillItems(tx, poBillItems, OpeningStock) {
-
+     console.log(poBillItems,"poBillItems123")
     const promises = poBillItems.map(async (item) => {
         return await tx.OpeningStockItems.create({
             data: {
@@ -166,8 +164,6 @@ async function createpoBillItems(tx, poBillItems, OpeningStock) {
                 box: item?.box ? parseFloat(item.box) : 0.000,
                 productId: item?.productId ? parseInt(item.productId) : undefined,
                 qty: item?.qty ? parseFloat(item.qty) : 0.000,
-                price: item?.price ? parseFloat(item.price) : 0.000,
-                uomId: item?.uomId ? parseFloat(item.uomId) : undefined,
                 stockQty: item?.stockQty ? parseFloat(item.stockQty) : undefined,
 
                 Stock: {
@@ -243,8 +239,6 @@ async function updatePoBillItems(tx, OpeningStockItems, OpeningStock) {
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     box: item?.box ? parseFloat(item.box) : 0.000,
-                    price: item?.price ? parseFloat(item.price) : 0.000,
-                    uomId: item?.uomId ? parseFloat(item.uomId) : undefined,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : undefined,
                     Stock: {
                         update: {
@@ -264,7 +258,6 @@ async function updatePoBillItems(tx, OpeningStockItems, OpeningStock) {
                     productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
-                    price: item?.price ? parseFloat(item.price) : 0.000,
                     Stock: {
                         create: {
                             inOrOut: "In",

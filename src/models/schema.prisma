@@ -617,7 +617,6 @@ model OpeningStockItems {
   Product        Product?      @relation(fields: [productId], references: [id])
   productId      Int?
   qty            Float?
-  price          Float?
   Stock          Stock?      
   stockQty       Float?
   stockId        Int?

@@ -107,10 +107,6 @@ const PoBillItems = ({ id, readOnly, setPoBillItems, poBillItems }) => {
             <th className="table-data">
               Qty<span className="text-red-500 p-0.5">*</span>
             </th>
-            <th className="table-data">
-              Price<span className="text-red-500 p-0.5">*</span>
-            </th>
-            <th className="table-data p-0.5">Amount</th>
             <th className="table-data p-0.5">
               <button onClick={addNewRow}>{PLUS}</button>
             </th>
@@ -167,41 +163,7 @@ const PoBillItems = ({ id, readOnly, setPoBillItems, poBillItems }) => {
                   }
                 />
               </td>
-              <td className="table-data w-44">
-                <input
-                  type="number"
-                  className="text-right rounded py-1 px-1 w-full table-data-input"
-                  onFocus={(e) => e.target.select()}
-                  value={item.price || ""}
-                  disabled={readOnly}
-                  onChange={(e) =>
-                    handleInputChange(e.target.value, index, "price")
-                  }
-                  onBlur={(e) =>
-                    handleInputChange(
-                      parseFloat(e.target.value).toFixed(2),
-                      index,
-                      "price"
-                    )
-                  }
-                />
-              </td>
-              <td className="table-data w-44">
-                <input
-                  type="number"
-                  className="text-right rounded py-1 px-1 w-full table-data-input"
-                  onFocus={(e) => e.target.select()}
-                  value={
-                    item.qty && item.price
-                      ? (parseFloat(item.qty) * parseFloat(item.price)).toFixed(
-                          2
-                        )
-                      : 0
-                  }
-                  disabled
-                />
-              </td>
-
+           
               <td className="border border-gray-500 text-xs text-center">
                 <button
                   type="button"
@@ -213,18 +175,11 @@ const PoBillItems = ({ id, readOnly, setPoBillItems, poBillItems }) => {
               </td>
             </tr>
           ))}
-          <tr className="bg-emerald-800 font-thin text-white tracking-wider text-sm w-full border border-gray-400 h-7 font-bold">
-            <td className="table-data text-center w-10 font-bold" colSpan={5}>
-              Total
-            </td>
-            <td className="table-data text-right pr-1 w-10">
-              {getTotal("qty", "price")}
-            </td>
-          </tr>
+      
         </tbody>
       </table>
     </div>
   );
-};
+}; 
 
 export default PoBillItems;
