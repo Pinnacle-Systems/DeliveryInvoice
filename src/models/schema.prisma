@@ -537,7 +537,8 @@ model SalesBill {
   isOn           Boolean          @default(false)
   price          Float?
   netBillValue   Int?
-  selectedDate      DateTime?        @db.Date
+    selectedDate      DateTime?        @db.Date
+
 }
 
 model SalesBillItems {
@@ -618,6 +619,7 @@ model OpeningStockItems {
   Product        Product?      @relation(fields: [productId], references: [id])
   productId      Int?
   qty            Float?
+  price          Float?
   Stock          Stock?      
   stockQty       Float?
   stockId        Int?
