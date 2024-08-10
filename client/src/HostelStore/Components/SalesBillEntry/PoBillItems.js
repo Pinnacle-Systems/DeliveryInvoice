@@ -51,9 +51,9 @@ const PoBillItems = ({
   }
 
   useEffect(() => {
-    if (poBillItems.length >= 10) return;
+    if (poBillItems.length >= 1) return;
     setPoBillItems((prev) => {
-      let newArray = Array.from({ length: 10 - prev.length }, (i) => {
+      let newArray = Array.from({ length: 1 - prev.length }, (i) => {
         return {
           productCategoryId: "",
           productBrandId: "",

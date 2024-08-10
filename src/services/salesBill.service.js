@@ -160,19 +160,7 @@ async function getOne(id) {
             SalesBillItems: {
                 select: {
                     id: true,
-                    productBrandId: true,
-                    ProductBrand: {
-                        select: {
-                            name: true
-                        }
-                    },
-                   
-                    productCategoryId: true,
-                    ProductCategory: {
-                        select: {
-                            name: true
-                        }
-                    },
+                 
                     Product: {
                         select: {
                             name: true
@@ -309,6 +297,7 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
             productId: item?.productId ? parseInt(item.productId) : undefined,
             qty: 0 - parseFloat(item.qty),
             branchId: parseInt(salesBill.branchId),
+            price: item?.price ? parseFloat(item.price) : 0.000,
         } : undefined;
 
         if (item?.id) {
@@ -323,6 +312,8 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
+                    price: item?.price ? parseFloat(item.price) : 0.000,
+
                 }
             });
 
@@ -355,8 +346,6 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
             const newSalesBillItem = await tx.salesBillItems.create({
                 data: {
                     salesBillId: parseInt(salesBill.id),
-                    productBrandId: item?.productBrandId ? parseInt(item.productBrandId) : undefined,
-                    productCategoryId: item?.productCategoryId ? parseInt(item.productCategoryId) : undefined,
                     productId: item?.productId ? parseInt(item.productId) : undefined,
                     qty: item?.qty ? parseFloat(item.qty) : 0.000,
                     stockQty: item?.stockQty ? parseFloat(item.stockQty) : 0.000,
@@ -404,9 +393,6 @@ async function update(id, body) {
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
                 netBillValue: parseInt(netBillValue)
             },
-
-
-
 
             include: {
                 SalesBillItems: true

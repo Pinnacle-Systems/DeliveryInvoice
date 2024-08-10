@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import secureLocalStorage from "react-secure-storage";
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer } from "@react-pdf/renderer";
 import tw from "../../../Utils/tailwind-react-pdf";
 
 import FormHeader from "../../../Basic/components/FormHeader";
@@ -22,14 +22,8 @@ import {
   useDeleteSalesBillMutation,
 } from "../../../redux/services/SalesBillService";
 import { dropDownListObject } from "../../../Utils/contructObject";
-import {
-
-  getDateFromDateTime,
-  
-} from "../../../Utils/helper";
-import {
-  useGetPartyQuery,
-} from "../../../redux/services/PartyMasterService";
+import { getDateFromDateTime } from "../../../Utils/helper";
+import { useGetPartyQuery } from "../../../redux/services/PartyMasterService";
 import PoBillItems from "./PoBillItems";
 import Modal from "../../../UiComponents/Modal";
 import PurchaseBillFormReport from "./PurchaseBillFormReport";
@@ -117,7 +111,7 @@ export default function Form() {
       setContactMobile(data?.contactMobile ? data.contactMobile : "");
       setPlace(data?.place ? data.place : "");
       setPoBillItems(data?.SalesBillItems ? data.SalesBillItems : []);
-      setNetBillValue(data?.netBillValue ? data.netBillValue : '0');
+      setNetBillValue(data?.netBillValue ? data.netBillValue : "0");
       setDueDate(
         data?.dueDate ? moment.utc(data?.dueDate).format("YYYY-MM-DD") : ""
       );
@@ -155,14 +149,16 @@ export default function Form() {
   };
 
   const handleSubmitCustom = async (callback, data, text) => {
-    try {
+    try { 
       let returnData = await callback(data).unwrap();
+      setId(returnData.data.id)
       if (returnData.statusCode === 0) {
         setPrintReportOpen(true);
         toast.success(text + "Successfully");
       } else {
         toast.error(returnData?.message);
       }
+     
       dispatch({
         type: `stock/invalidateTags`,
         payload: ["Stock"],
@@ -174,7 +170,8 @@ export default function Form() {
 
   const validateNetBillValue = () => {
     if (
-      getTotal("qty", "price").toFixed(2) === parseFloat(netBillValue).toFixed(2)
+      getTotal("qty", "price").toFixed(2) ===
+      parseFloat(netBillValue).toFixed(2)
     ) {
       return true;
     }
@@ -262,8 +259,8 @@ export default function Form() {
     "dataObj.active ? ACTIVE : INACTIVE",
   ];
   const handlePrint = () => {
-    setPrintModalOpen(true); 
-  }
+    setPrintModalOpen(true);
+  };
 
   function openPrint(value) {
     if (value) {
@@ -296,8 +293,11 @@ export default function Form() {
       onKeyDown={handleKeyDown}
       className="md:items-start md:justify-items-center grid h-full bg-theme"
     >
-
-        <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >
+      <Modal
+        isOpen={printModalOpen}
+        onClose={() => setPrintModalOpen(false)}
+        widthClass={"w-[90%] h-[90%]"}
+      >
         <PDFViewer style={tw("w-full h-full")}>
           <RetailPrintFormatFinishedGoodsSales
             contactMobile={contactMobile}
@@ -330,10 +330,8 @@ export default function Form() {
         widthClass={"px-2 h-[20%] w-[35%]"}
       >
         <PrintReportOpen
-          onClick={(value) => {
-            setPrintReportOpen(false);
-            openPrint(value);
-          }}
+          setPrintModalOpen={setPrintModalOpen}
+          printModalOpen={printModalOpen}
         />
       </Modal>
 
@@ -361,7 +359,7 @@ export default function Form() {
                     required={true}
                     readOnly={readOnly}
                   />
-                  <DisabledInput
+                     <DisabledInput
                     name="Bill. Date"
                     value={date}
                     type={"Date"}
@@ -411,7 +409,7 @@ export default function Form() {
                 <PoBillItems
                   date={singleData?.data?.createdAt}
                   id={id}
-                  readOnly = {readOnly}
+                  readOnly={readOnly}
                   poBillItems={poBillItems}
                   setPoBillItems={setPoBillItems}
                   isOn={isOn}
