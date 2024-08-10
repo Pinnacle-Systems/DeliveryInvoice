@@ -32,6 +32,8 @@ import { useDispatch } from "react-redux";
 import { useReactToPrint } from "@etsoo/reactprint";
 import PrintReportOpen from "./PrintReportOpen";
 import ToggleButton from "./ToggleButton ";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const MODEL = "Sales Bill Entry";
 
@@ -106,6 +108,7 @@ export default function Form() {
       if (data?.createdAt)
         setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
       setActive(data?.active ? data.active : false);
+      setSelectedDate(data?. selectedDate? moment.utc(data?.selectedDate).format("YYYY-MM-DD") : "")
       setIsOn(data?.isOn ? data.isOn : false);
       setSupplierId(data?.supplierId ? data?.supplierId : "");
       setContactMobile(data?.contactMobile ? data.contactMobile : "");
@@ -120,6 +123,8 @@ export default function Form() {
     },
     [id]
   );
+    const [selectedDate, setSelectedDate] = useState(null);
+  
 
   useEffect(() => {
     syncFormWithDb(singleData?.data);
@@ -133,7 +138,7 @@ export default function Form() {
     place,
     isOn,
     supplierId,
-    netBillValue,
+    netBillValue,selectedDate,
     salesBillItems: poBillItems.filter(
       (item) => item.qty != 0 && item.salePrice != 0
     ),
@@ -302,7 +307,7 @@ export default function Form() {
           <RetailPrintFormatFinishedGoodsSales
             contactMobile={contactMobile}
             data={id ? singleData?.data : "Null"}
-            date={id ? singleData?.data?.createdAt : date}
+            date={id ? singleData?.data?.selectedDate : date}
             id={id}
             isOn={isOn}
             poBillItems={poBillItems}
@@ -352,7 +357,7 @@ export default function Form() {
             <div className="mr-1 md:ml-2">
               <fieldset className="frame my-1">
                 <legend className="sub-heading">Product Info</legend>
-                <div className="grid grid-cols-5 my-2">
+                <div className="grid grid-cols-6 my-2">
                   <DisabledInput
                     name="Bill.No"
                     value={docId}
@@ -402,6 +407,15 @@ export default function Form() {
                       readOnly={readOnly}
                     />
                   </div>
+                  <div className="w-full max-w-xs mx-auto">
+      <DatePicker
+        selected={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
+        dateFormat="MMMM d, yyyy"
+        className="w-full px-4 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholderText="Choose a date"
+      />
+    </div>
                 </div>
               </fieldset>
               <fieldset className="frame rounded-tr-lg rounded-bl-lg rounded-br-lg my-1 w-full border border-gray-400 md:pb-5 flex flex-1 overflow-auto">

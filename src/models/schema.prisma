@@ -537,6 +537,7 @@ model SalesBill {
   isOn           Boolean          @default(false)
   price          Float?
   netBillValue   Int?
+  selectedDate      DateTime?        @db.Date
 }
 
 model SalesBillItems {

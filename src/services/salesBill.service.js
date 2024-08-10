@@ -247,13 +247,10 @@ async function createSalesBillItems(tx, salesBillItems, salesBill, isOn) {
     return Promise.all(promises);
 }
 
-
-
-
-
 async function create(body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn,netBillValue } = await body
+    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn,netBillValue,selectedDate } = await body
+   console.log(selectedDate,"selectedDate")
     let newDocId = await getNextDocId(branchId)
     await prisma.$transaction(async (tx) => {
         data = await tx.salesBill.create(
@@ -265,7 +262,8 @@ async function create(body) {
                     companyId: parseInt(companyId),
                     dueDate: dueDate ? new Date(dueDate) : undefined,
                     branchId: parseInt(branchId),
-                    isOn,netBillValue:parseInt(netBillValue)
+                    isOn,netBillValue:parseInt(netBillValue),
+                    selectedDate: selectedDate ? new Date(selectedDate): undefined
 
                 }
             })
@@ -371,7 +369,7 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
 
 async function update(id, body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile, isOn,netBillValue } = await body;
+    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile, isOn,netBillValue,selectedDate } = await body;
     console.log(netBillValue,"netBill")
     const dataFound = await prisma.salesBill.findUnique({
         where: {
@@ -391,7 +389,9 @@ async function update(id, body) {
                 branchId: parseInt(branchId),
                 name,isOn,
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
-                netBillValue: parseInt(netBillValue)
+                netBillValue: parseInt(netBillValue),
+                selectedDate: selectedDate ? new Date(selectedDate): undefined
+
             },
 
             include: {
