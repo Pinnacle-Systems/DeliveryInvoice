@@ -65,8 +65,7 @@ async function create(body) {
     const { name, code, aliasName, displayName, address,isSupplier, isCustomer,
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
         cinNo, faxNo, email, website, contactPersonName,contactMobile,
-        gstNo, currencyId, costCode, 
-      
+        gstNo, currencyId, costCode,soa,coa, 
         companyId, active, userId } = await body
     const data = await prisma.party.create(
         {
@@ -77,9 +76,7 @@ async function create(body) {
                 cinNo, faxNo, email, website, contactPersonName,
                 gstNo, currencyId: currencyId ? parseInt(currencyId): undefined, costCode, 
                 createdById: userId ? parseInt(userId): undefined,
-                companyId: parseInt(companyId), active,
-             
-              
+                companyId: parseInt(companyId), active,coa: coa? parseInt(coa):undefined,soa : soa? parseInt(soa): undefined,
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
               
             }
@@ -92,8 +89,7 @@ async function update(id, body) {
     const { name, code, aliasName, displayName, address,isSupplier, isCustomer,
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
         cinNo, faxNo, email, website, contactPersonName,contactMobile,
-        gstNo,
-     
+        gstNo,coa,soa,
         companyId, active, userId } = await body
         
     const dataFound = await prisma.party.findUnique({
@@ -114,8 +110,7 @@ async function update(id, body) {
             gstNo, 
             createdById: userId ? parseInt(userId): undefined,
             companyId: parseInt(companyId), active,
-            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
-           
+            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,coa: coa? parseInt(coa):undefined,soa : soa? parseInt(soa): undefined,
         }
     })
     return { statusCode: 0, data };

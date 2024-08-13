@@ -5,7 +5,7 @@ import {
   cityMasterApi, departmentMasterApi, employeeCategoryMasterApi,
   finYearMasterApi, rolesMasterApi, employeeMasterApi, userMasterApi,
   branchMasterApi, companyMasterApi, pageGroupMasterApi, productBrandMasterApi, productCategoryMasterApi, productMasterApi, partyMasterApi,
-   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,PayOutApi,openingStockApi
+   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,PaymentApi,openingStockApi
 } from "./services"
 
 const commonReducers = {  
@@ -27,7 +27,7 @@ const commonReducers = {
   productCategoryMaster: productCategoryMasterApi.reducer,
   productMaster: productMasterApi.reducer,
   partyMaster: partyMasterApi.reducer,
-  [PayOutApi.reducerPath]: PayOutApi.reducer,
+  [PaymentApi.reducerPath]: PaymentApi.reducer,
   [openingStockApi.reducerPath]: openingStockApi.reducer,
 
 
@@ -57,7 +57,7 @@ pageGroupMasterApi.middleware,
 productBrandMasterApi.middleware,
 productCategoryMasterApi.middleware,
 productMasterApi.middleware,
-PayOutApi.middleware,
+PaymentApi.middleware,
 partyMasterApi.middleware,
 partyCategoryMasterApi.middleware,
 purchaseBillApi.middleware,

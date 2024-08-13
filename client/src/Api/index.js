@@ -15,7 +15,7 @@ export const FIN_YEAR_API = "finYear";
 export const EMPLOYEE_CATEGORY_API = "employeeCategories";
 
 export const PARTY_CATEGORY_API = "partyCategories"
-export const PAYOUT_API = "payOut"
+export const PAYMENT_API = "payments"
 
 export const PARTY_API = "party"
 export const PRODUCT_BRAND_API = "productBrand"

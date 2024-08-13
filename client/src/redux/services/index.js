@@ -25,7 +25,7 @@ export { default as salesBillApi } from './SalesBillService'
 export { default as purchaseReturnApi } from './PurchaseReturnService'
 export { default as salesReturnApi } from './SalesReturnService'
 export { default as uomMasterApi } from "./UomMasterService"
-export { default as PayOutApi } from './PayOut.Services';
+export { default as PaymentApi } from './PaymentService';
 
 
 

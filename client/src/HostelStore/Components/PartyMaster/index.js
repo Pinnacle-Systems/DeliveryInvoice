@@ -44,6 +44,8 @@ export default function Form() {
     const [faxNo, setFaxNo] = useState("");
     const [website, setWebsite] = useState("");
     const [code, setCode] = useState("");
+    const [soa,setSoa] = useState("")
+    const [coa,setCoa] = useState("")
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [pincode, setPincode] = useState("");
@@ -108,6 +110,9 @@ export default function Form() {
         setCinNo(data?.cinNo ? data?.cinNo : "");
         setFaxNo(data?.faxNo ? data?.faxNo : "");
         setCinNo(data?.cinNo ? data?.cinNo : "");
+        setCoa(data?.coa ? data?.coa : "" );
+        setSoa(data?.soa ? data?.soa : "" )
+
         setContactPersonName(data?.contactPersonName ? data?.contactPersonName : "");
         setGstNo(data?.gstNo ? data?.gstNo : "");
         setCostCode(data?.costCode ? data?.costCode : "");
@@ -133,8 +138,7 @@ export default function Form() {
     const data = {
         name,isSupplier, isCustomer, code, aliasName, displayName, address, cityId: city, pincode, panNo, tinNo, cstNo, cstDate, cinNo,
         faxNo, email, website, contactPersonName, gstNo,  costCode,contactMobile,
-        active, companyId,
-      
+        active, companyId,coa,soa,
         id, userId
     }
 
@@ -306,6 +310,13 @@ export default function Form() {
                                         <CheckBox name="Customer" readOnly={readOnly} value={isCustomer} setValue={setIsCustomer} />
                                     </div>
                                 </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Opening payment</legend>
+                                    <div className='grid grid-cols-1 gap-2 my-2'>
+                                        <TextInput name="Customer Opening Amount" type="text" value={coa} setValue={setCoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Supplier Opening Amount" type="text" value={soa} setValue={setSoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                                                          </div>
+                                </fieldset>
                             </div>
                             <div className='mr-1'>
                                 <fieldset className='frame my-1'>
@@ -331,6 +342,7 @@ export default function Form() {
                                         <CheckBox name="Active" readOnly={readOnly} value={active} setValue={setActive} />
                                     </div>
                                 </fieldset>
+                       
                             </div>
                         </div>
                     </div>

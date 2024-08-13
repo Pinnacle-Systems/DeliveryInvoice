@@ -20,7 +20,7 @@ import {
   salesBill,
   purchaseReturn,
   salesReturn,
-  payOut,
+  payments,
   uom
 } from './src/routes/index.js';
 
@@ -90,7 +90,7 @@ app.use("/salesBill", salesBill);
 app.use("/purchaseReturn", purchaseReturn)
 app.use("/salesReturn", salesReturn)
 app.use('/uom', uom)
-app.use("/payOut", payOut);
+app.use('/payment', payments)
 
 
 

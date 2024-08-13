@@ -1,9 +1,8 @@
 import validator from 'validator';
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { MultiSelect } from "react-multi-select-component";
 import Select from 'react-dropdown-select';
-import { findFromList } from '../Utils/helper';
-
+import { findFromList, findFromListFindProperty } from '../Utils/helper';
 
 
 export const handleOnChange = (event, setValue) => {
@@ -24,10 +23,10 @@ export const handleOnChange = (event, setValue) => {
     });
 };
 
-export const MultiSelectDropdown = ({ name, selected, labelName, setSelected, options, readOnly = false, tabIndex = null, className = "", inputClass }) => {
+export const MultiSelectDropdown = ({ name, selected, setSelected, options, readOnly = false, tabIndex = null, className = "", inputClass }) => {
     return (
         <div className={`m-1 grid grid-cols-1 md:grid-cols-3 items-center z-0 md:my-0.5 md:py-3 data ${className}`}>
-            <label className={`md:text-start flex ${labelName}`} >{name}</label>
+            <label className='md:text-start flex' >{name}</label>
             <MultiSelect
                 className={`focus:outline-none  border border-gray-500 rounded text-black  ${inputClass}`}
                 options={options}
@@ -39,19 +38,26 @@ export const MultiSelectDropdown = ({ name, selected, labelName, setSelected, op
     );
 };
 
-export const TextInput = ({ name, type, value, setValue, readOnly, className, required = false, disabled = false, tabIndex = null, onBlur = null }) => {
+export const TextInput = ({ name, type, value, setValue, readOnly, className, required = false, disabled = false, tabIndex = null, onBlur = null, onKeyDown, min }) => {
     return (
         <div className='grid grid-cols-1 md:grid-cols-3 items-center md:my-0.5 md:px-1 data gap-1'>
-            <label className={`md:text-start flex ${className}`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
-            <input onBlur={onBlur} tabIndex={tabIndex ? tabIndex : undefined} type={type} disabled={disabled} required={required} className='input-field focus:outline-none md:col-span-2 border-emerald-800 border-2 rounded' value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
+            <label className={`md:text-start flex ${className}`}>{required ? <RequiredLabel name={name} /> : name}</label>
+            <input min={min} onKeyDown={onKeyDown} onBlur={onBlur} tabIndex={tabIndex ? tabIndex : 0} type={type} disabled={disabled} required={required} className='input-field focus:outline-none md:col-span-2 border-gray-500 border rounded' value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
         </div>
+        // <div className="relative z-0 w-full mb-5 group">
+        //     <input type={type} name="floating_email" id="floating_email"
+        //         className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        //         placeholder=" " required={required} value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
+        //     <label for="floating_email"
+        //         className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{name}</label>
+        // </div>
     )
 }
 
 export const LongTextInput = ({ name, type, value, setValue, className, readOnly, required = false, disabled = false, tabIndex = null }) => {
     return (
         <div className='grid grid-cols-1 md:grid-cols-2 items-center md:my-0.5 md:px-1 data gap-1'>
-            <label className='md:text-start flex'>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
+            <label className='md:text-start flex'>{required ? <RequiredLabel name={name} /> : name}</label>
             <input tabIndex={tabIndex ? tabIndex : undefined} type={type} disabled={disabled} required={required} className={className} value={value} onChange={(e) => { type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue) }} readOnly={readOnly} />
         </div>
     )
@@ -61,8 +67,15 @@ export const DisabledInput = ({ name, type, value, className = "", textClassName
     return (
         <div className={`grid grid-cols-1 md:grid-cols-3 items-center md:my-0.5 md:px-1 data  ${className}`}>
             <label className={`md:text-start flex ${className} `}>{name}</label>
-            <input tabIndex={tabIndex ? tabIndex : undefined} type={type} className={`input-field ${textClassName} focus:outline-none md:col-span-2 border-2 border-emerald-800 p-1 rounded`} value={value} disabled />
+            <input tabIndex={tabIndex ? tabIndex : undefined} type={type} className={`input-field ${textClassName} focus:outline-none md:col-span-2 border border-gray-500 rounded`} value={value} disabled />
         </div>
+        // <div className="relative z-0 w-full mb-5 group">
+        //     <input type={type} name="floating_email" id="floating_email"
+        //         className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        //         placeholder=" " disabled value={value} />
+        //     <label for="floating_email"
+        //         className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{name}</label>
+        // </div>
     )
 }
 
@@ -89,12 +102,21 @@ export const DropdownInput = ({ name, beforeChange = () => { }, onBlur = null, o
         setValue(e.target.value);
     }
     return (
-        <div className={`flex flex-col mb-4 ${className}`}>
+        <div className='grid grid-cols-3 items-center md:my-1 md:px-1 data'>
             <label className={`md:text-start flex ${className}`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
+            {/* <div className='col-span-2'>
+                <DropdownWithSearch key={value} value={value}
+                    labelField='show' valueField='value'
+                    searchBy='show'
+                    readOnly={readOnly}
+                    setValue={(value) => setValue(value)}
+                    options={options}
+                />
+            </div> */}
             <select
                 onBlur={onBlur}
                 autoFocus={autoFocus} tabIndex={tabIndex ? tabIndex : undefined} defaultValue={defaultValue} id='dd'
-                required={required} name="name" className='input-field border-2 border-emerald-800 md:col-span-2 col-span-1 rounded'
+                required={required} name="name" className='input-field border border-gray-500 md:col-span-2 col-span-1 rounded'
                 value={value} onChange={(e) => { beforeChange(); handleOnChange(e); }} disabled={readOnly}>
                 <option value="" hidden={!clear}>Select</option>
                 {options.map((option, index) => <option key={index} value={option.value} >
@@ -114,7 +136,7 @@ export const LongDropdownInput = ({ name, options, value, setValue, defaultValue
         <div className='grid grid-cols-12 items-center md:my-1 md:px-1 data'>
             <label className={`text-start col-span-2 `}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
             <select tabIndex={tabIndex ? tabIndex : undefined} defaultValue={defaultValue} id='dd' required={required} name="name"
-                className={`border-2 border-emerald-800 h-6 rounded ${className} col-span-10`} value={value} onChange={(e) => { handleOnChange(e); }} disabled={readOnly}>
+                className={`border border-gray-500 h-6 rounded ${className} col-span-10`} value={value} onChange={(e) => { handleOnChange(e); }} disabled={readOnly}>
                 <option value="">Select</option>
                 {options.map((option, index) => <option key={index} value={option.value} >
                     {option.show}
@@ -167,10 +189,10 @@ const RequiredLabel = ({ name }) => <p>{`${name}`}<span className="text-red-500"
 
 
 
-export const DateInput = ({ name, value, setValue, readOnly, required = false, type = "date", disabled = false, tabIndex = null, inputClass, inputHead }) => {
+export const DateInput = ({ name, value, setValue, readOnly, required = false, type = "date", disabled = false, tabIndex = null, inputClass }) => {
     return (
         <div className='grid grid-cols-1 md:grid-cols-3 items-center md:my-1 md:px-1 data w-full'>
-            <label htmlFor="id" className={`md:text-start flex ${inputHead}`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
+            <label htmlFor="id" className='md:text-start flex'>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
             <input tabIndex={tabIndex ? tabIndex : undefined} type={type} disabled={disabled} required={required}
                 className={`input-field focus:outline-none md:col-span-2 border border-gray-500 rounded w-full ${inputClass}`} id='id' value={value} onChange={(e) => { setValue(e.target.value); }} readOnly={readOnly} />
         </div>
@@ -221,64 +243,27 @@ export const validatePincode = (data) => {
     return data.toString().length === 6;
 }
 
-export const DropdownWithSearch = ({ options, value, setValue, readOnly }) => {
-    const [currentIndex, setCurrentIndex] = useState("");
-    useEffect(() => setCurrentIndex(new Date()), [])
-    useEffect(() => {
-        const dropDownElement = document.getElementById(`dropdown${currentIndex}`);
-        dropDownElement.addEventListener('keydown', function (ev) {
-            var focusableElementsString = '[tabindex="0"]';
-            let ol = dropDownElement.querySelectorAll(focusableElementsString);
-            if (ev.key === "ArrowDown") {
-                for (let i = 0; i < ol.length; i++) {
-                    if (ol[i] === ev.target) {
-                        let o = i < ol.length - 1 ? ol[i + 1] : ol[0];
-                        o.focus(); break;
-                    }
-                }
-                ev.preventDefault()
-            } else if (ev.key === "ArrowUp") {
-                for (let i = 0; i < ol.length; i++) {
-                    if (ol[i] === ev.target) {
-                        let o = ol[i - 1];
-                        o.focus(); break;
-                    }
-                }
-                ev.preventDefault()
-            }
-        });
-
-        return () => {
-            dropDownElement.removeEventListener('keydown', () => { });
-        };
-    }, [currentIndex]);
-
-    // const ItemRenderer = ({ item, itemIndex, props, state, methods }) =>
-    //     <div onClick={() => methods.addItem(item)} tabIndex={0} className='hover:bg-blue-500'>{item.name}</div>
-
-    // const ContentRenderer = ({ state }) =>
-    //     <div tabIndex={0} className='hover:bg-blue-500'>{`${state?.values[0]}1`}</div>
-
-
+export const DropdownWithSearch = ({ options, value, setValue, readOnly, searchBy = 'name', labelField = 'name', valueField = 'id', className = 'h-44' }) => {
     return (
-        <div id={`dropdown${currentIndex}`}>
-            <Select className='' searchBy='name' options={options || []}
-                key={value}
-                // ContentRenderer={ContentRenderer}
-                // itemRenderer={ItemRenderer}
-                disabled={readOnly}
-                labelField="name"
-                valueField="id"
-                multi={false}
-                values={value ? [{
-                    id: value, name:
-                        findFromList(value, options || [], "name")
-                }] : []}
-                onChange={(value) => {
-                    setValue(value[0] ? value[0]?.id : "")
-                }} />
-        </div>
+        <>
+            {readOnly ?
+                <span className={className}>
+                    {findFromList(value, options || [], labelField)}
+                </span>
+                :
+                <Select key={value} searchBy={searchBy} options={options || []}
+                    disabled={readOnly}
+                    labelField={labelField}
+                    valueField={valueField}
+                    multi={false}
+                    values={value ? [{
+                        [valueField]: value, name:
+                            findFromList(value, options || [], labelField)
+                    }] : []}
+                    onChange={(value) => {
+                        setValue(value[0] ? value[0][valueField] : "")
+                    }} />
+            }
+        </>
     )
 }
-
-

@@ -295,7 +295,6 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
             productId: item?.productId ? parseInt(item.productId) : undefined,
             qty: 0 - parseFloat(item.qty),
             branchId: parseInt(salesBill.branchId),
-            price: item?.price ? parseFloat(item.price) : 0.000,
         } : undefined;
 
         if (item?.id) {
