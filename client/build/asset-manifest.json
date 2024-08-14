@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.18d7a8a9.css",
-    "main.js": "/static/js/main.4be27341.js",
+    "main.css": "/static/css/main.0f4ed31f.css",
+    "main.js": "/static/js/main.7a0ebc54.js",
     "static/media/fish.png": "/static/media/fish.c0ac81e959823461c46f.png",
     "static/media/top1.png": "/static/media/top1.d762b526705e0bf20b41.png",
     "static/media/pin.png": "/static/media/pin.90caa988bd613fbe757b.png",
     "static/media/armlogo0.jpg": "/static/media/armlogo0.cf28aab02234f2bf64a3.jpg",
     "static/media/pinnacle.jpg": "/static/media/pinnacle.fda61abe44b2bfdc094d.jpg",
     "index.html": "/index.html",
-    "main.18d7a8a9.css.map": "/static/css/main.18d7a8a9.css.map",
-    "main.4be27341.js.map": "/static/js/main.4be27341.js.map"
+    "main.0f4ed31f.css.map": "/static/css/main.0f4ed31f.css.map",
+    "main.7a0ebc54.js.map": "/static/js/main.7a0ebc54.js.map"
   },
   "entrypoints": [
-    "static/css/main.18d7a8a9.css",
-    "static/js/main.4be27341.js"
+    "static/css/main.0f4ed31f.css",
+    "static/js/main.7a0ebc54.js"
   ]
 }
