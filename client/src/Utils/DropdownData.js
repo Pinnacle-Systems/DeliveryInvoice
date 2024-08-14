@@ -129,7 +129,7 @@ export const salesTypes = [
     { show: "RETAIL", value: "RETAIL" },
 ]
 export const PaymentType = [
-    { show: "PURCHAS BILL", value: "PURCHSEBILL" },
-    { show: "SALES BILL", value: "SALESBILL" },
+    { show: "PURCHASEBILL", value: "PURCHASEBILL" },
+    { show: "SALESBILL", value: "SALESBILL" },
 ]
 

@@ -209,7 +209,7 @@ console.log(PartyData,"partyData")
     "Code", "Name", "Status"
   ]
   const tableDataNames = ["dataObj.code", "dataObj.name", 'dataObj.active ? ACTIVE : INACTIVE']
-
+    console.log(paymentType,"paymenttype")
   if (!form)
     return <ReportTemplate
       heading={MODEL}
@@ -251,32 +251,32 @@ console.log(PartyData,"partyData")
           setSearchValue={setSearchValue}
         />
 
-<div className="flex justify-center h-full bg-gray-200">
+<div className="flex justify-center h-[90%] bg-gray-200">
   <form
     onSubmit={saveData}
-    className="bg-white p-3 rounded-lg h-[90%] mt-5 shadow-lg w-full max-w-lg"
+    className="bg-white p-3 rounded-lg h-auto mt-5 shadow-lg w-full max-w-lg"
   >
-    <h2 className="text-3xl font-bold mb-6 text-center text-emerald-700">
+    <h2 className="text-3xl font-bold mb-4 text-center text-emerald-700">
       Payment Form
     </h2>
-    <div className="mb-4">
-      <label className="block text-gray-700 mb-2">Transaction No</label>
+    <div className="mb-3">
+      <label className="block text-gray-700 mb-1">Transaction No</label>
       <input
         type="text"
         value={docId}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md text-emerald-600 text-sm"
+        className="w-full px-2 py-1 border border-gray-300 rounded-md text-emerald-600 text-sm"
         readOnly
       />
     </div>
-    <div className="mb-4">
-      <label htmlFor="paymentType" className="block text-gray-700 mb-2">
+    <div className="mb-3">
+      <label htmlFor="paymentType" className="block text-gray-700 mb-1">
         Payment Type
       </label>
       <select
         id="paymentType"
         value={paymentType}
         onChange={(e) => setPaymentType(e.target.value)}
-        className="w-full px-3 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
       >
         {PaymentType.map((type) => (
           <option key={type.value} value={type.value}>
@@ -285,85 +285,84 @@ console.log(PartyData,"partyData")
         ))}
       </select>
     </div>
-    <div className="mb-4 ">
-      <div className='p-2 w-full'>
-      <DropdownInput
-    name="Customer"
-    className="text-sm"
-    options={dropDownListObject(
-      id
-        ? supplierData
-        : paymentType === "PURCHSEBILL"
-        ? supplierData.filter((value) => value.isSupplier && value.active)
-        : supplierData.filter((value) => value.isCustomer && value.active),
-      "name",
-      "id"
-    )}
-    value={supplierId}
-    setValue={setSupplierId}
-    required={true}
-    readOnly={readOnly}
-    disabled={childRecord.current > 0}
-  />
+    <div className="mb-3">
+      <div className="p-2 w-full">
+        <DropdownInput
+          name="Customer"
+          className="text-sm"
+          options={dropDownListObject(
+            id
+              ? supplierData
+              : paymentType === "PURCHASEBILL"
+              ? supplierData.filter((value) => value.isSupplier && value.active)
+              : supplierData.filter((value) => value.isCustomer && value.active),
+            "name",
+            "id"
+          )}
+          value={supplierId}
+          setValue={setSupplierId}
+          required={true}
+          readOnly={readOnly}
+          disabled={childRecord.current > 0}
+        />
       </div>
-      <div className='p-2 w-full'> 
-      <DropdownInput
-    name="Payment Mode"
-    className="text-sm"
-
-    options={paymentModes}
-    value={paymentMode}
-    setValue={setPaymentMode}
-    required={true}
-    readOnly={readOnly}
-  />
-
+      <div className="p-2 w-full">
+        <DropdownInput
+          name="Payment Mode"
+          className="text-sm"
+          options={paymentModes}
+          value={paymentMode}
+          setValue={setPaymentMode}
+          required={true}
+          readOnly={readOnly}
+        />
       </div>
-
-  
-     
     </div>
-   
-    <div className="flex space-x-4 mb-4">
+    <div className="flex space-x-4 mb-3">
       <div className="w-1/2">
-        <label className="block text-gray-700 mb-2">Date</label>
+        <label className="block text-gray-700 mb-1">Date</label>
         <input
           type="date"
           value={cvv}
           onChange={(e) => setCvv(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="Select Date"
         />
       </div>
       <div className="w-1/2">
-        <label className="block text-gray-700 mb-2">Total Bill Amount</label>
-        <input
-          type="text"
-          value={totalBillAmount}
-          onChange={(e) => setTotalBillAmount(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="123"
-        />
-      </div>
+  <label className="block text-gray-700 mb-1">Total Bill Amount</label>
+  <input
+    type="text"
+    value={
+      PaymentType =='PURCHSEBILL' 
+        ? PartyData?.data?.soa 
+        : PartyData?.data?.coa
+    }
+    onChange={(e) => setTotalBillAmount(e.target.value)}
+    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+    placeholder="123"
+  />
+</div>
+
     </div>
-    <div className="flex space-x-4 mb-4">
+    <div className="flex space-x-4 mb-3">
       <div className="w-1/2">
-        <label className="block text-gray-700 mb-2">Paid Amount</label>
+        <label className="block text-gray-700 mb-1">Paid Amount</label>
         <input
           type="text"
           value={paidAmount}
           onChange={(e) => setPaidAmount(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="123"
         />
       </div>
       <div className="w-1/2">
-        <label className="block text-gray-700 mb-2">Balance Amount</label>
+        <label className="block text-gray-700 mb-1">Balance Amount</label>
         <input
           type="text"
           value={balanceAmount}
           onChange={(e) => setBalanceAmount(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="123"
         />
       </div>
