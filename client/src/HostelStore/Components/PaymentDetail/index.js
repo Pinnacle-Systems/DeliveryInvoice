@@ -13,6 +13,7 @@ import {
   useDeletePaymentMutation,
 } from '../../../redux/services/PaymentService.js';
 import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
+import { useGetPartyByIdQuery } from '../../../redux/services/PartyMasterService';
 
 
 import { getCommonParams, getDateFromDateTime } from '../../../Utils/helper';
@@ -62,6 +63,12 @@ export default function Form() {
   const { data: allData, isLoading, isFetching } = useGetPaymentQuery({ params: { branchId, finYearId }, searchParams: searchValue });
   console.log(allData,"alladata")
   const { data: singleData } = useGetPaymentByIdQuery(id, { skip: !id });
+  const {
+    data: PartyData,
+    isFetching: isSingleFetching,
+    isLoading: isSingleLoading,
+} = useGetPartyByIdQuery(supplierId, { skip: !supplierId });
+console.log(PartyData,"partyData")
 
   const syncFormWithDb = useCallback(
     (data) => {
