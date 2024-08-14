@@ -1,9 +1,12 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi,fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { PAYMENT_API } from "../../Api";
-// import baseQuery from "./baseQuery";
-const PaymentApi = createApi({
-  reducerPath: "Payment",
-  // baseQuery,
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
+
+const paymentApi = createApi({
+  reducerPath: "payment",
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+  }),
   tagTypes: ["Payment"],
   endpoints: (builder) => ({
     getPayment: builder.query({
@@ -79,6 +82,6 @@ export const {
   useAddPaymentMutation,
   useUpdatePaymentMutation,
   useDeletePaymentMutation,
-} = PaymentApi;
+} = paymentApi;
 
-export default PaymentApi;
+export default paymentApi;

@@ -11,7 +11,7 @@ export { default as pageGroup } from "./pageGroup.route.js"
 export { default as subscriptions } from "./subscription.route.js"
 export { default as roles } from "./roles.route.js"
 export { default as finYear } from "./finYear.route.js"
-export { default as payments } from "./payments.route.js"
+
 export { default as OpeningStock } from "./OpeningStock.route.js"
 export { default as employeeCategories } from "./employeeCategories.route.js";
 
@@ -33,6 +33,7 @@ export { default as stock } from "./stock.route.js"
 export { default as salesBill } from "./salesBill.route.js"
 export { default as salesReturn } from "./salesReturn.route.js"
 export { default as uom } from "./uom.route.js"
+export {default as payments} from "./payments.route.js"
 
 
 

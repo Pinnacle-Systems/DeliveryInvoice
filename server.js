@@ -90,7 +90,7 @@ app.use("/salesBill", salesBill);
 app.use("/purchaseReturn", purchaseReturn)
 app.use("/salesReturn", salesReturn)
 app.use('/uom', uom)
-app.use('/payment', payments)
+app.use('/payments', payments)
 
 
 

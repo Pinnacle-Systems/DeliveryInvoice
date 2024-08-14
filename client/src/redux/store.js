@@ -5,8 +5,9 @@ import {
   cityMasterApi, departmentMasterApi, employeeCategoryMasterApi,
   finYearMasterApi, rolesMasterApi, employeeMasterApi, userMasterApi,
   branchMasterApi, companyMasterApi, pageGroupMasterApi, productBrandMasterApi, productCategoryMasterApi, productMasterApi, partyMasterApi,
-   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,PaymentApi,openingStockApi
+   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,openingStockApi
 } from "./services"
+import paymentApi from "./services/PaymentService";
 
 const commonReducers = {  
   openTabs,
@@ -27,7 +28,8 @@ const commonReducers = {
   productCategoryMaster: productCategoryMasterApi.reducer,
   productMaster: productMasterApi.reducer,
   partyMaster: partyMasterApi.reducer,
-  [PaymentApi.reducerPath]: PaymentApi.reducer,
+  payment:paymentApi.reducer,
+ 
   [openingStockApi.reducerPath]: openingStockApi.reducer,
 
 
@@ -57,7 +59,7 @@ pageGroupMasterApi.middleware,
 productBrandMasterApi.middleware,
 productCategoryMasterApi.middleware,
 productMasterApi.middleware,
-PaymentApi.middleware,
+paymentApi.middleware,
 partyMasterApi.middleware,
 partyCategoryMasterApi.middleware,
 purchaseBillApi.middleware,

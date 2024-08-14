@@ -89,7 +89,7 @@ export const DropdownInput = ({ name, beforeChange = () => { }, onBlur = null, o
         setValue(e.target.value);
     }
     return (
-        <div className={`flex flex-col mb-4 ${className}`}>
+        <div className={`grid grid-cols-3 items-center md:my-1 md:px-1 data ${className}`} >
             <label className={`md:text-start flex ${className}`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
             <select
                 onBlur={onBlur}

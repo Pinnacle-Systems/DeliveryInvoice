@@ -60,6 +60,7 @@ export default function Form() {
 
 
   const { data: allData, isLoading, isFetching } = useGetPaymentQuery({ params: { branchId, finYearId }, searchParams: searchValue });
+  console.log(allData,"alladata")
   const { data: singleData } = useGetPaymentByIdQuery(id, { skip: !id });
 
   const syncFormWithDb = useCallback(
@@ -246,7 +247,7 @@ export default function Form() {
 <div className="flex justify-center h-full bg-gray-200">
   <form
     onSubmit={saveData}
-    className="bg-white p-6 rounded-lg h-[85%] mt-10 shadow-lg w-full max-w-lg"
+    className="bg-white p-3 rounded-lg h-[90%] mt-5 shadow-lg w-full max-w-lg"
   >
     <h2 className="text-3xl font-bold mb-6 text-center text-emerald-700">
       Payment Form
@@ -277,10 +278,11 @@ export default function Form() {
         ))}
       </select>
     </div>
-    <div className="mb-4">
-    <div className="grid grid-cols-2 gap-2">
-  <DropdownInput
+    <div className="mb-4 ">
+      <div className='p-2 w-full'>
+      <DropdownInput
     name="Customer"
+    className="text-sm"
     options={dropDownListObject(
       id
         ? supplierData
@@ -296,16 +298,22 @@ export default function Form() {
     readOnly={readOnly}
     disabled={childRecord.current > 0}
   />
-  <DropdownInput
+      </div>
+      <div className='p-2 w-full'> 
+      <DropdownInput
     name="Payment Mode"
+    className="text-sm"
+
     options={paymentModes}
     value={paymentMode}
     setValue={setPaymentMode}
     required={true}
     readOnly={readOnly}
   />
-</div>
 
+      </div>
+
+  
      
     </div>
    
