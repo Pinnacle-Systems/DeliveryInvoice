@@ -236,8 +236,8 @@ export const getCommonParams = () => ({
   userId: secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "userId"
   ),
-  finYearId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'currentFinYear')
-})
+  finYearId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'currentFinYear'),
+  token: `Bearer ${secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'token')} `})
 
 export function isGridDatasValid(datas, isRequiredAllData, mandatoryFields = []) {
   console.log(mandatoryFields, "mandatory fields", datas, isRequiredAllData, "isRequiredAllData");

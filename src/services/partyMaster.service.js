@@ -76,7 +76,7 @@ async function create(body) {
                 cinNo, faxNo, email, website, contactPersonName,
                 gstNo, currencyId: currencyId ? parseInt(currencyId): undefined, costCode, 
                 createdById: userId ? parseInt(userId): undefined,
-                companyId: parseInt(companyId), active,coa: coa? parseInt(coa):undefined,soa : soa? parseInt(soa): undefined,
+                companyId: parseInt(companyId), active,coa: coa? parseInt(coa):parseInt(0),soa : soa? parseInt(soa):parseInt(0),
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
               
             }
@@ -110,7 +110,7 @@ async function update(id, body) {
             gstNo, 
             createdById: userId ? parseInt(userId): undefined,
             companyId: parseInt(companyId), active,
-            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,coa: coa? parseInt(coa):undefined,soa : soa? parseInt(soa): undefined,
+            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,coa: coa? parseInt(coa):parseInt(0),soa : soa? parseInt(soa): parseInt(0),
         }
     })
     return { statusCode: 0, data };

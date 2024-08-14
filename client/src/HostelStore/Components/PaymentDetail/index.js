@@ -29,26 +29,24 @@ import { dropDownListObject } from '../../../Utils/contructObject.js';
 const MODEL = "Payments";
 
 export default function Form() {
+  const today = new Date().toISOString().split('T')[0]; 
+
   const { branchId, companyId, finYearId, userId } = getCommonParams();
 
-  const params = { branchId, companyId, finYearId };
-  const today = new Date()
   const [form, setForm] = useState(true);
   const [date, setDate] = useState(getDateFromDateTime(today));
   const [docId, setDocId] = useState("");
-  const [formReport, setFormReport] = useState(false)
+  const [formReport, setFormReport] = useState(false) 
   const [id, setId] = useState("");
   const [readOnly, setReadOnly] = useState(false);
-  const [cvv, setCvv] = useState('');
-
-  const [amount, setAmount] = useState('');
+  const [cvv, setCvv] = useState(today);
   const [paymentMode, setPaymentMode] = useState('');
   const [paymentRefNo, setPaymentRefNo] = useState('');
   const [partyId, setPartyId] = useState("");
   const [paymentType, setPaymentType] = useState(PaymentType[0].value);
-  const [totalBillAmount, setTotalBillAmount] = useState('');
   const [paidAmount, setPaidAmount] = useState('');
   const [balanceAmount, setBalanceAmount] = useState('');
+  const [totalBillAmount, setTotalBillAmount] = useState('');
 
 
   const [searchValue, setSearchValue] = useState("");
@@ -78,7 +76,7 @@ console.log(PartyData,"partyData")
         setDocId(data.docId);
       }
       if (data?.createdAt) setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
-      setAmount(data?.amount || 0);
+      setPaidAmount(data?.paidAmount || 0);
       setPaymentMode(data?.paymentMode || '');
       setPaymentRefNo(data?.paymentRefNo || '');
       setPartyId(data?.partyId || '');
@@ -109,15 +107,16 @@ console.log(PartyData,"partyData")
   const data = {
     id,
     branchId,
-    amount,
     paymentMode,
-    paymentRefNo,
+    cvv,
+    paidAmount,
+    supplierId,
+    paymentType,
     finYearId,
-    partyId,
     userId,
   }
   const validateData = (data) => {
-    return data?.partyId && data?.amount && data?.paymentMode
+    return data?.supplierId && data?.paidAmount && data?.paymentMode
   }
 
   const handleSubmitCustom = async (callback, data, text) => {
@@ -195,7 +194,7 @@ console.log(PartyData,"partyData")
     syncFormWithDb(undefined);
 
   }
-  const { data: supplierList } = useGetPartyQuery({ params });
+  const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId } });
 
   const supplierData = supplierList?.data ? supplierList.data : [];
 
@@ -210,6 +209,13 @@ console.log(PartyData,"partyData")
   ]
   const tableDataNames = ["dataObj.code", "dataObj.name", 'dataObj.active ? ACTIVE : INACTIVE']
     console.log(paymentType,"paymenttype")
+    useEffect(() => {
+      const newAmount = paymentType === 'PURCHASEBILL' 
+        ? PartyData?.data?.soa 
+        : PartyData?.data?.coa;
+  
+      setTotalBillAmount(newAmount);
+    }, [paymentType, PartyData]);
   if (!form)
     return <ReportTemplate
       heading={MODEL}
@@ -229,7 +235,7 @@ console.log(PartyData,"partyData")
   return (
 
 
-    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-full bg-theme'>
+    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-full bg-gray-200'>
       <Modal
 
         isOpen={formReport}
@@ -251,7 +257,7 @@ console.log(PartyData,"partyData")
           setSearchValue={setSearchValue}
         />
 
-<div className="flex justify-center h-[90%] bg-gray-200">
+<div className="flex justify-center h-[80%] bg-gray-200">
   <form
     onSubmit={saveData}
     className="bg-white p-3 rounded-lg h-auto mt-5 shadow-lg w-full max-w-lg"
@@ -259,32 +265,35 @@ console.log(PartyData,"partyData")
     <h2 className="text-3xl font-bold mb-4 text-center text-emerald-700">
       Payment Form
     </h2>
-    <div className="mb-3">
-      <label className="block text-gray-700 mb-1">Transaction No</label>
-      <input
-        type="text"
-        value={docId}
-        className="w-full px-2 py-1 border border-gray-300 rounded-md text-emerald-600 text-sm"
-        readOnly
-      />
-    </div>
-    <div className="mb-3">
-      <label htmlFor="paymentType" className="block text-gray-700 mb-1">
-        Payment Type
-      </label>
-      <select
-        id="paymentType"
-        value={paymentType}
-        onChange={(e) => setPaymentType(e.target.value)}
-        className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-      >
-        {PaymentType.map((type) => (
-          <option key={type.value} value={type.value}>
-            {type.show}
-          </option>
-        ))}
-      </select>
-    </div>
+    <div className="grid grid-cols-2 gap-4">
+  <div className="mb-3">
+    <label className="block text-gray-700 mb-1">Transaction No</label>
+    <input
+      type="text"
+      value={docId}
+      className="w-full px-2 py-1 border border-gray-300 rounded-md text-emerald-600 text-sm"
+      readOnly
+    />
+  </div>
+  <div className="mb-3">
+    <label htmlFor="paymentType" className="block text-gray-700 mb-1">
+      Payment Type
+    </label>
+    <select
+      id="paymentType"
+      value={paymentType}
+      onChange={(e) => setPaymentType(e.target.value)}
+      className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+    >
+      {PaymentType.map((type) => (
+        <option key={type.value} value={type.value}>
+          {type.show}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+
     <div className="mb-3">
       <div className="p-2 w-full">
         <DropdownInput
@@ -330,19 +339,17 @@ console.log(PartyData,"partyData")
         />
       </div>
       <div className="w-1/2">
-  <label className="block text-gray-700 mb-1">Total Bill Amount</label>
-  <input
-    type="text"
-    value={
-      PaymentType =='PURCHSEBILL' 
-        ? PartyData?.data?.soa 
-        : PartyData?.data?.coa
-    }
-    onChange={(e) => setTotalBillAmount(e.target.value)}
-    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-    placeholder="123"
-  />
-</div>
+      <label className="block text-gray-700 mb-1">Outstanding Amount</label>
+      <input
+  type="text"
+  value={(Number(totalBillAmount) || 0).toFixed(2)}
+  onChange={(e) => setTotalBillAmount(e.target.value)}
+  className="w-full px-2 py-1 border border-gray-300 text-red-500 font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+  placeholder="0"
+/>
+
+    </div>
+
 
     </div>
     <div className="flex space-x-4 mb-3">
@@ -353,23 +360,26 @@ console.log(PartyData,"partyData")
           value={paidAmount}
           onChange={(e) => setPaidAmount(e.target.value)}
           className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="123"
+          placeholder="0"
         />
       </div>
       <div className="w-1/2">
         <label className="block text-gray-700 mb-1">Balance Amount</label>
         <input
-          type="text"
-          value={balanceAmount}
-          onChange={(e) => setBalanceAmount(e.target.value)}
-          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="123"
-        />
+  type="text"
+  value={((Number(totalBillAmount) - Number(paidAmount)) || 0).toFixed(2)}
+  onChange={(e) => setBalanceAmount(e.target.value)}
+  className={`w-full px-2 py-1 border border-gray-300 rounded-md ${
+    (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-500'
+  } focus:outline-none focus:ring-2 font-semibold focus:ring-emerald-500`}
+  placeholder="0"
+/>
+
       </div>
     </div>
     <button
-      type="submit"
-      className="w-full bg-emerald-700 text-white py-2 rounded-md hover:bg-emerald-800 transition duration-200"
+      type="submit" 
+      className="w-full bg-emerald-700 text-white py-2 mt-5 rounded-md hover:bg-emerald-800 transition duration-200"
     >
       {id ? 'Update Payment' : 'Add Payment'}
     </button>

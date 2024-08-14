@@ -87,6 +87,7 @@ model Branch {
   SalesBill        SalesBill[]
   SalesReturn      SalesReturn[]
   OpeningStock     OpeningStock[]
+  Payment          Payment[]
 }
 
 model UserOnBranch {
@@ -125,19 +126,21 @@ model RoleOnPage {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
-  username       String         @unique
-  email          String?
-  Employee       Employee?      @relation(fields: [employeeId], references: [id])
-  password       String
-  role           Role?          @relation(fields: [roleId], references: [id])
-  roleId         Int?
-  otp            String?
-  active         Boolean        @default(true)
-  UserOnBranch   UserOnBranch[]
-  employeeId     Int?
-  partyCreatedBy Party[]        @relation(name: "createdBy")
-  partyUpdatedBy Party[]        @relation(name: "updatedBy")
+  id               Int            @id @default(autoincrement())
+  username         String         @unique
+  email            String?
+  Employee         Employee?      @relation(fields: [employeeId], references: [id])
+  password         String
+  role             Role?          @relation(fields: [roleId], references: [id])
+  roleId           Int?
+  otp              String?
+  active           Boolean        @default(true)
+  UserOnBranch     UserOnBranch[]
+  employeeId       Int?
+  partyCreatedBy   Party[]        @relation(name: "createdBy")
+  partyUpdatedBy   Party[]        @relation(name: "updatedBy")
+  PaymentCreatedBy Payment[]      @relation(name: "createdBy")
+  PaymentUpdatedBy Payment[]      @relation(name: "updatedBy")
 }
 
 model Employee {
@@ -343,6 +346,7 @@ model Party {
   SalesReturn          SalesReturn[]    @relation(name: "supplier")
   coa                  BigInt?
   soa                  BigInt?
+  Payment              Payment[]
 }
 
 model ProductBrand {
@@ -539,8 +543,7 @@ model SalesBill {
   isOn           Boolean          @default(false)
   price          Float?
   netBillValue   Int?
-    selectedDate      DateTime?        @db.Date
-
+  selectedDate   DateTime?        @db.Date
 }
 
 model SalesBillItems {
@@ -622,7 +625,28 @@ model OpeningStockItems {
   productId      Int?
   qty            Float?
   price          Float?
-  Stock          Stock?      
+  Stock          Stock?
   stockQty       Float?
   stockId        Int?
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  docId        String
+  Party        Party    @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  partyId      Int
+  isTaxBill    Boolean  @default(false)
+  Branch       Branch?  @relation(fields: [branchId], references: [id])
+  branchId     Int?
+  createdBy    User     @relation("createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  updatedBy    User?    @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById  Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  paymentMode  String
+  isDeleted    Boolean  @default(false)
+  cvv          DateTime
+  paidAmount   BigInt   @default(0)
+  paymentType  String
 }
