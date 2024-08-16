@@ -280,7 +280,7 @@ console.log(PartyData,"partyData")
 <div className="flex justify-center h-[80%] bg-gray-200">
   <form
     onSubmit={saveData}
-    className="bg-white p-3 rounded-lg h-auto mt-5 shadow-lg w-full max-w-lg"
+    className="bg-white p-3 rounded-lg h-full mt-5 shadow-lg w-full max-w-lg"
   >
     <h2 className="text-3xl font-bold mb-4 text-center text-emerald-700">
       Payment Form
