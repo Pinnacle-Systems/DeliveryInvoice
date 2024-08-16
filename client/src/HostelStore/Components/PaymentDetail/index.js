@@ -14,17 +14,19 @@ import {
 } from '../../../redux/services/PaymentService.js';
 import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
 import { useGetPartyByIdQuery } from '../../../redux/services/PartyMasterService';
-
+import { useGetSalesBillByIdQuery} from "../../../redux/services/SalesBillService";
 
 import { getCommonParams, getDateFromDateTime } from '../../../Utils/helper';
 import Modal from "../../../UiComponents/Modal";
-// import PurchaseBillFormReport from './PurchaseBillFormReport';
+import PurchaseBillFormReport from './PurchaseBillFormReport';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 
 import { paymentModes } from '../../../Utils/DropdownData';
 import PartyDropdownSearch from './PartyDropdownSearch.js';
 import { dropDownListObject } from '../../../Utils/contructObject.js';
+import { toWords } from 'number-to-words'
+import e from 'cors';
 
 const MODEL = "Payments";
 
@@ -45,6 +47,7 @@ export default function Form() {
   const [partyId, setPartyId] = useState("");
   const [paymentType, setPaymentType] = useState(PaymentType[0].value);
   const [paidAmount, setPaidAmount] = useState('');
+  const [discount,setDiscount] = useState('')
   const [balanceAmount, setBalanceAmount] = useState('');
   const [totalBillAmount, setTotalBillAmount] = useState('');
 
@@ -66,6 +69,7 @@ export default function Form() {
     isFetching: isSingleFetching,
     isLoading: isSingleLoading,
 } = useGetPartyByIdQuery(supplierId, { skip: !supplierId });
+
 console.log(PartyData,"partyData")
 
   const syncFormWithDb = useCallback(
@@ -76,10 +80,13 @@ console.log(PartyData,"partyData")
         setDocId(data.docId);
       }
       if (data?.createdAt) setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
-      setPaidAmount(data?.paidAmount || 0);
+      setPaidAmount(data?.paidAmount || '');
+      setDiscount (data?.discount || 0)
+      setSupplierId(data?.partyId || '')
       setPaymentMode(data?.paymentMode || '');
       setPaymentRefNo(data?.paymentRefNo || '');
       setPartyId(data?.partyId || '');
+      setTotalBillAmount(data?.totalBillAmount || '')
       childRecord.current = data?.childRecord ? data?.childRecord : 0;
     }, [id])
 
@@ -110,10 +117,12 @@ console.log(PartyData,"partyData")
     paymentMode,
     cvv,
     paidAmount,
+    discount,
     supplierId,
     paymentType,
     finYearId,
     userId,
+    totalBillAmount
   }
   const validateData = (data) => {
     return data?.supplierId && data?.paidAmount && data?.paymentMode
@@ -197,7 +206,18 @@ console.log(PartyData,"partyData")
   const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId } });
 
   const supplierData = supplierList?.data ? supplierList.data : [];
+  const handleChange = (e) => {
+    const value = e.target.value;
+    // Only accept numeric values
+    if (/^\d*$/.test(value)) {
+      setPaidAmount(value);
+    }
+  };
+  const handleChange1 = (e) =>{
+    const value  = e.target.value;
+    setDiscount(value)
 
+  }
 
   function onDataClick(id) {
     setId(id);
@@ -211,8 +231,8 @@ console.log(PartyData,"partyData")
     console.log(paymentType,"paymenttype")
     useEffect(() => {
       const newAmount = paymentType === 'PURCHASEBILL' 
-        ? PartyData?.data?.soa 
-        : PartyData?.data?.coa;
+        ? ((PartyData?.data?.soa +PartyData?.data?.totalPurchaseNetBillValue)-PartyData?.data?.totalPaymentPurchaseBill) 
+        : ((PartyData?.data?.coa+ PartyData?.data?.totalSalesNetBillValue)-PartyData?.data?.totalPaymentSalesBill)
   
       setTotalBillAmount(newAmount);
     }, [paymentType, PartyData]);
@@ -243,7 +263,7 @@ console.log(PartyData,"partyData")
         widthClass={"px-2 h-[90%] w-[90%]"}
 
       >
-        {/* <PurchaseBillFormReport onClick={(id) => { setId(id); setFormReport(false) }} /> */}
+        <PurchaseBillFormReport onClick={(id) => { setId(id); setFormReport(false) }} />
       </Modal>
       <div className='flex flex-col frame w-full h-full'>
         <FormHeader
@@ -353,29 +373,48 @@ console.log(PartyData,"partyData")
 
     </div>
     <div className="flex space-x-4 mb-3">
-      <div className="w-1/2">
-        <label className="block text-gray-700 mb-1">Paid Amount</label>
-        <input
-          type="text"
-          value={paidAmount}
-          onChange={(e) => setPaidAmount(e.target.value)}
-          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="0"
-        />
-      </div>
+    <div className="w-1/2">
+      <label className="block text-gray-700 mb-1">Paid Amount</label>
+      <input
+        type="text"
+        value={(paidAmount)}
+        onChange={handleChange}
+        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        placeholder="0"
+      />
+    </div>
       <div className="w-1/2">
         <label className="block text-gray-700 mb-1">Balance Amount</label>
         <input
   type="text"
-  value={((Number(totalBillAmount) - Number(paidAmount)) || 0).toFixed(2)}
+  value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)) || 0).toFixed(2)}
   onChange={(e) => setBalanceAmount(e.target.value)}
   className={`w-full px-2 py-1 border border-gray-300 rounded-md ${
-    (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-500'
+    (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
   } focus:outline-none focus:ring-2 font-semibold focus:ring-emerald-500`}
   placeholder="0"
 />
 
       </div>
+    </div>
+    <div className='w-full'>
+    {paidAmount && (
+        <p className="text-sm text-gray-800 mt-2">
+          Amount in words:<span className='text-green-800 text-sm uppercase font-semibold'> {toWords(parseInt(paidAmount))}</span> 
+        </p>
+      )}
+    </div>
+    <div className="absolute top-20 right-0 w-58 max-w-xs">
+      <input
+        type="text"
+        placeholder="Enter discount"
+        value={discount}
+        onChange={handleChange1}
+        className="w-full py-2 px-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+      />
+      <span className="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold py-1 px-2 rounded-bl-md">
+      discount
+      </span>
     </div>
     <button
       type="submit" 

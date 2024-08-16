@@ -16,26 +16,67 @@ async function get(req) {
     return { statusCode: 0, data };
 }
 
-
 async function getOne(id) {
-    const childRecord = 0;
     const data = await prisma.party.findUnique({
         where: {
             id: parseInt(id)
         },
-        include:{
-           
+        include: {
             City: {
-                select:{
-                    name:true,
+                select: {
+                    name: true,
                     state: true
+                }
+            },
+            PurchaseBillSupplier: {
+                select: {
+                    netBillValue: true,
+                    supplierId: true
+                }
+            },
+            SalesBillSupplier: {
+                select: {
+                    netBillValue: true,
+                    supplierId: true
+                }
+            },
+            Payment: {
+                select: {
+                    paidAmount: true,
+                    partyId: true,
+                    paymentType: true,
                 }
             }
         }
-    })
+    });
+
     if (!data) return NoRecordFound("party");
-    return { statusCode: 0, data: { ...data, ...{ childRecord } } };
+
+    const totalPurchaseNetBillValue = data.PurchaseBillSupplier.reduce((acc, bill) => acc + (bill.netBillValue || 0), 0);
+    const totalSalesNetBillValue = data.SalesBillSupplier.reduce((acc, bill) => acc + (bill.netBillValue || 0), 0);
+
+    const totalPaymentSalesBill = data.Payment.reduce((acc, payment) => 
+        payment.paymentType === 'SALESBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
+
+    const totalPaymentPurchaseBill = data.Payment.reduce((acc, payment) => 
+        payment.paymentType === 'PURCHASEBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
+
+    const childRecord = data.PurchaseBillSupplier.length + data.SalesBillSupplier.length;
+
+    return { 
+        statusCode: 0, 
+        data: { 
+            ...data, 
+            totalPurchaseNetBillValue, 
+            totalSalesNetBillValue, 
+            totalPaymentSalesBill, 
+            totalPaymentPurchaseBill, 
+            childRecord 
+        } 
+    };
 }
+
+
 
 async function getSearch(req) {
     const { searchKey } = req.params

@@ -54,7 +54,7 @@ model Company {
 
 model Subscription {
   id        Int      @id @default(autoincrement())
-  Company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId Int
   validFrom DateTime
   expireAt  DateTime
@@ -647,6 +647,10 @@ model Payment {
   paymentMode  String
   isDeleted    Boolean  @default(false)
   cvv          DateTime
-  paidAmount   BigInt   @default(0)
+  paidAmount   Int?   @default(0)
   paymentType  String
+  totalBillAmount Int?
+  discount   Int?   @default(0)
+
+
 }

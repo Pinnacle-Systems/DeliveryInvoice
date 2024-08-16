@@ -5,7 +5,6 @@ import { getTableRecordWithId } from '../utils/helperQueries.js';
 import { getFinYearStartTimeEndTime } from '../utils/finYearHelper.js';
 
 
-
 async function getNextDocId(branchId, shortCode, startTime, endTime) {
     let lastObject = await prisma.payment.findFirst({
         where: {
@@ -115,7 +114,7 @@ async function getSearch(req) {
 async function create(body) {
     let data;
     try {
-        const { branchId, id, paymentMode, cvv, paymentType, paidAmount, supplierId, userId, paymentRefNo, partyId, finYearId } = body;
+        const { branchId, id, paymentMode, cvv, paymentType, paidAmount,discount, supplierId, userId,finYearId,totalBillAmount } = body;
 
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startTime, finYearDate?.endTime) : "";
@@ -129,9 +128,12 @@ async function create(body) {
                     branchId: parseInt(branchId),
                     paymentMode,
                     paidAmount: parseFloat(paidAmount),
+                    discount: parseFloat(discount),
+
                     createdById: parseInt(userId),
                     cvv: cvv ? new Date(cvv) : undefined,
-                    paymentType
+                    paymentType,
+                    totalBillAmount
                 }
             });
         });
@@ -148,11 +150,7 @@ async function create(body) {
 async function update(id, body) {
     let data
     const {
-        amount,
-        paymentMode,
-        partyId,
-        paymentRefNo,
-        userId } = await body
+        branchId, paymentMode, cvv, paymentType, paidAmount,discount, supplierId, userId, paymentRefNo, partyId, finYearId } = await body
     const dataFound = await prisma.payment.findUnique({
         where: {
             id: parseInt(id)
@@ -165,11 +163,14 @@ async function update(id, body) {
                 id: parseInt(id),
             },
             data: {
-                partyId: parseInt(partyId),
-                paymentMode,
-                paymentRefNo,
-                amount: parseFloat(amount),
-                updatedById: parseInt(userId)
+                    partyId: parseInt(supplierId),
+                    branchId: parseInt(branchId),
+                    paymentMode,
+                    paidAmount: parseFloat(paidAmount),
+                    discount: parseFloat(discount),
+                    createdById: parseInt(userId),
+                    cvv: cvv ? new Date(cvv) : undefined,
+                    paymentType
             },
         })
     })
@@ -177,13 +178,11 @@ async function update(id, body) {
 };
 
 async function remove(id) {
-    const data = await prisma.payment.update({
+    const data = await prisma.payment.delete({
         where: {
             id: parseInt(id)
         },
-        data: {
-            isDeleted: true
-        }
+      
     })
     return { statusCode: 0, data };
 }
