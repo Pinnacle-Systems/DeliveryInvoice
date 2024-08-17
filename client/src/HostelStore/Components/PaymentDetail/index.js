@@ -256,7 +256,7 @@ console.log(PartyData,"partyData")
   return (
 
 
-    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-[100%] bg-gray-200'>
+    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid  bg-gray-200'>
       <Modal
 
         isOpen={formReport}
