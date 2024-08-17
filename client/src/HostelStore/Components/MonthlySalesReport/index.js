@@ -53,13 +53,14 @@ const MonthlySales = () => {
           <div className='flex items-center justify-between page-heading p-2 font-bold'>
             <h1 className=''>Monthly Sales Report</h1>
             <div className='flex no-print'>
-              <ExcelButton onClick={() => exportFileToCsv("ANUGRAHA FASHION HOSTEL", [...salesList.map((i, index) => ({ "S.No": index + 1, ...i })), { "S.No": "", Product: "Total", "Qty": sumArray(salesList, "Qty"), "Amount": sumArray(salesList, "Amount") }], "Monthly Sales Report", "ANUGRAHA FASHION HOSTEL")} width={40} />
+              <ExcelButton onClick={() => exportFileToCsv("ARM SALES REPORT", [...salesList.map((i, index) => ({ "S.No": index + 1, ...i })), { "S.No": "", Product: "Total", "Qty": sumArray(salesList, "Qty"), "Amount": sumArray(salesList, "Amount") }], "Monthly Sales Report", "ARM SALES REPORT")} width={40} />
               {/* <PrintButtonOnly onClick={() => setOpenPdfView(true)} /> */}
             </div>
           </div>
           <div className='flex  p-2 w-2/6'>
             <DateInput inputHead={"font-bold text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
             <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
+            
           </div>
           <div className="flex w-full justify-end -mt-9">
             <PreviewButtonOnly onClick={()=>setOpenPdfView(true)} />

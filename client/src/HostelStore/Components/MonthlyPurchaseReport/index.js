@@ -39,8 +39,7 @@ const MonthlyPurchase = () => {
   const purData = data?.data ? data?.data : []
   console.log( purData)
   const { data: partyListData } =
-    useGetPartyQuery({ params });
-
+    useGetPartyQuery({ params });  
   const filterData = () => {
     return (purData ? purData : []).filter(item => {
       return moment.utc(item?.createdAt).format("YYYY-MM-DD") >= startDate && moment.utc(item?.createdAt).format("YYYY-MM-DD") <= endDate;
@@ -53,6 +52,8 @@ const MonthlyPurchase = () => {
     totalAmount += obj.netBillValue;
 
   }
+  console.log(partyList,"Party")
+
 
   let exportData = filterParty.map((i, index) => ({ "S.no": index + 1, "Date": getDateFromDateTimeToDisplay(i.createdAt), "Party Name": i?.supplier?.name, "Party Dc No.": i?.supplierDcNo, "Amount": parseFloat(i?.netBillValue || 0).toFixed(2) }))
 
@@ -79,13 +80,23 @@ const MonthlyPurchase = () => {
         <DateInput inputHead={"font-bold  text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
         <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
 
+        <MultiSelectDropdown
+  name="Party :"
+  inputClass={"w-80"}
+  labelName={"font-bold "}
+  selected={partyList}
+  setSelected={setPartyList}
+  options={
+    partyListData
+      ? multiSelectOption(
+          partyListData.data.filter(item => item.isSupplier === true), 
+          "name",
+          "id"
+        )
+      : []
+  }
+/>
 
-        <MultiSelectDropdown name="Party :" inputClass={"w-80"} labelName={"font-bold "}
-          selected={partyList}
-          setSelected={setPartyList}
-          options={partyListData ? multiSelectOption(partyListData.data, "name", "id") : []}
-
-        />
 
       </div>
       <div className="flex w-full justify-end -mt-9">

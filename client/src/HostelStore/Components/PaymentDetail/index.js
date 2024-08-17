@@ -256,7 +256,7 @@ console.log(PartyData,"partyData")
   return (
 
 
-    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid  bg-gray-200'>
+    <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid  min-h-screen  bg-gray-200'>
       <Modal
 
         isOpen={formReport}
@@ -278,7 +278,7 @@ console.log(PartyData,"partyData")
           setSearchValue={setSearchValue}
         />
 
-<div className="flex justify-center h-[100%] bg-gray-200">
+<div className="flex justify-center h-[70%] bg-gray-200">
   <form
     onSubmit={saveData}
     className="bg-white p-3 rounded-lg h-full mt-5 shadow-lg w-full max-w-lg"
