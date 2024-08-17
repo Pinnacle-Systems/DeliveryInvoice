@@ -32,7 +32,7 @@ const MonthlySales = () => {
   salesList.forEach(item => {
     totalAmount += item.Qty * item.AvgPrice
   })
-  console.log(totalAmount,"totalAmount")
+  console.log(salesList,"salesList")
 
  
   const numericFields = ["Qty", "Amount"];
@@ -41,7 +41,7 @@ const MonthlySales = () => {
     <>
       <Modal onClose={() => setOpenPdfView(false)} isOpen={openPdfView} widthClass={"w-[90%] h-[90%]"}>
         <PDFViewer className='w-full h-screen'>
-          <MonthlySalesDocument salesList={salesList} startDate={getDateFromDateTimeToDisplay(new Date(startDate))} endDate={getDateFromDateTimeToDisplay(new Date(endDate))} />
+          <MonthlySalesDocument salesList={salesList} totalAmount = {totalAmount} startDate={getDateFromDateTimeToDisplay(new Date(startDate))} endDate={getDateFromDateTimeToDisplay(new Date(endDate))} />
         </PDFViewer>
       </Modal>
 

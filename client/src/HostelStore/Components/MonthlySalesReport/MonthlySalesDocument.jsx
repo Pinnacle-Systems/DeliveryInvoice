@@ -5,11 +5,11 @@ import tw from "../../../Utils/tailwind-react-pdf";
 import InvoiceContent from './InvoiceContent';
 
 
-const MonthlySalesDocument = ({ startDate, endDate, salesList }) => {
+const MonthlySalesDocument = ({ startDate, endDate, salesList, totalAmount }) => {
   return (
     <>
       <Document width={500} height={300} style={tw("font-normal")} >
-        <InvoiceContent startDate={startDate} endDate={endDate} salesList={salesList} />
+        <InvoiceContent startDate={startDate} endDate={endDate} salesList={salesList} totalAmount = {totalAmount} />
        
       </Document>
     </>

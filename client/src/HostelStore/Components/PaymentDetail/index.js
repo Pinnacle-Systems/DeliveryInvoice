@@ -84,6 +84,7 @@ console.log(PartyData,"partyData")
       setDiscount (data?.discount || 0)
       setSupplierId(data?.partyId || '')
       setPaymentMode(data?.paymentMode || '');
+      setPaymentType(data?.paymentType || '')
       setPaymentRefNo(data?.paymentRefNo || '');
       setPartyId(data?.partyId || '');
       setTotalBillAmount(data?.totalBillAmount || '')

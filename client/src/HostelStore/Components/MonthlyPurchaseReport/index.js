@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { DateInput, MultiSelectDropdown } from '../../../Inputs';
 import secureLocalStorage from 'react-secure-storage';
 import { EMPTY_ICON } from "../../../icons";
-import { useGetPurchaseBillQuery } from '../../../redux/services/PurchaseBillService';
+import {useGetPurchaseBillQuery} from '../../../redux/services/PurchaseBillService'
 import moment from 'moment';
 import { Loader } from '../../../Basic/components';
 import { getDateFromDateTimeToDisplay, sumArray } from '../../../Utils/helper';
@@ -36,7 +36,8 @@ const MonthlyPurchase = () => {
 
 
   const { data, isLoading, isFetching } = useGetPurchaseBillQuery({ params });
-  const purData = data?.data ? data.data : []
+  const purData = data?.data ? data?.data : []
+  console.log( purData)
   const { data: partyListData } =
     useGetPartyQuery({ params });
 
@@ -45,7 +46,7 @@ const MonthlyPurchase = () => {
       return moment.utc(item?.createdAt).format("YYYY-MM-DD") >= startDate && moment.utc(item?.createdAt).format("YYYY-MM-DD") <= endDate;
     });
   };
-
+ console.log(filterData(),"filterData")
   let totalAmount = 0;
   let filterParty = filterData()?.filter(item => partyList.find(i => parseInt(i.value) === parseInt(item.supplierId)));
   for (const obj of filterParty) {
@@ -95,8 +96,8 @@ const MonthlyPurchase = () => {
       <div className='w-full h-full  p-2'>
         {filterData().length > 0 ?
           <table className="border-2 border-gray-700 table-fixed text-center w-2/4 m-auto ">
-            <thead className=" bg-blue-400 border-2 border-gray-700">
-              <tr className='h-2 bg-blue-400'>
+            <thead className=" bg-green-400 border-2 border-gray-700">
+              <tr className='h-2 bg-green-400'>
                 <th
                   className=" w-8 p-1 border-2 border-gray-700">
                   S. no.
@@ -150,9 +151,9 @@ const MonthlyPurchase = () => {
 
                 </tr>
               ))}
-              <tr className='py-2 w-full border-2 border-gray-700 bg-blue-400'>
-                <td colSpan={4} className='text-center border-2 border-gray-700 font-bold text-sm bg-blue-400'>Total</td>
-                <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(totalAmount).toFixed(2)}</td>
+              <tr className='py-2 w-full border-2 border-gray-700 bg-green-400'>
+                <td colSpan={4} className='text-center border-2 border-gray-700 font-bold text-sm bg-green-400'>Total</td>
+                <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-green-400'>{parseFloat(totalAmount).toFixed(2)}</td>
 
               </tr>
             </tbody>

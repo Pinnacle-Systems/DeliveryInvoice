@@ -18,7 +18,7 @@ const PageWrapper = ({ children ,startDate,endDate}) => {
             <View>
                 {children}
             </View>
-            <View fixed style={tw("pr-2 pb-2 mt-3 absolute bottom-3")}>
+            <View fixed style={tw("pr-2 pb-2 mt-1 absolute bottom-3")}>
 
              
                 <View style={tw("text-right w-full pb-1 pt-2 pr-3")}>
