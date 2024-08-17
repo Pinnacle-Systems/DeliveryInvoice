@@ -278,7 +278,7 @@ console.log(PartyData,"partyData")
           setSearchValue={setSearchValue}
         />
 
-<div className="flex justify-center h-[80%] bg-gray-200">
+<div className="flex justify-center h-[100%] bg-gray-200">
   <form
     onSubmit={saveData}
     className="bg-white p-3 rounded-lg h-full mt-5 shadow-lg w-full max-w-lg"
