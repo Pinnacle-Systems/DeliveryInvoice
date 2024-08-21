@@ -1,134 +1,166 @@
-import React, { useState } from 'react'
-import { DateInput } from '../../../Inputs';
+import React, { useState } from 'react';
+import { DateInput, MultiSelectDropdown } from '../../../Inputs';
 import secureLocalStorage from 'react-secure-storage';
 import { EMPTY_ICON } from "../../../icons";
 import { useGetSalesBillQuery } from '../../../redux/services/SalesBillService';
-import { ExcelButton, PreviewButtonOnly, PrintButtonOnly } from '../../../Buttons';
-import { exportFileToCsv } from '../../../Utils/excelHelper';
+import { ExcelButton, PreviewButtonOnly } from '../../../Buttons';
 import { getDateFromDateTimeToDisplay, sumArray } from '../../../Utils/helper';
 import Modal from '../../../UiComponents/Modal';
 import { PDFViewer } from '@react-pdf/renderer';
 import MonthlySalesDocument from './MonthlySalesDocument';
+import { multiSelectOption } from '../../../Utils/contructObject';
+import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 
 const MonthlySales = () => {
   const [openPdfView, setOpenPdfView] = useState(false);
+  const [partyList, setPartyList] = useState([]);
 
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const branchId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "currentBranchId"
-  )
+  );
 
-  const { data: salesData
-  } = useGetSalesBillQuery({ params: { branchId, salesReport: true, fromDate: startDate, toDate: endDate } },
-    { skip: !(endDate && startDate) });
+  const companyId = secureLocalStorage.getItem(
+    sessionStorage.getItem("sessionId") + "userCompanyId"
+  );
 
+  const params = {
+    branchId,
+    companyId,
+    filterSupplier: true
+  };
 
-  let salesList = salesData ? salesData.data : []
+  const { data: salesData } = useGetSalesBillQuery(
+    {
+      params: {
+        branchId,
+        salesReport: true,
+        fromDate: startDate,
+        toDate: endDate,
+        partyList: JSON.stringify(partyList.map(party => party.label))
+      }
+    },
+    { skip: !(endDate && startDate) }
+  );
 
-  let totalAmount = 0;
+  const salesList = salesData ? salesData.data : [];
 
-  salesList.forEach(item => {
-    totalAmount += item.Qty * item.AvgPrice
-  })
-  console.log(salesList,"salesList")
+  const totalAmount = salesList.reduce((total, item) => total + (item.Qty * item.AvgPrice), 0);
 
- 
+  const { data: partyListData } = useGetPartyQuery({ params });
+
   const numericFields = ["Qty", "Amount"];
-  return (
 
+  return (
     <>
       <Modal onClose={() => setOpenPdfView(false)} isOpen={openPdfView} widthClass={"w-[90%] h-[90%]"}>
         <PDFViewer className='w-full h-screen'>
-          <MonthlySalesDocument salesList={salesList} totalAmount = {totalAmount} startDate={getDateFromDateTimeToDisplay(new Date(startDate))} endDate={getDateFromDateTimeToDisplay(new Date(endDate))} />
+          <MonthlySalesDocument
+            salesList={salesList}
+            totalAmount={totalAmount}
+            startDate={getDateFromDateTimeToDisplay(new Date(startDate))}
+            endDate={getDateFromDateTimeToDisplay(new Date(endDate))}
+          />
         </PDFViewer>
       </Modal>
 
-     
-           
-
-      <div className='bg-gray-200 min-h-screen' >
+      <div className='bg-gray-200 min-h-screen'>
         <div className='w-full h-full p-1'>
           <div className='flex items-center justify-between page-heading p-2 font-bold'>
             <h1 className=''>Monthly Sales Report</h1>
             <div className='flex no-print'>
-              <ExcelButton onClick={() => exportFileToCsv("ARM SALES REPORT", [...salesList.map((i, index) => ({ "S.No": index + 1, ...i })), { "S.No": "", Product: "Total", "Qty": sumArray(salesList, "Qty"), "Amount": sumArray(salesList, "Amount") }], "Monthly Sales Report", "ARM SALES REPORT")} width={40} />
-              {/* <PrintButtonOnly onClick={() => setOpenPdfView(true)} /> */}
             </div>
           </div>
-          <div className='flex  p-2 w-2/6'>
+          <div className='flex p-2 w-4/6'>
             <DateInput inputHead={"font-bold text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
             <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
-            
+            <MultiSelectDropdown
+              name="Party :"
+              inputClass={"w-80"}
+              labelName={"font-bold "}
+              selected={partyList}
+              setSelected={setPartyList}
+              options={
+                partyListData
+                  ? multiSelectOption(
+                      partyListData.data.filter(item => item.isCustomer === true),
+                      "name",
+                      "id"
+                    )
+                  : []
+              }
+            />
           </div>
           <div className="flex w-full justify-end -mt-9">
-            <PreviewButtonOnly onClick={()=>setOpenPdfView(true)} />
+            <PreviewButtonOnly onClick={() => setOpenPdfView(true)} />
+          </div>
 
-            </div>
+          <ReactHTMLTableToExcel
+            id="test-table-xls-button"
+            className="download-table-xls-button"
+            table="table-to-xls"
+            filename="MonthlySalesReport"
+            sheet="Sales"
+            buttonText="Download as XLS"
+          />
 
-          <div className='w-full grid grid-cols-1 mt-5  '>
-            {
-              salesList.length !== 0 ?
-                <table className='w-2/4 m-auto border-2 border-gray-900 text-xs'>
-                  <thead>
-                    <tr className='bg-emerald-400 border-2 border-gray-700 sticky top-0 py-2'>
-                      <th className='w-12'>S.No</th>
-                      {Object.keys(salesList[0]).map((heading, i) =>
-                        <th className='p-2 border border-gray-500 text-sm' key={i}>
-                          {heading.replace(/_+/g, ' ')}
-                        </th>
-                      )}
+          <div className='w-full grid grid-cols-1 mt-5'>
+            {salesList.length !== 0 ? (
+              <table className='w-2/4 m-auto border-2 border-gray-900 text-xs' id="table-to-xls">
+                <thead>
+                  <tr className='bg-emerald-400 border-2 border-gray-700 sticky top-0 py-2'>
+                    <th className='w-12'>S.No</th>
+                    {Object.keys(salesList[0]).map((heading, i) => (
+                      <th className='p-2 border border-gray-500 text-sm' key={i}>
+                        {heading.replace(/_+/g, ' ')}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesList.map((data, i) => (
+                    <tr key={i} className='py-2 w-full table-row'>
+                      <td className='text-center border border-gray-500'>{i + 1}</td>
+                      {Object.keys(data).map((heading, i) => (
+                        <td
+                          key={i}
+                          className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}
+                        >
+                          {heading === "Amount" ? (
+                            parseFloat(data[heading]).toFixed(2)
+                          ) : heading === "Date" ? (
+                            new Date(data[heading]).toISOString().split('T')[0]
+                          ) : (
+                            data[heading]
+                          )}
+                        </td>
+                      ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {salesList?.map((data, i) =>
-                      <>
-                        <tr key={i} className='py-2 w-full table-row'>
-                          <td className='text-center border border-gray-500'>{i + 1}</td>
-                          {Object.keys(data).map((heading, i) => (
-                           <td
-                             key={i}
-                             className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}
-                           >
-                             {heading === "Amount" ? (
-                               parseFloat(data[heading]).toFixed(2)
-                             ) : heading === "Date" ? (
-                              new Date(data[heading]).toISOString().split('T')[0]
-                             ) : (
-                                data[heading]
-                             )}
+                  ))}
 
-                           </td>
-                          
-                         ))}
-
-
-
-                        </tr>
-
-
-                      </>
-                    )}
-
-                    <tr className='py-2 w-full table-row bg-blue-400'>
-                      <td colSpan={6} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>Total</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>{parseFloat(totalAmount).toFixed(2)}</td>
-
-                    </tr>
-                  </tbody>
-                </table>
-                :
-                <div className="flex justify-center items-center text-blue-900  text-3xl sm:mt-52">
-                  <p>{EMPTY_ICON} No Data Found...! </p>
-                </div>
-            }
+                  <tr className='py-2 w-full table-row bg-blue-400'>
+                    <td colSpan={Object.keys(salesList[0]).length } className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+                      Total
+                    </td>
+                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+                      {parseFloat(totalAmount).toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <div className="flex justify-center items-center text-blue-900 text-3xl sm:mt-52">
+                <p>{EMPTY_ICON} No Data Found...! </p>
+              </div>
+            )}
           </div>
         </div>
-
       </div>
     </>
-  )
-}
+  );
+};
 
-export default MonthlySales
+export default MonthlySales;

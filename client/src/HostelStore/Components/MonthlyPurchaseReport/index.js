@@ -13,6 +13,7 @@ import { exportFileToCsv } from '../../../Utils/excelHelper';
 import MonthlyPurchaseDocument from './MonthlyPurchaseDocument';
 import Modal from '../../../UiComponents/Modal';
 import { PDFViewer } from '@react-pdf/renderer';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 
 
 
@@ -71,7 +72,6 @@ const MonthlyPurchase = () => {
       <div className='flex items-center justify-between page-heading p-1 font-bold'>
         <h1 className='p-1'>Monthly Purchase Report</h1>
         <div className='flex no-print'>
-          <ExcelButton onClick={() => exportFileToCsv(exportData, "Monthly Purchase Report")} width={40} />
           {/* <PrintButtonOnly onClick={() => setOpenPdfView(true)} /> */}
         </div>
       </div>
@@ -103,10 +103,18 @@ const MonthlyPurchase = () => {
             <PreviewButtonOnly onClick={()=>setOpenPdfView(true)} />
 
             </div>
+            <ReactHTMLTableToExcel
+            id="test-table-xls-button"
+            className="download-table-xls-button"
+            table="table-to-xls"
+            filename="MonthlyPurchaseReport"
+            sheet="Sales"
+            buttonText="Download as XLS"
+          />
 
       <div className='w-full h-full  p-2'>
         {filterData().length > 0 ?
-          <table className="border-2 border-gray-700 table-fixed text-center w-2/4 m-auto ">
+          <table className="border-2 border-gray-700 table-fixed text-center w-2/4 m-auto " id="table-to-xls">
             <thead className=" bg-green-400 border-2 border-gray-700">
               <tr className='h-2 bg-green-400'>
                 <th
