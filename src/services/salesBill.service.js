@@ -57,7 +57,7 @@ async function get(req) {
     const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList } = req.query;
     let data;
     console.log(partyList,"partyList")
-     const partyListData = JSON.parse(partyList)
+     const partyListData = partyList? JSON.parse(partyList) : []
      const partyData = partyListData.map(item => `'${item}'`).join(',');
      console.log(partyData,"partyData")
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);

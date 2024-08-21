@@ -77,7 +77,8 @@ const MonthlySales = () => {
           <div className='flex p-2 w-4/6'>
             <DateInput inputHead={"font-bold text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
             <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
-            <MultiSelectDropdown
+        <div className='z-2'>
+        <MultiSelectDropdown
               name="Party :"
               inputClass={"w-80"}
               labelName={"font-bold "}
@@ -93,6 +94,8 @@ const MonthlySales = () => {
                   : []
               }
             />
+        </div>
+            
           </div>
           <div className="flex w-full justify-end -mt-9">
             <PreviewButtonOnly onClick={() => setOpenPdfView(true)} />
