@@ -26,12 +26,12 @@ where  partyid = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Sales' as type, docId as transId, createdAt as date, netBillValue as amount, '' as paymentType 
+   select * from (select 'Sales' as type, docId as transId, createdAt as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, paidAmount,paymentMode as paymentType
-from payment
+select 'Payment' as type, docId as transId, createdAt as date, paidAmount,paymentMode as paymentType, paymentRefNo
+from payment 
 where partyid = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
     `;
