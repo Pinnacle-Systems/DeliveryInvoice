@@ -19,6 +19,8 @@ export {default as MonthlyProfit} from './MonthlyProfitReport'
 export { default as PaymentDetail } from './PaymentDetail'
 export { default as OpeningStock } from './OpeningStock'
 export {default as QuatationStock} from './Quatation'
+export { default as PaymentLedgre } from './PartyOverAllLedger'
+export {default as Ledger} from './Ledger'
 
 
 
