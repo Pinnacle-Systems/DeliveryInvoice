@@ -12,7 +12,7 @@ where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) < ${startDateFor
 union
 select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)
 from payment
-where  partyid = ${partyId} and (DATE(createdAt) < ${startDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) < ${startDateFormatted})) a
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
@@ -22,7 +22,7 @@ where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) <= ${endDateForm
 union
 select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount 
 from payment
-where  partyid = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
@@ -32,7 +32,7 @@ where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) between ${startD
 union
 select 'Payment' as type, docId as transId, createdAt as date, paidAmount,paymentMode as paymentType, paymentRefNo
 from payment 
-where partyid = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
+where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
     `;
     const partyDetails = await prisma.party.findUnique({
