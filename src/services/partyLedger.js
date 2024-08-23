@@ -120,6 +120,8 @@ FROM (
         0 AS paymentAmount 
     FROM 
         party
+    where 
+        isCustomer = '1'    
 
     UNION ALL
 
@@ -153,6 +155,7 @@ FROM (
         party 
     ON 
         party.id = payment.partyId
+        where paymentType = 'SALESBILL'
   
     GROUP BY 
         payment.partyId, 
