@@ -282,5 +282,5 @@ export function getDiscountAmount(discountType, discountValue, grossAmount) {
 }
 
 export function removeComma(str) {
-  return str.replace(/,/g, '')
+  return str ? str.replace(/,/g, '') : ''
 }
