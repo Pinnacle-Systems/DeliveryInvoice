@@ -98,7 +98,7 @@ const MonthlyProfit = () => {
                             <>
 
                               <td key={i} className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-1 border border-gray-500`}>
-                                {heading == "Amount" ? parseFloat(data[heading]).toFixed(2) : (data[heading])}
+                              {heading == "Amount" || heading == "qty" ? parseFloat(data[heading]).toFixed(2) : data[heading]}
                               </td>
                             </>
 
