@@ -23,9 +23,7 @@ const InvoiceContent = ({ purchaseAmount, saleAmount, startDate, endDate, salesL
               <Text style={tw("w-64 text-center p-1  border-r  border-gray-500")}>
                 Product
               </Text>
-              <Text style={tw(" w-24 text-center p-1  border-r  border-gray-500")}>
-                Uom
-              </Text>
+           
               <Text style={tw("w-20 p-1 text-center border-r  border-gray-500")}>
                 Qty
               </Text>
@@ -51,9 +49,7 @@ const InvoiceContent = ({ purchaseAmount, saleAmount, startDate, endDate, salesL
                 <Text style={tw("w-64 text-left p-1  border-r  border-gray-500")}>
                   {data?.Product}
                 </Text>
-                <Text style={tw("w-24 text-left p-1  border-r  border-gray-500")}>
-                  {data?.Uom}
-                </Text>
+              
                 <Text style={tw("w-20 text-right p-1  border-r  border-gray-500")}>
                   {data?.Qty}
                 </Text>

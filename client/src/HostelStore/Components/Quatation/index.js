@@ -99,8 +99,8 @@ const QuatationStock = () => {
               filteredStockList.map((product, index) => (
                 <tr key={index} className="hover:bg-emerald-300 bg-amber-100 transition-colors">
                   <td className="py-2 px-3 border-b border-gray-200">{product.Product}</td>
-                  <td className="py-2 px-3 border-b border-gray-200">{product._sum.qty}</td>
-                  <td className="py-2 px-3 border-b border-gray-200">{product.QuatationStock}</td>
+                  <td className="py-2 px-3 border-b border-gray-200">{parseFloat(product._sum.qty).toFixed(2)}</td>
+                  <td className="py-2 px-3 border-b border-gray-200">{parseFloat(product.QuatationStock).toFixed(2)}</td>
                   <td className={`py-2 px-3 border-b border-gray-200 ${product._sum.qty - product.QuatationStock < 11 ? 'text-red-500 bg-red-200' : ''}`}>
                     {product._sum.qty - product.QuatationStock}
                   </td>

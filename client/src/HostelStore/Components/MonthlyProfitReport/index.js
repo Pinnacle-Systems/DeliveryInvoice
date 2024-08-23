@@ -97,9 +97,10 @@ const MonthlyProfit = () => {
                           {Object.keys(data).map((heading, i) =>
                             <>
 
-                              <td key={i} className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-1 border border-gray-500`}>
-                              {heading == "Amount" && heading == "qty" ? parseFloat(data[heading]).toFixed(2) : data[heading]}
-                              </td>
+<td key={i} className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-1 border border-gray-500`}>
+  {["Amount", "Qty"].includes(heading) ? parseFloat(data[heading]).toFixed(2) : data[heading]}
+</td>
+
                             </>
 
                           )}
