@@ -4,17 +4,18 @@ import tw from '../../../Utils/tailwind-react-pdf'
 import { getDateFromDateTimeToDisplay } from '../../../Utils/helper';
 import commaNumber from 'comma-number';
 
-const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
+const LedgerReportPrintFormatcus = ({ ledgerData, startDate, endDate }) => {
     const ledgerDetails = ledgerData?.data ? ledgerData.data : []
     // Calculate the total credit and debit amounts
-    const totalCredit = ledgerDetails.filter(item => item.type === "Sales").reduce((total, entry) => total + Math.abs(entry.amount), 0);
+    const totalCredit = ledgerDetails.filter(item => item.type === "Purchase").reduce((total, entry) => total + Math.abs(entry.amount), 0);
     const totalDebit = ledgerDetails.filter(item => item.type === "Payment").reduce((total, entry) => total + Math.abs(entry.amount), 0);
-
+     console.log(ledgerDetails,"ledgerDetail")
     const openingBalance = ledgerData?.openingBalance;
     const closingBalance = ledgerData?.closingBalance;
     const partyName = ledgerData?.partyDetails?.name;
     const columnWidth = [
         5, 10, 15, 20, 20, 15, 15
+
     ];
     const columns = [
         { name: "S.No.", columnWidthPercentage: columnWidth[0], valueGetter: (entry, index) => index + 1, className: "text-center" },
@@ -23,7 +24,7 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
         { name: "Trans.Id.", columnWidthPercentage: columnWidth[3], valueGetter: (entry, index) => entry.transId },
         { name: "Payment Type / Ref.No.", columnWidthPercentage: columnWidth[4], valueGetter: (entry, index) => `${entry.paymentType}/${entry.paymentRefNo}`, totalsData: "Totals" },
         {
-            name: "Credit", columnWidthPercentage: columnWidth[6], openingBalanceRow: "Open. Balance", openingBalanceStyle: "text-center", valueGetter: (entry, index) => (entry.type === "Sales") ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalCredit).toFixed(2)),
+            name: "Credit", columnWidthPercentage: columnWidth[6], openingBalanceRow: "Open. Balance", openingBalanceStyle: "text-center", valueGetter: (entry, index) => entry.type === "Purchase" ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalCredit).toFixed(2)),
             closingBalanceData: "Closing Balance"
         },
         { name: "Debit", columnWidthPercentage: columnWidth[5], openingBalanceRow: parseFloat(openingBalance || 0).toFixed(2), openingBalanceStyle: "text-center", valueGetter: (entry, index) => entry.type === "Payment" ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalDebit).toFixed(2)), closingBalanceData: parseFloat(closingBalance).toFixed(2) },
@@ -33,7 +34,7 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
             <Page size="A4" style={{ fontFamily: "Times-Roman", ...tw("relative pb-[50px] px-2") }}>
                 <View fixed>
                     <View style={tw("text-center mb-10 text-xl")}>
-                        <Text style={{ fontFamily: "Times-Bold" }}>{partyName} Customer Ledger Report</Text>
+                        <Text style={{ fontFamily: "Times-Bold" }}>{partyName} Customer Purchase Ledger Report</Text>
                         <Text style={tw("text-sm")}>{getDateFromDateTimeToDisplay(startDate)} to {getDateFromDateTimeToDisplay(endDate)}</Text>
                     </View>
                     <View style={{ ...tw("w-full flex flex-row border-t border-l text-[11px]"), fontFamily: "Times-Bold" }}>
@@ -101,4 +102,4 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
     )
 }
 
-export default LedgerReportPrintFormat
+export default LedgerReportPrintFormatcus

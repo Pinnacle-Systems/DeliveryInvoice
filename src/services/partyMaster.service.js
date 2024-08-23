@@ -1,14 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 import { NoRecordFound } from '../configs/Responses.js';
-import { getPartyOverAllReport,getPartyLedgerReport } from './partyLedger.js';
+import { getPartyOverAllReport,getPartyLedgerReport,getPartyLedgerReportCus } from './partyLedger.js';
 
 const prisma = new PrismaClient()
 
 
 async function get(req) {
-    const { companyId, active,isPartyOverAllReport,searchValue, partyId, startDate, endDate,isPartyLedgerReport, } = req.query
+    const { companyId, active,isPartyOverAllReport,searchValue, partyId, startDate, endDate,isPartyLedgerReport,isPartyLedgerReportCus } = req.query
     if (isPartyLedgerReport) {
         const data = await getPartyLedgerReport(partyId, startDate, endDate)
+        return { statusCode: 0, data };
+    }
+    if (isPartyLedgerReportCus) {
+        const data = await getPartyLedgerReportCus(partyId, startDate, endDate)
         return { statusCode: 0, data };
     }
     if (isPartyOverAllReport) {

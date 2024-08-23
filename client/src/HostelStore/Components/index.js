@@ -21,6 +21,7 @@ export { default as OpeningStock } from './OpeningStock'
 export {default as QuatationStock} from './Quatation'
 export { default as PaymentLedgre } from './PartyOverAllLedger'
 export {default as Ledger} from './Ledger'
+export { default as PurchaseLedger} from './PurchaseLedger'
 
 
 

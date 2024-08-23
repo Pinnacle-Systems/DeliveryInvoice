@@ -52,6 +52,58 @@ order by date;
         partyDetails
     }
 }
+export async function getPartyLedgerReportCus(partyId, startDate, endDate) {
+    console.log(partyId,"partyIdsss")
+    const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
+    const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
+    const openingBalanceResults = await prisma.$queryRaw`
+    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, coalesce(netBillValue,0) as amount
+from purchasebill
+where  supplierId = ${partyId} and (DATE(createdAt) < ${startDateFormatted})
+union
+select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)
+from payment
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) < ${startDateFormatted})) a
+    `;
+
+    const closingBalanceResults = await prisma.$queryRaw`
+    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, netBillValue as amount
+from purchasebill
+where supplierId = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})
+union
+select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount 
+from payment
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) <= ${endDateFormatted})) a
+    `;
+
+    const data = await prisma.$queryRaw`
+   select * from (select 'Purchase' as type, docId as transId, createdAt as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
+from purchasebill
+where supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
+union
+select 'Payment' as type, docId as transId, createdAt as date, paidAmount,paymentMode as paymentType, paymentRefNo
+from payment 
+where partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
+order by date;
+    `;
+    const partyDetails = await prisma.party.findUnique({
+        where: {
+            id: parseInt(partyId)
+        },
+        select: {
+            name: true,
+            soa: true
+        }
+    })
+    console.log(typeof partyDetails.coa)
+    return {
+        openingBalance:parseFloat(openingBalanceResults[0]?.openingBalance)  + parseFloat(partyDetails.soa) ,
+        closingBalance:parseFloat( closingBalanceResults[0]?.closingBalance) + parseFloat(partyDetails.soa),
+        data,
+        partyDetails
+    }
+}
+
 
 export async function getPartyOverAllReport(searchPartyName) {
     const sql = `SELECT 
