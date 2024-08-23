@@ -135,7 +135,7 @@ FROM (
     ON 
         party.id = salesbill.supplierId
     WHERE 
-        salesbill.isOn = 1
+        salesbill.isOn = 1 AND isCustomer = 1
     GROUP BY 
         salesbill.supplierId, 
         party.name

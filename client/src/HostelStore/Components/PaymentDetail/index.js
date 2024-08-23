@@ -301,17 +301,19 @@ console.log(PartyData,"partyData")
       Payment Type
     </label>
     <select
-      id="paymentType"
-      value={paymentType}
-      onChange={(e) => setPaymentType(e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-    >
-      {PaymentType.map((type) => (
-        <option key={type.value} value={type.value}>
-          {type.show}
-        </option>
-      ))}
-    </select>
+  id="paymentType"
+  value={paymentType}
+  onChange={(e) => setPaymentType(e.target.value)}
+  className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+>
+  <option value="" disabled>Select a payment type</option>
+  {PaymentType.map((type) => (
+    <option key={type.value} value={type.value}>
+      {type.show}
+    </option>
+  ))}
+</select>
+
   </div>
 </div>
 

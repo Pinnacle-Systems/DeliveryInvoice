@@ -210,7 +210,9 @@ async function createpoBillItems(tx, poBillItems, purchaseBill) {
 
 async function create(body) {
     let data;
-    const { supplierId, dueDate, address, place, poBillItems, supplierDcNo, companyId, active, branchId, netBillValue } = await body
+    console.log(body,"body")
+    const { supplierId, dueDate, address, place, poBillItems, supplierDcNo, companyId, active,
+    icePrice,packingCharge,labourCharge,tollgate,transport,ourPrice, branchId, netBillValue } = await body
     let newDocId = await getNextDocId(branchId)
     await prisma.$transaction(async (tx) => {
         data = await tx.purchaseBill.create(
@@ -221,8 +223,7 @@ async function create(body) {
                     companyId: parseInt(companyId), active,
                     dueDate: dueDate ? new Date(dueDate) : undefined,
                     branchId: parseInt(branchId),
-                    netBillValue: parseInt(netBillValue),
-
+                    netBillValue: parseInt(netBillValue),icePrice: parseFloat(icePrice),packingCharge: parseFloat(packingCharge),labourCharge: parseFloat(labourCharge),tollgate:parseFloat(tollgate),transport:parseFloat(transport),ourPrice:parseFloat(ourPrice)
                 }
             })
         await createpoBillItems(tx, poBillItems, data)

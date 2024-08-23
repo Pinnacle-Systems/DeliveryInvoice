@@ -36,8 +36,15 @@ export default function Form() {
   const [address, setAddress] = useState("");
   const [place, setPlace] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [charge, setCharge] = useState()
   const [formReport, setFormReport] = useState(false)
-
+  const [icePrice,seticePrice ] = useState("")
+  const [packingCharge,setPackingCharge] = useState("")
+  const [labourCharge,setLabourCharge ] = useState("")
+  const [ tollgate,setTollgate] =   useState("")
+  const [transport,setTransport] = useState("") 
+  const [ourPrice,setOurPrice] = useState("")
+  const [discount,setDiscout] = useState("")
   const [readOnly, setReadOnly] = useState(false);
   const [id, setId] = useState("");
   const [supplierId, setSupplierId] = useState("");
@@ -61,7 +68,18 @@ export default function Form() {
     newBlend[index][field] = value;
     setPoBillItems(newBlend);
   };
+  
+  
+  useEffect(() => {
+    const totalCharge = 
+      Number(icePrice) + 
+      Number(packingCharge) + 
+      Number(labourCharge) + 
+      Number(tollgate) + 
+      Number(transport) 
 
+    setCharge(totalCharge);
+  }, [icePrice, packingCharge, labourCharge, tollgate, transport]);
   const params = { companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId") }
 
   const { data: allData, isLoading, isFetching } = useGetPurchaseBillQuery({ params: { branchId }, searchParams: searchValue });
@@ -109,6 +127,12 @@ export default function Form() {
       if (data?.docId) {
         setDocId(data.docId);
       }
+      seticePrice(data?.icePrice ? data?.icePrice : "")
+      setPackingCharge(data?.packingCharge ? data?.packingCharge : "")
+      setLabourCharge(data?.labourCharge ? data?.labourCharge : "" )
+      setTollgate(data?.tollgate ? data?.tollgate : "")
+      setTransport(data?.transport ? data?.transport : "")
+      setOurPrice (data?.ourPrice ? data?.ourPrice : "")
       setActive(id ? (data?.active ? data.active : false) : true);
       setSupplierId(data?.supplierId ? data?.supplierId : "");
       setAddress(data?.address ? data.address : "")
@@ -138,7 +162,7 @@ export default function Form() {
     dueDate,
     address,
     place,
-    netBillValue,
+    netBillValue,icePrice,packingCharge,labourCharge,tollgate,transport,ourPrice,
     poBillItems: poBillItems.filter(item => item.qty != 0 && item.price != 0),
     companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId"), active, id
   }
@@ -305,7 +329,7 @@ export default function Form() {
             <div className='mr-1 md:ml-2'>
               <fieldset className='frame my-1'>
                 <legend className='sub-heading'>Product Info</legend>
-                <div className='grid grid-cols-3 my-2'>
+                <div className='grid grid-cols-5 my-2'>
                   <DisabledInput name="Trans.No" value={docId} required={true} readOnly={readOnly} />
                   <DisabledInput name="Trans. 
                            Date" value={date} type={"Date"} required={true} readOnly={readOnly} />
@@ -315,9 +339,17 @@ export default function Form() {
                   <TextInput name="Sup.Dc.No" type="text" value={supplierDcNo} setValue={setSupplierDcNo} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
 
                   <DateInput name="Sup.Dc. Date" value={dueDate} setValue={setDueDate} required={true} readOnly={readOnly} />
+                  <TextInput name={"IcePrice"} value={icePrice} setValue={seticePrice} readOnly={readOnly} required />
+                  <TextInput name={"PackingCharge"} value={packingCharge} setValue={setPackingCharge} readOnly={readOnly} required />
+                  <TextInput name={"LabourCharge"} value={labourCharge} setValue={setLabourCharge} readOnly={readOnly} required />
+                  <TextInput name={"Tollgate"} value={tollgate} setValue={setTollgate} readOnly={readOnly} required />
+                  <TextInput name={"Transport"} value={transport} setValue={setTransport} readOnly={readOnly} required />
+                  <TextInput name={"Our Price"} value={ourPrice} setValue={setOurPrice} readOnly={readOnly} required />
+                  <DisabledInput name={"Discount"} value={ourPrice-netBillValue} readOnly={readOnly} required />
                   <TextInput name={"NetBillValue"} value={netBillValue} setValue={setNetBillValue} readOnly={readOnly} required />
+                  <DisabledInput name="TotalAnother Charge" value={charge} required={true} readOnly={readOnly} />
 
-                  {/* <CheckBox name="Active" value={active} setValue={setActive} readOnly={readOnly} /> */}
+                  {/* <CheckBox name="Active" value={active}  setValue={setActive} readOnly={readOnly} /> */}
                 </div>
               </fieldset>
               <fieldset className='frame rounded-tr-lg rounded-bl-lg rounded-br-lg my-1 w-full border border-gray-400 md:pb-5 flex flex-1 overflow-auto'>
