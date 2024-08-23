@@ -80,7 +80,7 @@ const MonthlyProfit = () => {
               salesList.length !== 0 ?
                 <table className='w-2/4 m-auto border-2 border-gray-900 text-xs'>
                   <thead>
-                    <tr className='bg-blue-400 border-2 border-gray-700 sticky top-0 py-2'>
+                    <tr className='bg-emerald-700 text-white border-2 border-gray-700 sticky top-0 py-2'>
                       <th className='w-12'>S.No</th>
                       {Object.keys(salesList[0]).map((heading, i) =>
                         <th className='p-2 border border-gray-500 text-sm' key={i}>
@@ -112,10 +112,10 @@ const MonthlyProfit = () => {
                     )}
 
                     <tr className='py-2 w-full table-row bg-blue-400'>
-                      <td colSpan={4} className='text-center border-2 border-gray-700 font-bold text-sm bg-blue-400'>Total</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(purchaseAmount).toFixed(2)}</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(saleAmount).toFixed(2)}</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-blue-400'>{parseFloat(totalAmount).toFixed(2)}</td>
+                      <td colSpan={4} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>Total</td>
+                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(purchaseAmount).toFixed(2)}</td>
+                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(saleAmount).toFixed(2)}</td>
+                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(totalAmount).toFixed(2)}</td>
 
                     </tr>
                   </tbody>
