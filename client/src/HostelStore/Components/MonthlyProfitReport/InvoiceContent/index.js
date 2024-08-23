@@ -50,9 +50,10 @@ const InvoiceContent = ({ purchaseAmount, saleAmount, startDate, endDate, salesL
                   {data?.Product}
                 </Text>
               
-                <Text style={tw("w-20 text-right p-1  border-r  border-gray-500")}>
-                  {data?.Qty}
-                </Text>
+                <Text style={tw("w-20 text-right p-1 border-r border-gray-500")}>
+  {parseFloat(data?.Qty).toFixed(2)}
+</Text>
+
                 <Text style={tw(" w-24 text-right p-1  border-r  border-gray-500")}>
                   {data?.["Purchase Amount"]}
                 </Text>
