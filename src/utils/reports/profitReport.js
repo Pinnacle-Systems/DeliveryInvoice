@@ -1,3 +1,7 @@
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 export default async function profitReport(startDateStartTime, endDateEndTime) {
     return await prisma.$queryRaw`
       SELECT 
@@ -8,13 +12,11 @@ export default async function profitReport(startDateStartTime, endDateEndTime) {
     COALESCE(SUM(sbi.totalSaleValue), 0) AS totalSales,
     COALESCE(SUM(pbi.totalQty), 0) AS totalPurchaseQty,
     COALESCE(SUM(pbi.totalPurchaseValue), 0) AS totalPurchases,
-    COALESCE(SUM(sbi.totalSaleValue), 0) - COALESCE(SUM(pbi.totalPurchaseValue) , 0)- COALESCE(SUM(Obi.totalOpeningValue),0) AS profit,
-    
-    COALESCE(sbi.averageSalePrice, 0) AS averageSalePrice,
     COALESCE(pbi.averagePurchaseRate, 0) AS averagePurchaseRate,
+    COALESCE(sbi.averageSalePrice, 0) AS averageSalePrice,
     COALESCE(Obi.totalOpenQty, 0) AS totalOpenQty,
-    COALESCE(Obi.totalOpeningValue, 0) AS totalOpeningValue
-    
+    COALESCE(Obi.totalOpeningValue, 0) AS totalOpeningValue,
+    COALESCE(SUM(sbi.totalSaleValue), 0) - COALESCE(SUM(pbi.totalPurchaseValue) , 0)- COALESCE(SUM(Obi.totalOpeningValue),0) AS profit
 FROM 
     Product pr
 LEFT JOIN (
