@@ -11,10 +11,9 @@ export default async function profitReport(startDateStartTime, endDateEndTime) {
     COALESCE(sbi.averageSalePrice, 0) AS averageSalePrice,
     COALESCE(SUM(pbi.totalQty), 0) AS totalPurchaseQty,
     COALESCE(SUM(sbi.totalSaleQty), 0) AS totalSaleQty,
+    COALESCE(Obi.totalOpenQty, 0) AS totalOpenQty,
     COALESCE(SUM(sbi.totalSaleValue), 0) AS totalSales,
     COALESCE(SUM(pbi.totalPurchaseValue), 0) AS totalPurchases,
-
-    COALESCE(Obi.totalOpenQty, 0) AS totalOpenQty,
     COALESCE(Obi.totalOpeningValue, 0) AS totalOpeningValue,
     COALESCE(SUM(sbi.totalSaleValue), 0) - COALESCE(SUM(pbi.totalPurchaseValue) , 0)- COALESCE(SUM(Obi.totalOpeningValue),0) AS profit
 FROM 
