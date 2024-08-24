@@ -64,6 +64,7 @@ async function get(req) {
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
     
     if (isProfitReport) {
+        console.log("Profit")
         data = await profitReport(startDateStartTime, endDateEndTime);
         return { statusCode: 0, data };
     }
