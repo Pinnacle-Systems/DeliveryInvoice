@@ -1,68 +1,59 @@
+// import prisma from "../../models/getPrisma";
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 export default async function profitReport(startDateStartTime, endDateEndTime) {
     return await prisma.$queryRaw`
-      SELECT 
-    pr.id AS productId,
-    pr.name AS productName,
-    COALESCE(pbi.averagePurchaseRate, 0) AS averagePurchaseRate,
-    COALESCE(sbi.averageSalePrice, 0) AS averageSalePrice,
-    COALESCE(SUM(pbi.totalQty), 0) AS totalPurchaseQty,
-    COALESCE(SUM(sbi.totalSaleQty), 0) AS totalSaleQty,
-    COALESCE(Obi.totalOpenQty, 0) AS totalOpenQty,
-    COALESCE(SUM(sbi.totalSaleValue), 0) AS totalSales,
-    COALESCE(SUM(pbi.totalPurchaseValue), 0) AS totalPurchases,
-    COALESCE(Obi.totalOpeningValue, 0) AS totalOpeningValue,
-    COALESCE(SUM(sbi.totalSaleValue), 0) - COALESCE(SUM(pbi.totalPurchaseValue) , 0)- COALESCE(SUM(Obi.totalOpeningValue),0) AS profit
-FROM 
-    Product pr
-LEFT JOIN (
-    SELECT 
-        sbi.productId,
-        SUM(sbi.qty) AS totalSaleQty,
-        SUM(sbi.price * sbi.qty) AS totalSaleValue,
-        AVG(sbi.price) AS averageSalePrice
-    FROM 
-        SalesBillItems sbi
-    JOIN SalesBill sb ON sb.id = sbi.salesbillId    
-    WHERE
-        sb.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-    GROUP BY 
-        sbi.productId
-) sbi ON pr.id = sbi.productId
-LEFT JOIN (
-    SELECT 
-        pbi.productId,
-        SUM(pbi.qty) AS totalQty,
-        SUM(pbi.price * pbi.qty) AS totalPurchaseValue,
-        AVG(pbi.price) AS averagePurchaseRate
-    FROM 
-        PoBillItems pbi
-    JOIN PurchaseBill pb ON pb.id = pbi.purchasebillId    
-    WHERE
-        pb.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-    GROUP BY 
-        pbi.productId
-) pbi ON pr.id = pbi.productId
-LEFT JOIN (
-    SELECT 
-        Obi.productId,
-        SUM(Obi.qty) AS totalOpenQty,
-        SUM(Obi.qty * pbi.price ) AS totalOpeningValue
-    FROM 
-        OpeningStockItems Obi
-    JOIN OpeningStock Ob ON Ob.id = Obi.openingStockId
-    JOIN pobillitems pbi ON pbi.productId = Obi.productId
-      WHERE
-        Ob.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
-    
-    GROUP BY 
-        Obi.productId
-) Obi ON pr.id = Obi.productId
-GROUP BY 
-    pr.id, pr.name, sbi.averageSalePrice, pbi.averagePurchaseRate, Obi.totalOpenQty, Obi.totalOpeningValue;
-
-    `;
+   select Product, Qty, FORMAT(purchaseAmount,2) as 'Purchase Amount', FORMAT(saleAmount,2) as 'Sale Amount', FORMAT(saleAmount - purchaseAmount, 2) as Profit from (SELECT 
+    product.name AS Product,
+    sum(qty) as Qty,
+    sum(price * qty) as saleAmount,
+    ROUND((SELECT 
+                    SUM(e.purchaseAmount)
+                FROM
+                    (SELECT 
+                        d.product,
+                            d.uom,
+                            d.purchaseRate,
+                            d.qty,
+                            d.purchaseRate * qty AS purchaseAmount
+                    FROM
+                        (SELECT 
+                        product.name AS product,
+                            qty,
+                            (SELECT 
+                                    SUM(e.amount) / SUM(e.qty)
+                                FROM
+                                    (SELECT 
+                                    pobillitems.price,
+                                        pobillitems.qty,
+                                        pobillitems.price * pobillitems.qty AS amount 
+                                FROM
+                                    pobillitems
+                                JOIN purchasebill pb ON pb.id = pobillitems.purchaseBillId
+                                WHERE
+                                    pb.createdAt < sb.createdAt
+                                        AND pobillitems.productId = salesbillitems.productId
+                                      ) e) AS purchaseRate,
+                            
+                    FROM
+                        salesbillitems
+                    JOIN salesbill sb ON sb.id = salesbillitems.salesbillid
+                    LEFT JOIN product ON product.id = salesbillitems.productId
+                    WHERE
+                        salesbillitems.productId = salesbillitemsout.productId
+                            AND
+                sb.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+                            ) d) e),
+            2) AS purchaseAmount
+FROM
+    salesbillitems salesbillitemsout
+        LEFT JOIN
+    product ON product.id = salesbillitemsout.productId
+    LEFT JOIN
+    SalesBill salebill ON salebill.id = salesbillitemsout.salesBillId
+    WHERE salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+GROUP BY salesbillitemsout.productId , product.name )f
+    ORDER BY Product
+    `
 }
