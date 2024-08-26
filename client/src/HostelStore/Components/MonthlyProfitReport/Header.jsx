@@ -7,7 +7,7 @@ import moment from 'moment';
 const Header = ({ startDate, endDate }) => {
   return (
     <View style={{ ...tw("w-full mt-5"), fontFamily: "Times-Roman", fontWeight: 100 }}>
-      <Text style={{ ...tw("text-center text-lg") }}>ANUGRAHA FASHION MILL HOSTEL</Text>
+      <Text style={{ ...tw("text-center text-lg") }}>ARM PROFIT REPORT</Text>
       <Text style={tw("text-sm mt-3 text-center")}>All Productwise Profit Report
         Date From {startDate} to {endDate}
       </Text>
