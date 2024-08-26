@@ -7,13 +7,12 @@ export default async function profitReport(startDateStartTime, endDateEndTime) {
    select Product, Qty, FORMAT(purchaseAmount,2) as 'Purchase Amount', FORMAT(saleAmount,2) as 'Sale Amount', FORMAT(saleAmount - purchaseAmount, 2) as Profit from (SELECT 
     product.name AS Product,
     sum(qty) as Qty,
-    sum(price * qty) as saleAmount,
+    sum(salesbillitemsout.price * qty) as saleAmount,
     ROUND((SELECT 
                     SUM(e.purchaseAmount)
                 FROM
                     (SELECT 
                         d.product,
-                            d.uom,
                             d.purchaseRate,
                             d.qty,
                             d.purchaseRate * qty AS purchaseAmount
@@ -34,7 +33,7 @@ export default async function profitReport(startDateStartTime, endDateEndTime) {
                                 WHERE
                                     pb.createdAt < sb.createdAt
                                         AND pobillitems.productId = salesbillitems.productId
-                                      ) e) AS purchaseRate,
+                                      ) e) AS purchaseRate
                             
                     FROM
                         salesbillitems

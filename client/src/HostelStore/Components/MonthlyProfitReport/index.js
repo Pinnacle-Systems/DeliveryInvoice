@@ -113,12 +113,10 @@ const MonthlyProfit = () => {
                     )}
 
                     <tr className='py-2 w-full table-row bg-blue-400'>
-                      <td colSpan={8} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>Total</td>
+                      <td colSpan={3} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>Total</td>
                       <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(purchaseAmount).toFixed(2)}</td>
                       <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(saleAmount).toFixed(2)}</td>
                       <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(totalAmount).toFixed(2)}</td>
-                      <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-700 text-white'>{parseFloat(totalAmount).toFixed(2)}</td>
-
                     </tr>
                   </tbody>
                 </table>
