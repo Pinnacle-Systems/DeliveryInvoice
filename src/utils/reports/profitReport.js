@@ -40,7 +40,7 @@ export default async function profitReport(startDateStartTime, endDateEndTime) {
                     JOIN salesbill sb ON sb.id = salesbillitems.salesbillid
                     LEFT JOIN product ON product.id = salesbillitems.productId
                     WHERE
-                        salesbillitems.productId = salesbillitemsout.productId
+                        salesbillitems.productId = salesbillitemsout.productId AND isOn = '1'
                             AND
                 sb.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
                             ) d) e),
@@ -51,7 +51,7 @@ FROM
     product ON product.id = salesbillitemsout.productId
     LEFT JOIN
     SalesBill salebill ON salebill.id = salesbillitemsout.salesBillId
-    WHERE salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime}
+    WHERE salebill.createdAt BETWEEN ${startDateStartTime} AND ${endDateEndTime} AND isOn = '1'
 GROUP BY salesbillitemsout.productId , product.name )f
     ORDER BY Product
     `
