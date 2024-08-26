@@ -172,3 +172,74 @@ ORDER BY
 `
     return await prisma.$queryRawUnsafe(sql)
 }
+export async function getPartyPurchaseOverAllReport(searchPartyName) {
+    const sql = `SELECT 
+    id, 
+    name, 
+    FORMAT(SUM(purchaseAmount), 2) AS purchaseAmount, 
+    FORMAT(SUM(paymentAmount), 2) AS paymentAmount, 
+    FORMAT(SUM(purchaseAmount) - SUM(paymentAmount), 2) AS balance
+FROM (
+    SELECT 
+        party.id,
+        party.name, 
+        party.soa AS purchaseAmount, 
+        0 AS paymentAmount 
+    FROM 
+        party
+         WHERE 
+       isSupplier = 1
+ 
+
+    UNION ALL
+
+    SELECT 
+        party.id, 
+        party.name, 
+        SUM(purchaseBill.netBillValue) AS purchaseAmount, 
+        0 AS paymentAmount
+    FROM 
+        purchaseBill 
+    JOIN 
+        party 
+    ON 
+        party.id = purchaseBill.supplierId
+   WHERE 
+       isSupplier = 1
+    GROUP BY 
+        purchaseBill.supplierId, 
+        party.name
+
+    UNION ALL
+
+    SELECT 
+        party.id, 
+        party.name, 
+        0 AS purchaseAmount, 
+        SUM(payment.paidAmount) AS paymentAmount
+    FROM 
+        payment 
+    JOIN 
+        party 
+    ON 
+        party.id = payment.partyId
+        
+        where paymentType = 'PURCHASEBILL'
+         AND
+       party.isSupplier = 1
+  
+    GROUP BY 
+        payment.partyId, 
+        party.name
+) a 
+where a.name like '%${searchPartyName}%'
+GROUP BY 
+    id, 
+    name
+HAVING 
+    SUM(purchaseAmount) > 0 OR SUM(paymentAmount) > 0 
+ORDER BY 
+    name
+`
+    return await prisma.$queryRawUnsafe(sql)
+}

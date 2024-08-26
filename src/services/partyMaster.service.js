@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client'
 import { NoRecordFound } from '../configs/Responses.js';
-import { getPartyOverAllReport,getPartyLedgerReport,getPartyLedgerReportCus } from './partyLedger.js';
+import { getPartyOverAllReport,getPartyLedgerReport,getPartyLedgerReportCus,getPartyPurchaseOverAllReport } from './partyLedger.js';
 
 const prisma = new PrismaClient()
 
 
 async function get(req) {
-    const { companyId, active,isPartyOverAllReport,searchValue, partyId, startDate, endDate,isPartyLedgerReport,isPartyLedgerReportCus } = req.query
+    const { companyId, active,isPartyOverAllReport,searchValue, partyId, startDate, endDate,isPartyLedgerReport,isPartyLedgerReportCus,isPartyPurchaseOverAllReport } = req.query
     if (isPartyLedgerReport) {
         const data = await getPartyLedgerReport(partyId, startDate, endDate)
         return { statusCode: 0, data };
@@ -19,6 +19,10 @@ async function get(req) {
         const data = await getPartyOverAllReport(searchValue)
         return { statusCode: 0, data };
 
+    }
+    if(isPartyPurchaseOverAllReport){
+        const data = await getPartyPurchaseOverAllReport(searchValue)
+        return { statusCode: 0, data };
     }
     const data = await prisma.party.findMany({
         where: {

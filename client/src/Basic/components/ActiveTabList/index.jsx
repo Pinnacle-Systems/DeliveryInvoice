@@ -14,7 +14,7 @@ import CompanyMaster from "../CompanyMaster";
 import { useState } from "react";
 import useOutsideClick from "../../../CustomHooks/handleOutsideClick";
 import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
-   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail,OpeningStock,PaymentLedgre,QuatationStock,Ledger,PurchaseLedger } from "../../../HostelStore/Components";
+   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail,OpeningStock,PaymentLedgre,QuatationStock,Ledger,PurchaseLedger, PurchasepayLedgre } from "../../../HostelStore/Components";
 
 const ActiveTabList = () => {
   const openTabs = useSelector((state) => state.openTabs);
@@ -58,6 +58,8 @@ const ActiveTabList = () => {
     "OPENING STOCK"   : <OpeningStock />,
     "QUATATION STOCK"  : <QuatationStock />,
     "PAYMENT LEDGRE" : <PaymentLedgre />,
+    "PURCHASE PAYMENT LEDGRE" : <PurchasepayLedgre />,
+
     "PARTY LEDGER": <Ledger />,
     "PURCHASE LEDGER" : <PurchaseLedger />
   };
