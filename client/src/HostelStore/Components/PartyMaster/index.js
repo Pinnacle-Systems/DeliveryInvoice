@@ -313,8 +313,8 @@ export default function Form() {
                                 <fieldset className='frame my-1'>
                                     <legend className='sub-heading'>Opening payment</legend>
                                     <div className='grid grid-cols-1 gap-2 my-2'>
-                                        <TextInput name="Customer Opening Amount" type="text" value={coa} setValue={setCoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                                        <TextInput name="Supplier Opening Amount" type="text" value={soa} setValue={setSoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                       {isCustomer && <TextInput name="Customer Opening Amount" type="text" value={coa} setValue={setCoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />} 
+                                       {isSupplier && <TextInput name="Supplier Opening Amount" type="text" value={soa} setValue={setSoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />} 
                                                                           </div>
                                 </fieldset>
                             </div>
