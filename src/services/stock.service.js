@@ -178,30 +178,29 @@ async function get(req) {
     });
 
   
-    const productIds = data
-  .map(item => item.productId)
-  .filter(id => id !== null && id !== undefined);  
-
-const products = await xprisma.product.findMany({
-    where: {
-        id: {
-            in: productIds,
+    const productIds = data.map(item => item.productId);
+    const products = await xprisma.product.findMany({
+        where: {
+            id: {
+                in: productIds,
+            },
         },
-    },
-    select: {
-        id: true,
-        name: true,
-    },
-});
+        select: {
+            id: true,
+            name: true,
+        },
+    });
 
-data = data.map(item => ({
-    ...item,
-    Product: products.find(product => product.id === item.productId)?.name || null,
-    QuatationStock: quatationStockMap.get(item.productId) || 0
-}));
+   
+    data = data.map(item => ({
+        ...item,
+        Product: products.find(product => product.id === item.productId)?.name || null,
+        QuatationStock: quatationStockMap.get(item.productId) || 0
+    }));
 
-data = data.filter(item => item._sum.qty !== 0);
-totalCount = data.length;
+  
+    data = data.filter(item => item._sum.qty !== 0);
+    totalCount = data.length;
 
     if (pagination) {
         data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
