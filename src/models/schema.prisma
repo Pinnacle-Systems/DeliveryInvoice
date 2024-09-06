@@ -54,7 +54,7 @@ model Company {
 
 model Subscription {
   id        Int      @id @default(autoincrement())
-  Company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId Int
   validFrom DateTime
   expireAt  DateTime
@@ -440,10 +440,10 @@ model PurchaseBill {
   netBillValue   Int?
   icePrice       Float?
   packingCharge  Float?
-  labourCharge    Float?
+  labourCharge   Float?
   tollgate       Float?
-  transport       Float?
-  ourPrice     Float?
+  transport      Float?
+  ourPrice       Float?
   PoBillItems    PoBillItems[]
   PurchaseReturn PurchaseReturn[]
 }
@@ -453,8 +453,8 @@ model PoBillItems {
   PurchaseBill           PurchaseBill?            @relation(fields: [purchaseBillId], references: [id], onDelete: Cascade)
   purchaseBillId         Int?
   box                    Float?
-  Product                Product?                 @relation(fields: [productId], references: [id])
-  productId              Int?
+  Product                Product                  @relation(fields: [productId], references: [id])
+  productId              Int
   qty                    Float?
   price                  Float?
   PoReturnItems          PoReturnItems[]
@@ -560,8 +560,8 @@ model SalesBillItems {
   productBrandId    Int?
   ProductCategory   ProductCategory?   @relation(fields: [productCategoryId], references: [id], onDelete: Restrict)
   productCategoryId Int?
-  Product           Product?           @relation(fields: [productId], references: [id], onDelete: Restrict)
-  productId         Int?
+  Product           Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productId         Int
   qty               Float?
   price             Float?
   stockQty          Float?
@@ -637,27 +637,25 @@ model OpeningStockItems {
 }
 
 model Payment {
-  id           Int      @id @default(autoincrement())
-  docId        String
-  Party        Party    @relation(fields: [partyId], references: [id], onDelete: Restrict)
-  partyId      Int
-  isTaxBill    Boolean  @default(false)
-  Branch       Branch?  @relation(fields: [branchId], references: [id])
-  branchId     Int?
-  createdBy    User     @relation("createdBy", fields: [createdById], references: [id])
-  createdById  Int
-  updatedBy    User?    @relation("updatedBy", fields: [updatedById], references: [id])
-  updatedById  Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  paymentMode  String
-  isDeleted    Boolean  @default(false)
-  cvv          DateTime
-  paidAmount   Int?   @default(0)
-  paymentType  String
+  id              Int      @id @default(autoincrement())
+  docId           String
+  Party           Party    @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  partyId         Int
+  isTaxBill       Boolean  @default(false)
+  Branch          Branch?  @relation(fields: [branchId], references: [id])
+  branchId        Int?
+  createdBy       User     @relation("createdBy", fields: [createdById], references: [id])
+  createdById     Int
+  updatedBy       User?    @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById     Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  paymentMode     String
+  isDeleted       Boolean  @default(false)
+  cvv             DateTime
+  paidAmount      Int?     @default(0)
+  paymentType     String
   totalBillAmount Int?
-  discount   Int?   @default(0)
-   paymentRefNo String?
-
-
+  discount        Int?     @default(0)
+  paymentRefNo    String?
 }
