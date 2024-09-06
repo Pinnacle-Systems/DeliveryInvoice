@@ -177,30 +177,31 @@ async function get(req) {
         },
     });
 
-    // Fetch product names separately
-    const productIds = data.map(item => item.productId);
-    const products = await xprisma.product.findMany({
-        where: {
-            id: {
-                in: productIds,
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-        },
-    });
+  
+    const productIds = data
+  .map(item => item.productId)
+  .filter(id => id !== null && id !== undefined);  
 
-    // Map product names to the grouped data
-    data = data.map(item => ({
-        ...item,
-        Product: products.find(product => product.id === item.productId)?.name || null,
-        QuatationStock: quatationStockMap.get(item.productId) || 0
-    }));
+const products = await xprisma.product.findMany({
+    where: {
+        id: {
+            in: productIds,
+        },
+    },
+    select: {
+        id: true,
+        name: true,
+    },
+});
 
-    // Filter out entries where the sum is zero
-    data = data.filter(item => item._sum.qty !== 0);
-    totalCount = data.length;
+data = data.map(item => ({
+    ...item,
+    Product: products.find(product => product.id === item.productId)?.name || null,
+    QuatationStock: quatationStockMap.get(item.productId) || 0
+}));
+
+data = data.filter(item => item._sum.qty !== 0);
+totalCount = data.length;
 
     if (pagination) {
         data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * parseInt(dataPerPage));
