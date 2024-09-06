@@ -7,10 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { HOME_PATH } from '../../../Route/urlPaths';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import useLogout from '../../../CustomHooks/useLogout';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL
 
 const BranchAndFinYearForm = ({setIsGlobalOpen}) => {
+    useLogout()
+
     const [loading, setLoading] = useState(false);
     const [currentFinYear, setcurrentFinYear] = useState(secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'currentFinYear')
         ?

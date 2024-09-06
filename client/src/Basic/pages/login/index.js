@@ -11,10 +11,14 @@ import Modal from "../../../UiComponents/Modal";
 import { BranchAndFinyearForm } from "../../components";
 import logo from "../../../assets/pinnacle.jpg";
 import top from "../../../assets/top1.png";
+import useLogout, { loginSocket } from "../../../CustomHooks/useLogout";
+
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 const Login = () => {
+  useLogout()
+
   const [isGlobalOpen, setIsGlobalOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +35,7 @@ const Login = () => {
         setLoading(false);
         if (result.status === 200) {
           if (result.data.statusCode === 0) {
+            loginSocket(result?.data?.userInfo?.id)
             sessionStorage.setItem("sessionId", generateSessionId());
             if (!result.data.userInfo.roleId) {
               secureLocalStorage.setItem(

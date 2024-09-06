@@ -112,7 +112,7 @@ export const LongDropdownInput = ({ name, options, value, setValue, defaultValue
     }
     return (
         <div className='grid grid-cols-12 items-center md:my-1 md:px-1 data'>
-            <label className={`text-start col-span-2 `}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
+            <label className={`text-start text-sm col-span-2 `}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
             <select tabIndex={tabIndex ? tabIndex : undefined} defaultValue={defaultValue} id='dd' required={required} name="name"
                 className={`border-2 border-emerald-800 h-6 rounded ${className} col-span-10`} value={value} onChange={(e) => { handleOnChange(e); }} disabled={readOnly}>
                 <option value="">Select</option>

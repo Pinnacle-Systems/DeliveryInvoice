@@ -102,7 +102,6 @@ async function get(req) {
     `;
     console.log(quatationStockData,"quatationStockData")
 
-    // Convert QuatationStock data into a map for easy lookup
     const quatationStockMap = new Map(
         quatationStockData.map(item => [item.productId, item.TotalQty])
     );
@@ -123,7 +122,6 @@ async function get(req) {
         GROUP BY
             stock.productId;
         `;
-        // Integrate QuatationStock data
         data = data.map(item => ({
             ...item,
             QuatationStock: quatationStockMap.get(item.productId) || 0
@@ -152,7 +150,6 @@ async function get(req) {
         ORDER BY
             product.name;
         `;
-        // Add QuatationStock data to each item in the report
         data = data.map(item => ({
             ...item,
             QuatationStock: quatationStockMap.get(item.productId) || 0

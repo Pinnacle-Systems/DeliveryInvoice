@@ -12,6 +12,7 @@ import { latestExpireDateWithinNDays } from "../../../Utils/helper";
 import { GLOBE_ICON } from "../../../icons";
 import { useGetPageGroupQuery } from "../../../redux/services/PageGroupMasterServices";
 import MultiLevelDropDown from "../../../UiComponents/MultiSelectDropDown";
+import useLogout from "../../../CustomHooks/useLogout";
 
 import Anugraha from "../../../assets/fish.png"
 import { Dropdown } from "react-multi-select-component";
@@ -21,6 +22,7 @@ import PageSearch from "./PageSearch";
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 const AppHeader = ({ setIsGlobalOpen, setLogout }) => {
+  useLogout()
   const [hideNavBar, sethideNavBar] = useState(true);
 
   const navBatItemsStyle = hideNavBar ? "hidden" : "";
