@@ -122,6 +122,15 @@ async function getOne(id) {
             id: parseInt(id)
         },
         include: {
+            supplier: {
+                select: {
+                    name: true,
+                    contactMobile:true,
+                    contactPersonName: true,
+                    address:true,
+                    pincode:true,
+                }
+            },
             PoBillItems: {
                 select: {
                     id: true,
@@ -210,27 +219,47 @@ async function createpoBillItems(tx, poBillItems, purchaseBill) {
 
 async function create(body) {
     let data;
-    console.log(body,"body")
-    const { supplierId, dueDate, address, place, poBillItems, supplierDcNo, companyId, active,
-    icePrice,packingCharge,labourCharge,tollgate,transport,ourPrice, branchId, netBillValue } = await body
-    let newDocId = await getNextDocId(branchId)
-    await prisma.$transaction(async (tx) => {
-        data = await tx.purchaseBill.create(
-            {
-                data: {
-                    docId: newDocId, supplierDcNo,
-                    address, place, supplierId: parseInt(supplierId),
-                    companyId: parseInt(companyId), active,
-                    dueDate: dueDate ? new Date(dueDate) : undefined,
-                    branchId: parseInt(branchId),
-                    netBillValue: parseInt(netBillValue),icePrice: parseFloat(icePrice),packingCharge: parseFloat(packingCharge),labourCharge: parseFloat(labourCharge),tollgate:parseFloat(tollgate),transport:parseFloat(transport),ourPrice:parseFloat(ourPrice)
-                }
-            })
-        await createpoBillItems(tx, poBillItems, data)
+    console.log(body, "body");
 
-    })
+    const { 
+        supplierId, dueDate, address, place, poBillItems, supplierDcNo, 
+        companyId, active, icePrice, packingCharge, labourCharge, tollgate, 
+        transport, ourPrice, branchId, netBillValue 
+    } = body;
+
+    let newDocId = await getNextDocId(branchId);
+
+    // Start transaction
+    await prisma.$transaction(async (tx) => {
+        // Create the purchaseBill record
+        data = await tx.purchaseBill.create({
+            data: {
+                docId: newDocId,
+                supplierDcNo,
+                address,
+                place,
+                supplierId: parseInt(supplierId), 
+                companyId: parseInt(companyId),
+                active,
+                dueDate: dueDate ? new Date(dueDate) : null, // Ensuring null if undefined
+                branchId: parseInt(branchId),
+                netBillValue: netBillValue ? parseFloat(netBillValue) : 0,
+                icePrice: icePrice ? parseFloat(icePrice) : 0,
+                packingCharge: packingCharge ? parseFloat(packingCharge) : 0,
+                labourCharge: labourCharge ? parseFloat(labourCharge) : 0,
+                tollgate: tollgate ? parseFloat(tollgate) : 0,
+                transport: transport ? parseFloat(transport) : 0,
+                ourPrice: ourPrice ? parseFloat(ourPrice) : 0
+            }
+        });
+
+    
+        await createpoBillItems(tx, poBillItems, data);
+    });
+
     return { statusCode: 0, data };
 }
+
 
 
 

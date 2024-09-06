@@ -36,7 +36,7 @@ const SalesPrice = ({ productId, poBillItems, setPoBillItems, index, readOnly, i
         setPoBillItems(updatedItems);
     };
 
-    let stockQty = salePrice.find(i => i.salePrice === poBillItems[index]?.salePrice)?.stockQty || 0;
+    let stockQty = salePrice.find(i => i.salePrice === poBillItems[index]?.salePrice)?.stockQty.toFixed(2) || 0;
 
     const navigate = useNavigate();
 

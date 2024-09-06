@@ -18,7 +18,7 @@ const PoBillItems = ({ id, readOnly, setPoBillItems, poBillItems }) => {
   useEffect(() => {
     if (poBillItems.length >= 10) return;
     setPoBillItems((prev) => {
-      const newArray = Array.from({ length: 10 - prev.length }, () => ({
+      const newArray = Array.from({ length: 1 - prev.length }, () => ({
         productCategoryId: "",
         productBrandId: "",
         productId: "",

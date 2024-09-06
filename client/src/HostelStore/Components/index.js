@@ -12,6 +12,8 @@ export { default as SalesRegister } from "./SalesRegister"
 export { default as UomMaster } from "./UomMaster"
 export { default as StockRegister } from './StockRegister'
 export { default as RetailPrintFormatFinishedGoodsSales } from './PrintFormat-SalesBill'
+export { default as RetailPrintFormatFinishedGoodsPurchase } from './PrintFormat-PurchaseBill'
+
 export {default as MonthlySales}  from './MonthlySalesReport'
 export {default as MonthlyPurchase}  from './MonthlyPurchaseReport'
 export {default as CurrentStock}  from './CurrentStock'

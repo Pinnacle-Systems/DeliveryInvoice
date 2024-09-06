@@ -25,6 +25,10 @@ import Modal from "../../../UiComponents/Modal";
 import PurchaseBillFormReport from './PurchaseBillFormReport';
 import moment from 'moment';
 import { useGetStockQuery } from '../../../redux/services/StockService';
+import { PDFViewer } from "@react-pdf/renderer";
+import tw from "../../../Utils/tailwind-react-pdf";
+import { RetailPrintFormatFinishedGoodsPurchase } from "..";
+import PrintReportOpen from "./PrintReportOpen";
 
 const MODEL = "Purchase Bill Entry";
 
@@ -34,6 +38,9 @@ export default function Form() {
   const [date, setDate] = useState(getDateFromDateTime(today));
   const [docId, setDocId] = useState("");
   const [address, setAddress] = useState("");
+  const [printReportOpen, setPrintReportOpen] = useState(false);
+
+  const [contactMobile, setContactMobile] = useState("");
   const [place, setPlace] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [charge, setCharge] = useState()
@@ -49,7 +56,7 @@ export default function Form() {
   const [id, setId] = useState("");
   const [supplierId, setSupplierId] = useState("");
   const [supplierDcNo, setSupplierDcNo] = useState("")
-
+  const [printModalOpen, setPrintModalOpen] = useState(false);
   const [active, setActive] = useState(true);
 
   const [netBillValue, setNetBillValue] = useState("")
@@ -210,6 +217,7 @@ export default function Form() {
       if (returnData.statusCode === 0) {
         setId("")
         syncFormWithDb(undefined)
+        setPrintReportOpen(true);
         toast.success(text + "Successfully");
       } else {
         toast.error(returnData?.message)
@@ -261,6 +269,9 @@ export default function Form() {
       saveData();
     }
   }
+  const handlePrint = () => {
+    setPrintModalOpen(true);
+  };
 
   const onNew = () => {
     setId("");
@@ -298,11 +309,28 @@ export default function Form() {
       searchValue={searchValue}
       setSearchValue={setSearchValue}
     />
+    console.log(singleData,"singleData")
 
   return (
 
 
     <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-full bg-theme'>
+          <Modal
+        isOpen={printModalOpen}
+        onClose={() => setPrintModalOpen(false)}
+        widthClass={"w-[90%] h-[90%]"}
+      >
+        <PDFViewer style={tw("w-full h-full")}>
+          <RetailPrintFormatFinishedGoodsPurchase
+            contactMobile={contactMobile}
+            data={id ? singleData?.data : "Null"}
+            date={id ? singleData?.data?.selectedDate : date}
+            id={id}
+            poBillItems={poBillItems}
+            docId={docId ? docId : ""}
+          />
+        </PDFViewer>
+      </Modal>
       <Modal
 
         isOpen={formReport}
@@ -311,6 +339,16 @@ export default function Form() {
 
       >
         <PurchaseBillFormReport onClick={(id) => { setId(id); setFormReport(false) }} />
+      </Modal>
+      <Modal
+        isOpen={printReportOpen}
+        onClose={() => setPrintReportOpen(false)}
+        widthClass={"px-2 h-[20%] w-[35%]"}
+      >
+        <PrintReportOpen
+          setPrintModalOpen={setPrintModalOpen}
+          printModalOpen={printModalOpen}
+        />
       </Modal>
       <div className='flex flex-col frame w-full h-full'>
         <FormHeader
@@ -321,6 +359,8 @@ export default function Form() {
           setReadOnly={setReadOnly}
           deleteData={deleteData}
           //   onClose={() => {setForm(false); 
+          onPrint={id ? handlePrint : null}
+
           searchValue={searchValue}
           setSearchValue={setSearchValue}
         />
