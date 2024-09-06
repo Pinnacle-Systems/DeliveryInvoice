@@ -34,9 +34,9 @@ const PurchaseBillFormReport = ({
   const handleOnclick = (e) => {
     setCurrentPageNumber(reactPaginateIndexToPageNumber(e.selected));
   }
-  const searchFields = { searchDocId, searchBillDate, searchCustomerName, }
+  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchSupplierName }
 
-  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName, searchDueDate])
+  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, searchDueDate])
 
   const companyId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "userCompanyId"
@@ -146,9 +146,9 @@ const PurchaseBillFormReport = ({
                     type="text"
                     className="text-black  h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
                     placeholder="Search"
-                    value={searchSupplierName}
+                    value={searchCustomerName}
                     onChange={(e) => {
-                      setSearchSupplierName(e.target.value);
+                      setSearchCustomerName(e.target.value);
                     }}
                   />
                 </th>

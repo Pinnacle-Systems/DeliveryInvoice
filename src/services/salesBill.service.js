@@ -54,7 +54,7 @@ function manualFilterSearchData(searchBillDate, data) {
 
 
 async function get(req) {
-    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList } = req.query;
+    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList } = req.query;
     let data;
     console.log(partyList,"partyList")
      const partyListData = partyList? JSON.parse(partyList) : []
@@ -107,9 +107,7 @@ async function get(req) {
                 docId: searchDocId ? {
                     contains: searchDocId
                 } : undefined,
-                name: searchCustomerName ? {
-                    contains: searchCustomerName
-                } : undefined,
+               
                 supplier: {
                     name: searchCustomerName ? { contains: searchCustomerName } : undefined
                 }
