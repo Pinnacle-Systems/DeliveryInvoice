@@ -50,7 +50,7 @@ export default function Form() {
   const [discount,setDiscount] = useState('')
   const [balanceAmount, setBalanceAmount] = useState('');
   const [totalBillAmount, setTotalBillAmount] = useState('');
-
+    const [totalPayAmount,setTotalPayAmount] = useState('')
 
   const [searchValue, setSearchValue] = useState("");
   const [supplierId, setSupplierId] = useState("");
@@ -118,6 +118,7 @@ console.log(PartyData,"partyData")
     paymentMode,
     cvv,
     paidAmount,
+    paymentRefNo,
     discount,
     supplierId,
     paymentType,
@@ -278,136 +279,157 @@ console.log(PartyData,"partyData")
           setSearchValue={setSearchValue}
         />
 
-<div className="flex justify-center h-[70%] bg-gray-300">
-  <form
-    onSubmit={saveData}
-    className="bg-white p-3 rounded-lg h-full mt-5 shadow-lg w-full max-w-lg"
-  >
-    <h2 className="text-3xl font-bold mb-4 text-center text-emerald-700">
-      Payment Form
-    </h2>
-    <div className="grid grid-cols-2 gap-4">
-  <div className="mb-3">
-    <label className="block text-gray-700 mb-1">Transaction No</label>
-    <input
-      type="text"
-      value={docId}
-      className="w-full px-2 py-1 border border-gray-300 rounded-md text-emerald-600 text-sm"
-      readOnly
-    />
-  </div>
-  <div className="mb-3">
-    <label htmlFor="paymentType" className="block text-gray-700 mb-1">
-      Payment Type
-    </label>
-    <select
-  id="paymentType"
-  value={paymentType}
-  onChange={(e) => setPaymentType(e.target.value)}
-  className="w-full px-2 py-1 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+<div className="flex justify-center bg-gray-300">
+<div
+  onSubmit={saveData}
+  className="bg-white p-5 rounded-xl shadow-lg w-full max-w-lg mx-auto mt-10"
 >
-  <option value="" disabled>Select a payment type</option>
-  {PaymentType.map((type) => (
-    <option key={type.value} value={type.value}>
-      {type.show}
-    </option>
-  ))}
-</select>
-
-  </div>
-</div>
-
-    <div className="mb-3">
-      <div className="p-2 w-full">
-        <DropdownInput
-          name="Customer"
-          className="text-sm"
-          options={dropDownListObject(
-            id
-              ? supplierData
-              : paymentType === "PURCHASEBILL"
-              ? supplierData.filter((value) => value.isSupplier && value.active)
-              : supplierData.filter((value) => value.isCustomer && value.active),
-            "name",
-            "id"
-          )}
-          value={supplierId}
-          setValue={setSupplierId}
-          required={true}
-          readOnly={readOnly}
-          disabled={childRecord.current > 0}
-        />
-      </div>
-      <div className="p-2 w-full">
-        <DropdownInput
-          name="Payment Mode"
-          className="text-sm"
-          options={paymentModes}
-          value={paymentMode}
-          setValue={setPaymentMode}
-          required={true}
-          readOnly={readOnly}
-        />
-      </div>
-    </div>
-    <div className="flex space-x-4 mb-3">
-      <div className="w-1/2">
-        <label className="block text-gray-700 mb-1">Date</label>
-        <input
-          type="date"
-          value={cvv}
-          onChange={(e) => setCvv(e.target.value)}
-          className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="Select Date"
-        />
-      </div>
-      <div className="w-1/2">
-      <label className="block text-gray-700 mb-1">Outstanding Amount</label>
-      <input
-  type="text"
-  value={(Number(totalBillAmount) || 0).toFixed(2)}
-  onChange={(e) => setTotalBillAmount(e.target.value)}
-  className="w-full px-2 py-1 border border-gray-300 text-red-500 font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-  placeholder="0"
-/>
-
-    </div>
-
-
-    </div>
-    <div className="flex space-x-4 mb-3">
-    <div className="w-1/2">
-      <label className="block text-gray-700 mb-1">Paid Amount</label>
+  <h2 className="text-4xl font-extrabold mb-6 text-center text-emerald-700">
+    Payment Form
+  </h2>
+  <div className="grid grid-cols-2 gap-6">
+    <div className="mb-4">
+      <label className="block text-gray-600 font-medium mb-2">Transaction No</label>
       <input
         type="text"
-        value={(paidAmount)}
-        onChange={handleChange}
-        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        value={docId}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-emerald-700 bg-gray-50 text-sm"
+        readOnly
+      />
+    </div>
+    <div className="mb-4">
+      <label htmlFor="paymentType" className="block text-gray-600 font-medium mb-2">
+        Payment Type
+      </label>
+      <select
+        id="paymentType"
+        value={paymentType}
+        onChange={(e) => setPaymentType(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-emerald-500"
+      >
+        <option value="" disabled>Select a payment type</option>
+        {PaymentType.map((type) => (
+          <option key={type.value} value={type.value}>
+            {type.show}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  <div className="mb-5">
+    <div className="mb-4">
+      <DropdownInput
+        name="Customer"
+        className="text-sm"
+        options={dropDownListObject(
+          id
+            ? supplierData
+            : paymentType === "PURCHASEBILL"
+            ? supplierData.filter((value) => value.isSupplier && value.active)
+            : supplierData.filter((value) => value.isCustomer && value.active),
+          "name",
+          "id"
+        )}
+        value={supplierId}
+        setValue={setSupplierId}
+        required
+        readOnly={readOnly}
+        disabled={childRecord.current > 0}
+      />
+    </div>
+    <div className="mb-4">
+      <DropdownInput
+        name="Payment Mode"
+        className="text-sm"
+        options={paymentModes}
+        value={paymentMode}
+        setValue={setPaymentMode}
+        required
+        readOnly={readOnly}
+      />
+    </div>
+  </div>
+
+  <div className="grid grid-cols-2 gap-6 mb-5">
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Date</label>
+      <input
+        type="date"
+        value={cvv}
+        onChange={(e) => setCvv(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500"
+        placeholder="Select Date"
+      />
+    </div>
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Outstanding Amount</label>
+      <input
+        type="text"
+        value={(Number(totalBillAmount) || 0).toFixed(2)}
+        onChange={(e) => setTotalBillAmount(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
         placeholder="0"
       />
     </div>
-      <div className="w-1/2">
-        <label className="block text-gray-700 mb-1">Balance Amount</label>
-        <input
-  type="text"
-  value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)) || 0).toFixed(2)}
-  onChange={(e) => setBalanceAmount(e.target.value)}
-  className={`w-full px-2 py-1 border border-gray-300 rounded-md ${
-    (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
-  } focus:outline-none focus:ring-2 font-semibold focus:ring-emerald-500`}
-  placeholder="0"
-/>
+  </div>
 
-      </div>
+  <div className="grid grid-cols-2 gap-6 mb-5">
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Total Paid Amount</label>
+      <input
+        type="text"
+        value={(Number(totalPayAmount ? totalPayAmount : 0) || 0).toFixed(2)}
+        className="w-full px-3 py-2 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
+        placeholder="0"
+      />
     </div>
-    <div className='w-full'>
-    {paidAmount && (
-        <p className="text-sm text-gray-800 mt-2">
-          Amount in words:<span className='text-green-800 text-sm uppercase font-semibold'> {toWords(parseInt(paidAmount))}</span> 
-        </p>
-      )}
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Reference No</label>
+      <input
+        type="text"
+        onChange={(e) => setPaymentRefNo(e.target.value)}
+        value={paymentRefNo}
+        className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-emerald-500"
+        placeholder="Reference No"
+      />
     </div>
-    <div className="absolute top-20 right-0 w-58 max-w-xs">
+  </div>
+
+  <div className="grid grid-cols-2 gap-6 mb-5">
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Paid Amount</label>
+      <input
+        type="text"
+        value={paidAmount}
+        onChange={handleChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500"
+        placeholder="0"
+      />
+    </div>
+    <div>
+      <label className="block text-gray-600 font-medium mb-2">Balance Amount</label>
+      <input
+        type="text"
+        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)) || 0).toFixed(2)}
+        onChange={(e) => setBalanceAmount(e.target.value)}
+        className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${
+          (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
+        } focus:outline-none focus:ring-emerald-500 font-semibold`}
+        placeholder="0"
+      />
+    </div>
+  </div>
+
+  {paidAmount && (
+    <div className="mb-5">
+      <p className="text-sm text-gray-700">
+        Amount in words: <span className="text-green-700 font-semibold">{toWords(parseInt(paidAmount))}</span>
+      </p>
+    </div>
+  )}
+
+<div className="absolute top-20 right-0 w-58 max-w-xs">
       <input
         type="text"
         placeholder="Enter discount"
@@ -419,13 +441,10 @@ console.log(PartyData,"partyData")
       discount
       </span>
     </div>
-    <button
-      type="submit" 
-      className="w-full bg-emerald-700 text-white py-2 mt-5 rounded-md hover:bg-emerald-800 transition duration-200"
-    >
-      {id ? 'Update Payment' : 'Add Payment'}
-    </button>
-  </form>
+
+ 
+</div>
+
 </div>
 
       </div>

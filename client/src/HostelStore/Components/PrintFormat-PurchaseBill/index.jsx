@@ -78,23 +78,27 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
 
       <View style={styles.tableContainer}>
         <View style={styles.tableHeader}>
-          <Text style={styles.tableHeaderCell}>S.no</Text>
           <Text style={styles.tableHeaderCell}>Name of Item</Text>
           <Text style={styles.tableHeaderCell}>Qty</Text>
           <Text style={styles.tableHeaderCell}>Rate</Text>
           <Text style={styles.tableHeaderCell}>Amount</Text>
+          <Text style={styles.tableHeaderCell}>Remarks</Text>
+
         </View>
         {(poBillItems || []).map((item, index) => (
-          <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowOdd]}>
-            <Text style={styles.tableCell}>{index + 1}</Text>
-            <Text style={styles.tableCell}>
-              {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
-            </Text>
-            <Text style={styles.tableCell}>{item?.qty || 0}</Text>
-            <Text style={styles.tableCell}>{item?.price || 0}</Text>
-            <Text style={styles.tableCell}>{(item.price * item.qty).toFixed(2)}</Text>
-          </View>
-        ))}
+  <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowOdd]}>
+    <Text style={styles.tableCell}>
+      {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
+    </Text>
+    <Text style={styles.tableCell}>{item?.qty || 0}</Text>
+    <Text style={styles.tableCell}>{item?.price || 0}</Text>
+    <Text style={[styles.tableCell, styles.withBorder]}>
+      {(item.price * item.qty).toFixed(2)}
+    </Text>
+    <Text style={styles.tableCell}>{/* Add content here or keep it empty */}</Text>
+  </View>
+))}
+
         <View style={styles.tableFooter}>
           <Text style={styles.tableFooterCell}>Total</Text>
           <Text style={styles.tableFooterCell1}>{totalAmount}</Text>
@@ -170,6 +174,21 @@ const styles = StyleSheet.create({
   page: {
     padding: 15,
   },
+  tableRow: {
+    flexDirection: 'row',
+    // Other row styles here
+  },
+  tableRowOdd: {
+    backgroundColor: '#f9f9f9', // Or your desired color for odd rows
+  },
+  tableCell: {
+    padding: 5,
+    // Other cell styles here
+  },
+  withBorder: {
+    borderRightWidth: 1, // Thickness of the right border
+    borderRightColor: '#000', // Color of the right border
+  },
   container: {
     width: '100%',
     padding: 5,
@@ -229,6 +248,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 5,
+  },
+  border: {
+    borderBottomWidth: 1, // Specifies the border thickness
+    borderBottomColor: '#000',  // Specifies the border color
+    marginVertical: 10,   // Adjusts space above and below the line
   },
   fromInfoContainer: {
     width: '45%',
@@ -323,7 +347,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'right',
-    paddingRight: 42,
+    paddingRight: 145,
   },
   amountInWordsContainer: {
     marginTop: 5,

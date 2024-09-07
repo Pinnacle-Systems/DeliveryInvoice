@@ -114,7 +114,7 @@ async function getSearch(req) {
 async function create(body) {
     let data;
     try {
-        const { branchId, id, paymentMode, cvv, paymentType, paidAmount,discount, supplierId, userId,finYearId,totalBillAmount } = body;
+        const { branchId, id, paymentMode, cvv, paymentType, paidAmount,discount,paymentRefNo, supplierId, userId,finYearId,totalBillAmount } = body;
 
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startTime, finYearDate?.endTime) : "";
@@ -129,7 +129,7 @@ async function create(body) {
                     paymentMode,
                     paidAmount: parseFloat(paidAmount),
                     discount: parseFloat(discount),
-
+                    paymentRefNo: paymentRefNo,
                     createdById: parseInt(userId),
                     cvv: cvv ? new Date(cvv) : undefined,
                     paymentType,

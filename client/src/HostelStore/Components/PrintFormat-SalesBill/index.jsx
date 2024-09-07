@@ -82,21 +82,22 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
           <View style={styles.divider} />
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>S.no</Text>
               <Text style={styles.tableHeaderCell}>Name of Item</Text>
               <Text style={styles.tableHeaderCell}>Qty</Text>
               <Text style={styles.tableHeaderCell}>Rate</Text>
               <Text style={styles.tableHeaderCell}>Amount</Text>
+              <Text style={styles.tableHeaderCell}>Remarks</Text>
+
             </View>
             {(poBillItems || []).map((item, index) => (
               <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowOdd]}>
-                <Text style={styles.tableCell}>{index + 1}</Text>
                 <Text style={styles.tableCell}>
                   {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
                 </Text>
                 <Text style={styles.tableCell}>{item?.qty || 0}</Text>
                 <Text style={styles.tableCell}>{item?.price || 0}</Text>
                 <Text style={styles.tableCell}>{(item.price * item.qty).toFixed(2)}</Text>
+                <Text style={styles.tableCell}>{/* Add content here or keep it empty */}</Text>
               </View>
             ))}
             <View style={styles.tableFooter}>
@@ -137,6 +138,21 @@ const styles = StyleSheet.create({
     borderBottomColor: '#0381EF',
     paddingBottom: 2,
     marginBottom: 5,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    // Other row styles here
+  },
+  tableRowOdd: {
+    backgroundColor: '#f9f9f9', // Or your desired color for odd rows
+  },
+  tableCell: {
+    padding: 5,
+    // Other cell styles here
+  },
+  withBorder: {
+    borderRightWidth: 1, // Thickness of the right border
+    borderRightColor: '#000', // Color of the right border
   },
   logo: {
     width: 60,
