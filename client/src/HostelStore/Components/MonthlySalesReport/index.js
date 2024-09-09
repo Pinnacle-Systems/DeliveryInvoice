@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { DateInput, MultiSelectDropdown } from '../../../Inputs';
 import secureLocalStorage from 'react-secure-storage';
 import { EMPTY_ICON } from "../../../icons";
@@ -11,10 +11,14 @@ import MonthlySalesDocument from './MonthlySalesDocument';
 import { multiSelectOption } from '../../../Utils/contructObject';
 import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+import { useGetProductQuery } from '../../../redux/services/ProductMasterService';
 
 const MonthlySales = () => {
   const [openPdfView, setOpenPdfView] = useState(false);
   const [partyList, setPartyList] = useState([]);
+  const [productList, setProductList] = useState([]);
+
+  const [searchValue, setSearchValue] = useState("");
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -32,7 +36,7 @@ const MonthlySales = () => {
     companyId,
     filterSupplier: true
   };
-
+ 
   const { data: salesData } = useGetSalesBillQuery(
     {
       params: {
@@ -40,11 +44,17 @@ const MonthlySales = () => {
         salesReport: true,
         fromDate: startDate,
         toDate: endDate,
-        partyList: JSON.stringify(partyList.map(party => party.label))
+        partyList: JSON.stringify(partyList.map(party => party.label)),
+        productList: JSON.stringify(productList.map(party => party.label)),
       }
     },
     { skip: !(endDate && startDate) }
+
   );
+ 
+  console.log(productList,"productList")
+  console.log(partyList,"party")
+  const { data: allData, isLoading, isFetching } = useGetProductQuery({ params, searchParams: searchValue });
 
   const salesList = salesData ? salesData.data : [];
 
@@ -74,29 +84,65 @@ const MonthlySales = () => {
             <div className='flex no-print'>
             </div>
           </div>
-          <div className='flex p-2 w-4/6'>
-            <DateInput inputHead={"font-bold text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
-            <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
-        <div className='z-2'>
-        <MultiSelectDropdown
-              name="Party :"
-              inputClass={"w-80"}
-              labelName={"font-bold "}
-              selected={partyList}
-              setSelected={setPartyList}
-              options={
-                partyListData
-                  ? multiSelectOption(
-                      partyListData.data.filter(item => item.isCustomer === true),
-                      "name",
-                      "id"
-                    )
-                  : []
-              }
-            />
-        </div>
-            
-          </div>
+          <div className="grid grid-cols-4 gap-4 p-4 w-full">
+  {/* From Date Input */}
+  <div className="col-span-1">
+    <DateInput
+      inputHead="font-bold text-sm"
+      name="From :"
+      value={startDate}
+      setValue={setStartDate}
+    />
+  </div>
+
+  {/* To Date Input */}
+  <div className="col-span-1">
+    <DateInput
+      inputHead="font-bold text-sm"
+      name="To :"
+      value={endDate}
+      setValue={setEndDate}
+    />
+  </div>
+
+  {/* Party Multi-Select */}
+  <div className="col-span-1">
+    <MultiSelectDropdown
+      name="Party :"
+      inputClass="w-60"
+      labelName="font-bold"
+      selected={partyList}
+      setSelected={setPartyList}
+      options={
+        partyListData
+          ? multiSelectOption(
+              partyListData.data.filter(item => item.isCustomer === true),
+              "name",
+              "id"
+            )
+          : []
+      }
+    />
+  </div>
+
+  {/* Product Multi-Select */}
+  <div className="col-span-1">
+    <MultiSelectDropdown
+      name="Product :"
+      inputClass="w-60"
+      labelName="font-bold"
+      selected={productList}
+      setSelected={setProductList}
+      options={
+        allData && allData.data
+          ? multiSelectOption(allData.data, "name", "id")
+          : []
+      }
+    />
+  </div>
+</div>
+
+
           <div className="flex w-full justify-end -mt-9">
             <PreviewButtonOnly onClick={() => setOpenPdfView(true)} />
           </div>
@@ -136,7 +182,9 @@ const MonthlySales = () => {
                             parseFloat(data[heading]).toFixed(2)
                           ) : heading === "Date" ? (
                             new Date(data[heading]).toISOString().split('T')[0]
-                          ) : (
+                          )  : heading === "TotalPrice" ?(
+                            parseFloat(data[heading]).toFixed(2)
+                          ): (
                             data[heading]
                           )}
                         </td>

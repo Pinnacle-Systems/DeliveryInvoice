@@ -54,51 +54,61 @@ function manualFilterSearchData(searchBillDate, data) {
 
 
 async function get(req) {
-    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList } = req.query;
+    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList,productList } = req.query;
     let data;
     console.log(partyList,"partyList")
+    console.log(productList,"productList")
      const partyListData = partyList? JSON.parse(partyList) : []
-     const partyData = partyListData.map(item => `'${item}'`).join(',');
-     console.log(partyData,"partyData")
+     const productListData = productList? JSON.parse(productList) : []
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
     
     if (isProfitReport) {
-        console.log("Profit")
         data = await profitReport(startDateStartTime, endDateEndTime);
         return { statusCode: 0, data };
     }
-
+    const PartyData = partyListData.map(party => `'${party}'`).join(", ");
+    const ProductData = productListData.map(product => `'${product}'`).join(", ");
+    console.log(PartyData,"partyData")
+    console.log(ProductData,"ProductData")
     if (salesReport) {
-        const sql = `
-            SELECT 
-                DATE(salesBill.createdAt) AS Date,
-                party.name AS Party,
-                product.name AS Product,
-                SUM(salesBillItems.qty) AS Qty,
-                FORMAT(AVG(salesBillItems.price), 2) AS AvgPrice,
-                SUM(salesBillItems.qty) * FORMAT(AVG(salesBillItems.price), 2) AS TotalPrice
-            FROM 
-                salesBillItems
-            JOIN 
-                product ON salesBillItems.productId = product.id
-            JOIN 
-                salesBill ON salesBill.id = salesBillItems.salesBillId
-            JOIN 
-                party ON party.id = salesBill.supplierId
-            WHERE 
-                DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'
-                AND salesBill.isOn = '1'
-                AND party.name IN (${partyData})
-            GROUP BY 
-                DATE(salesBill.createdAt), party.name, product.name
-        `
-        console.log(sql)
-        data = await prisma.$queryRawUnsafe(sql);
+   const pData =PartyData.length > 0 ?` AND party.name IN (${PartyData})` :''  
+   const prodData = ProductData.length>0 ?`And product.name IN (${ProductData})`: ''
+    const sql = `
+        SELECT
+            DATE(salesBill.createdAt) AS Date,
+            party.name AS Party,
+            product.name AS Product,
+            SUM(salesBillItems.qty) AS Qty,
+            FORMAT(AVG(salesBillItems.price), 2) AS AvgPrice,
+            SUM(salesBillItems.qty) * FORMAT(AVG(salesBillItems.price), 2) AS TotalPrice
+        FROM
+            salesBillItems
+        JOIN
+            product ON salesBillItems.productId = product.id
+        JOIN
+            salesBill ON salesBill.id = salesBillItems.salesBillId
+        JOIN
+            party ON party.id = salesBill.supplierId
+        WHERE
+            DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'
+            AND salesBill.isOn = '1'
+            ${pData}
+            ${prodData}
+        GROUP BY
+            DATE(salesBill.createdAt), party.name, product.name
+    `;
     
-        return { statusCode: 0, data };
-    }
-     else {
+    console.log(sql);
+ 
+
+    
+    data = await prisma.$queryRawUnsafe(sql);
+    return { statusCode: 0, data };
+}
+    
+    
+     else { 
         data = await prisma.salesBill.findMany({
             where: {
                 companyId: companyId ? parseInt(companyId) : undefined,

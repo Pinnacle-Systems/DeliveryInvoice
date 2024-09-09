@@ -48,6 +48,12 @@ label {
     min-height: 90%;
     max-height: 90%;
   }
+  .download-table-xls-button{
+     background: #064209;
+     color: white;
+     padding: 3px;
+     border-radius: 4px;
+  }
 
   .custom-circle {
     @apply bg-emerald-900;
