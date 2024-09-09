@@ -74,6 +74,9 @@ async function get(req) {
     if (salesReport) {
    const pData =PartyData.length > 0 ?` AND party.name IN (${PartyData})` :''  
    const prodData = ProductData.length>0 ?`And product.name IN (${ProductData})`: ''
+   const dateFilter = (startDateStartTime && endDateEndTime) ? 
+   ` DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
+
     const sql = `
         SELECT
             DATE(salesBill.createdAt) AS Date,
@@ -91,8 +94,8 @@ async function get(req) {
         JOIN
             party ON party.id = salesBill.supplierId
         WHERE
-            DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'
-            AND salesBill.isOn = '1'
+        ${dateFilter}
+        AND salesBill.isOn = '1'
             ${pData}
             ${prodData}
         GROUP BY
