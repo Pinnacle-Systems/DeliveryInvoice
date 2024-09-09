@@ -59,6 +59,7 @@ const MonthlySales = () => {
   const salesList = salesData ? salesData.data : [];
 
   const totalAmount = salesList.reduce((total, item) => total + (item.Qty * item.AvgPrice), 0);
+  const totalQty = salesList.reduce((total,item) => total + item.Qty,0 )
 
   const { data: partyListData } = useGetPartyQuery({ params });
 
@@ -195,6 +196,9 @@ const MonthlySales = () => {
                   <tr className='py-2 w-full table-row bg-blue-400'>
                     <td colSpan={Object.keys(salesList[0]).length } className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
                       Total
+                    </td>
+                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+                      {parseFloat(totalQty).toFixed(2)}
                     </td>
                     <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
                       {parseFloat(totalAmount).toFixed(2)}
