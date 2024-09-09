@@ -60,6 +60,7 @@ const MonthlySales = () => {
 
   const totalAmount = salesList.reduce((total, item) => total + (item.Qty * item.AvgPrice), 0);
   const totalQty = salesList.reduce((total,item) => total + item.Qty,0 )
+  const AvgPrice = salesList.reduce((total, item) => total + item.price, 0) / salesList.length;
 
   const { data: partyListData } = useGetPartyQuery({ params });
 
@@ -171,40 +172,45 @@ const MonthlySales = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {salesList.map((data, i) => (
-                    <tr key={i} className='py-2 w-full table-row'>
-                      <td className='text-center border border-gray-500'>{i + 1}</td>
-                      {Object.keys(data).map((heading, i) => (
-                        <td
-                          key={i}
-                          className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}
-                        >
-                          {heading === "Amount" ? (
-                            parseFloat(data[heading]).toFixed(2)
-                          ) : heading === "Date" ? (
-                            new Date(data[heading]).toISOString().split('T')[0]
-                          )  : heading === "TotalPrice" ?(
-                            parseFloat(data[heading]).toFixed(2)
-                          ): (
-                            data[heading]
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
+  {salesList.map((data, i) => (
+    <tr key={i} className='py-2 w-full table-row'>
+      <td className='text-center border border-gxray-500'>{i + 1}</td>
+      {Object.keys(data).map((heading, index) => (
+        <td
+          key={index}
+          className={`${numericFields.includes(heading) ? "text-right" : "text-left"} p-1 px-3 border border-gray-500`}
+        >
+          {heading === "Amount" ? (
+            parseFloat(data[heading]).toFixed(2)
+          ) : heading === "Date" ? (
+            new Date(data[heading]).toISOString().split('T')[0]
+          )  : heading === "TotalPrice" ?(
+            parseFloat(data[heading]).toFixed(2)
+          ): (
+            data[heading]
+          )}
+        </td>
+      ))}
+    </tr>
+  ))}
 
-                  <tr className='py-2 w-full table-row bg-blue-400'>
-                    <td colSpan={Object.keys(salesList[0]).length } className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
-                      Total
-                    </td>
-                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
-                      {parseFloat(totalQty).toFixed(2)}
-                    </td>
-                    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
-                      {parseFloat(totalAmount).toFixed(2)}
-                    </td>
-                  </tr>
-                </tbody>
+  <tr className='py-2 w-full table-row bg-blue-400'>
+    <td colSpan={Object.keys(salesList[0]).length - 2} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      Total
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(totalQty).toFixed(2)}
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(AvgPrice).toFixed(2)}
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(totalAmount).toFixed(2)}
+    </td>
+   
+  </tr>
+</tbody>
+
               </table>
             ) : (
               <div className="flex justify-center items-center text-blue-900 text-3xl sm:mt-52">
