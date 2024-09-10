@@ -56,7 +56,7 @@ const PartyOverAllLedger = () => {
                             <td className="table-data">
                                 <div className='flex items-center justify-center' onClick={() => {
                                     dispatch(push({
-                                        name: "PARTY LEDGER",
+                                        name: "PARTY SALES LEDGER",
                                         previewId: party.id
                                     }))
                                 }}>
