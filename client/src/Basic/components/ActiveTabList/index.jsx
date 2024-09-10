@@ -57,10 +57,10 @@ const ActiveTabList = () => {
     "PAYMENT DETAIL" : <PaymentDetail />,
     "OPENING STOCK"   : <OpeningStock />,
     "QUATATION STOCK"  : <QuatationStock />,
-    "PAYMENT LEDGRE" : <PaymentLedgre />,
+    "PAYMENT SALES LEDGRE" : <PaymentLedgre />,
     "PURCHASE PAYMENT LEDGRE" : <PurchasepayLedgre />,
 
-    "PARTY LEDGER": <Ledger />,
+    "PARTY SALES LEDGER": <Ledger />,
     "PURCHASE LEDGER" : <PurchaseLedger />
   };
   const innerWidth = window.innerWidth;
