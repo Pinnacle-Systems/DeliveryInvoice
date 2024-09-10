@@ -24,7 +24,7 @@ const Ledger = () => {
     const { data } = useGetPartyQuery({ params: { isPartyLedgerReportCus: true, partyId, startDate, endDate } }, { skip: !partyId || !startDate || !endDate })
     const ledgerData = data?.data;
     const dispatch = useDispatch();
-   console.log(partyId,"partyId")
+ 
     useEffect(() => {
         const currentTabPreviewId = openTabs.tabs.find(i => i.name === "PARTY LEDGER")?.previewId
         if (!currentTabPreviewId) return
