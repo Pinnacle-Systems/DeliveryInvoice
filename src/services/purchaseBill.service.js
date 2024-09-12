@@ -3,7 +3,6 @@ import { NoRecordFound } from '../configs/Responses.js';
 import { getTableRecordWithId } from '../utils/helperQueries.js';
 import { exclude, getDateFromDateTime, getDateFromDateTimeDB, getDateTimeRange, getDateTimeRangeForCurrentYear, getYearShortCode } from '../utils/helper.js';
 
-
 const prisma = new PrismaClient()
 
 
@@ -64,42 +63,56 @@ async function get(req) {
    console.log(PartyData,"partyData")
    console.log(ProductData,"ProductData")
    if (purchaseReport) {
-    const pData =PartyData.length > 0 ?` AND party.name IN (${PartyData})` :''  
-    const prodData = ProductData.length>0 ?`And product.name IN (${ProductData})`: ''
-    const dateFilter = (startDateStartTime && endDateEndTime) ? 
-    ` DATE(purchaseBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
- 
-     const sql = `
-         SELECT
-             DATE(purchaseBill.createdAt) AS Date,
-             party.name AS Party,
-             product.name AS Product,
-             SUM(poBillItems.qty) AS Qty,
-             FORMAT(AVG(poBillItems.price), 2) AS AvgPrice,
-             SUM(poBillItems.qty) * FORMAT(AVG(poBillItems.price), 2) AS TotalPrice
-         FROM
-             poBillItems
-         JOIN
-             product ON poBillItems.productId = product.id
-         JOIN
-             purchaseBill ON purchaseBill.id = poBillItems.purchaseBillId
-         JOIN
-             party ON party.id = purchaseBill.supplierId
-         WHERE
-         ${dateFilter}
-             ${pData}
-             ${prodData}
-         GROUP BY
-             DATE(purchaseBill.createdAt), party.name, product.name
-     `;
-     
-     console.log(sql);
-  
- 
-     
-     data = await prisma.$queryRawUnsafe(sql);
-     return { statusCode: 0, data };
- }
+    const pData = PartyData.length > 0 ? ` AND party.name IN (${PartyData})` : '';  
+    const prodData = ProductData.length > 0 ? ` AND product.name IN (${ProductData})` : '';
+    
+    let dateFilter;
+    const today = new Date().toISOString().slice(0, 10); 
+    
+    if (startDateStartTime && endDateEndTime) {
+        const startDate = getDateFromDateTimeDB(startDateStartTime);
+        const endDate = getDateFromDateTimeDB(endDateEndTime);
+        
+      
+        if (startDate && endDate && !isNaN(Date.parse(startDate)) && !isNaN(Date.parse(endDate))) {
+            dateFilter = `DATE(purchaseBill.createdAt) BETWEEN '${startDate}' AND '${endDate}'`;
+        } else {
+            dateFilter = `DATE(purchaseBill.createdAt) = '${today}'`;
+        }
+    } else {
+        dateFilter = `DATE(purchaseBill.createdAt) = '${today}'`;
+    }
+
+    const sql = `
+        SELECT
+            DATE(purchaseBill.createdAt) AS Date,
+            party.name AS Party,
+            product.name AS Product,
+            SUM(poBillItems.qty) AS Qty,
+            FORMAT(AVG(poBillItems.price), 2) AS AvgPrice,
+            SUM(poBillItems.qty) * FORMAT(AVG(poBillItems.price), 2) AS TotalPrice
+        FROM
+            poBillItems
+        JOIN
+            product ON poBillItems.productId = product.id
+        JOIN
+            purchaseBill ON purchaseBill.id = poBillItems.purchaseBillId
+        JOIN
+            party ON party.id = purchaseBill.supplierId
+        WHERE
+            ${dateFilter}
+            ${pData}
+            ${prodData}
+        GROUP BY
+            DATE(purchaseBill.createdAt), party.name, product.name
+    `;
+    
+    console.log(sql);
+
+    data = await prisma.$queryRawUnsafe(sql);
+    return { statusCode: 0, data };
+}
+
      
 else{
     data = await prisma.purchaseBill.findMany({

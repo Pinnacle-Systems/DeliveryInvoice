@@ -45,7 +45,7 @@ const MonthlyPurchase = () => {
 
   const { data, isLoading, isFetching } = useGetPurchaseBillQuery({ params });
   const purData = data?.data ? data?.data : []
-  console.log( purData)
+  console.log( purData,"purData")
   const { data: partyListData } =
     useGetPartyQuery({ params });  
   const filterData = () => {
@@ -53,8 +53,10 @@ const MonthlyPurchase = () => {
       return moment.utc(item?.createdAt).format("YYYY-MM-DD") >= startDate && moment.utc(item?.createdAt).format("YYYY-MM-DD") <= endDate;
     });
   };
+  const totalAmount = purData.reduce((total, item) => total + (item.Qty * item.AvgPrice), 0);
+  const totalQty = purData.reduce((total,item) => total + item.Qty,0 )
+  const AvgPrice = purData.reduce((total, item) => total + item.price, 0) / purData.length;
  console.log(filterData(),"filterData")
-  let totalAmount = 0;
   let filterParty = filterData()?.filter(item => partyList.find(i => parseInt(i.value) === parseInt(item.supplierId)));
   for (const obj of filterParty) {
     totalAmount += obj.netBillValue;
@@ -74,7 +76,7 @@ const MonthlyPurchase = () => {
     <div className='w-full  mt-1 p-2 bg-gray-300 min-h-screen'>
        <Modal onClose={() => setOpenPdfView(false)} isOpen={openPdfView} widthClass={"w-[90%] h-[90%]"}>
         <PDFViewer className='w-full h-screen'>
-          <MonthlyPurchaseDocument totalAmount={totalAmount} salesList={(filterData()?.filter(item => partyList.find(i => parseInt(i.value) === parseInt(item.supplierId))))} startDate={getDateFromDateTimeToDisplay(new Date(startDate))} endDate={getDateFromDateTimeToDisplay(new Date(endDate))} />
+          <MonthlyPurchaseDocument totalAmount={totalAmount} salesList={purData} startDate={getDateFromDateTimeToDisplay(new Date(startDate))} endDate={getDateFromDateTimeToDisplay(new Date(endDate))} />
         </PDFViewer>
       </Modal>
       <div className='flex items-center justify-between page-heading p-1 font-bold'>
@@ -144,7 +146,7 @@ const MonthlyPurchase = () => {
                   S. no.
                 </th>
                 <th
-                  className="w-12 border-2 border-gray-700 "
+                  className="w-20 border-2 border-gray-700 "
                 >
                   <label>Date</label>
 
@@ -159,7 +161,19 @@ const MonthlyPurchase = () => {
                 <th
                   className="w-16 border-2 border-gray-700"
                 >
-                  <label>Party Dc No</label>
+                  <label>Product Name</label>
+
+                </th>
+                <th
+                  className="w-16 border-2 border-gray-700"
+                >
+                  <label>Qty</label>
+
+                </th>
+                <th
+                  className="w-16 border-2 border-gray-700"
+                >
+                  <label>Avg Price</label>
 
                 </th>
 
@@ -174,29 +188,42 @@ const MonthlyPurchase = () => {
 
 
             <tbody className="">
-              {(filterData()?.filter(item => partyList.find(i => parseInt(i.value) === parseInt(item.supplierId)))).map((dataObj, index) => (
+              {purData.map((dataObj, index) => (
 
                 <tr
                   className={` table-row`}
                 >
                   <td className='py-1 border border-gray-700'> {(index + 1)} </td>
-                  <td className='py-1 text-left border border-gray-700 px-2'> {getDateFromDateTimeToDisplay(dataObj?.createdAt)}</td>
+                  <td className='py-1 text-left border w-32 border-gray-700 px-2'> {getDateFromDateTimeToDisplay(dataObj?.createdAt)}</td>
 
 
-                  <td className='py-1 text-left border border-gray-700 px-2'>{dataObj?.supplier?.name} </td>
-                  <td className='py-1 text-right border border-gray-700 px-2'>{(dataObj?.supplierDcNo
+                  <td className='py-1 text-left border border-gray-700 px-2'>{dataObj?.Party} </td>
+                  <td className='py-1 text-right border border-gray-700 px-2'>{(dataObj?.Product
                   )}</td>
 
 
-                  <td className='text-right border border-gray-700 px-2'>{parseFloat(dataObj?.netBillValue ? dataObj.netBillValue : 0).toFixed(2)}</td>
+                  <td className='text-right border border-gray-700 px-2'>{parseFloat(dataObj?.Qty).toFixed(2)}</td>
+                  <td className='text-right border border-gray-700 px-2'>{parseFloat(dataObj?.AvgPrice).toFixed(2)}</td>
+                  <td className='text-right border border-gray-700 px-2'>{parseFloat(dataObj?.TotalPrice).toFixed(2)}</td>
+
+
 
                 </tr>
               ))}
-              <tr className='py-2 w-full border-2 border-gray-700 bg-green-400'>
-                <td colSpan={4} className='text-center border-2 border-gray-700 font-bold text-sm bg-green-400'>Total</td>
-                <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-green-400'>{parseFloat(totalAmount).toFixed(2)}</td>
-
-              </tr>
+             <tr className='py-2 w-full table-row bg-blue-400'>
+    <td colSpan={Object.keys(purData[0]).length - 2} className='text-center border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      Total
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(totalQty).toFixed(2)}
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(AvgPrice).toFixed(2)}
+    </td>
+    <td className='text-right px-1 border-2 border-gray-700 font-bold text-sm bg-emerald-400'>
+      {parseFloat(totalAmount).toFixed(2)}
+    </td>
+   </tr>
             </tbody>
 
           </table>
