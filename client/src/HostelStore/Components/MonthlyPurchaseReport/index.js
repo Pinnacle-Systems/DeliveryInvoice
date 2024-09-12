@@ -14,12 +14,14 @@ import MonthlyPurchaseDocument from './MonthlyPurchaseDocument';
 import Modal from '../../../UiComponents/Modal';
 import { PDFViewer } from '@react-pdf/renderer';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
-
+import { useGetProductQuery } from '../../../redux/services/ProductMasterService';
+                                                         
 
 
 const MonthlyPurchase = () => {
   const [startDate, setStartDate] = useState("")
   const [openPdfView, setOpenPdfView] = useState(false);
+  const [productList, setProductList] = useState([]);
 
   const [endDate, setEndDate] = useState("")
   const [partyList, setPartyList] = useState([]);
@@ -32,7 +34,12 @@ const MonthlyPurchase = () => {
     sessionStorage.getItem("sessionId") + "userCompanyId"
   )
   const params = {
-    branchId, companyId, filterSupplier: true
+    branchId, companyId, filterSupplier: true,
+    purchaseReport: true,
+    fromDate: startDate,
+    toDate: endDate,
+    partyList: JSON.stringify(partyList.map(party => party.label)),
+    productList: JSON.stringify(productList.map(party => party.label)),
   };
 
 
@@ -54,6 +61,7 @@ const MonthlyPurchase = () => {
 
   }
   console.log(partyList,"Party")
+  const { data: allData, isProLoading, isProFetching } = useGetProductQuery({ params });
 
 
   let exportData = filterParty.map((i, index) => ({ "S.no": index + 1, "Date": getDateFromDateTimeToDisplay(i.createdAt), "Party Name": i?.supplier?.name, "Party Dc No.": i?.supplierDcNo, "Amount": parseFloat(i?.netBillValue || 0).toFixed(2) }))
@@ -76,13 +84,13 @@ const MonthlyPurchase = () => {
         </div>
       </div>
 
-      <div className='grid  grid-cols-3  w-2/4'>
+      <div className='grid  grid-cols-4  w-6/7'>
         <DateInput inputHead={"font-bold  text-sm"} name={"From :"} value={startDate} setValue={setStartDate} />
         <DateInput inputHead={"font-bold text-sm"} name={"To :"} value={endDate} setValue={setEndDate} />
 
         <MultiSelectDropdown
   name="Party :"
-  inputClass={"w-80"}
+  inputClass={"w-60"}
   labelName={"font-bold "}
   selected={partyList}
   setSelected={setPartyList}
@@ -96,10 +104,24 @@ const MonthlyPurchase = () => {
       : []
   }
 />
+<div className="col-span-1">
+    <MultiSelectDropdown
+      name="Product :"
+      inputClass="w-60"
+      labelName="font-bold"
+      selected={productList}
+      setSelected={setProductList}
+      options={
+        allData && allData.data
+          ? multiSelectOption(allData.data, "name", "id")
+          : []
+      }
+    />
+  </div>
 
 
       </div>
-      <div className="flex w-full justify-end -mt-9">
+      <div className="flex w-full justify-end mt-9">
             <PreviewButtonOnly onClick={()=>setOpenPdfView(true)} />
 
             </div>

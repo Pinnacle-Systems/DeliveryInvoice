@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { NoRecordFound } from '../configs/Responses.js';
-import { exclude, getDateFromDateTime, getDateTimeRangeForCurrentYear, getYearShortCode } from '../utils/helper.js';
 import { getTableRecordWithId } from '../utils/helperQueries.js';
+import { exclude, getDateFromDateTime, getDateFromDateTimeDB, getDateTimeRange, getDateTimeRangeForCurrentYear, getYearShortCode } from '../utils/helper.js';
 
 
 const prisma = new PrismaClient()
@@ -51,35 +51,57 @@ function manualFilterSearchData(searchBillDate, searchSupplierDcDate, searchSupp
 }
 
 async function get(req) {
-    const { companyId, fromDate, toDate, purchaseReport, filterSupplier, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchSupplierName, searchSupplierDcNo, searchSupplierDcDate } = req.query
+    const { companyId, purchaseReport, filterSupplier, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, 
+        searchBillDate, searchSupplierName, searchSupplierDcNo, fromDate, toDate,partyList,productList, searchSupplierDcDate } = req.query
 
     let data;
-    //     if (purchaseReport) {
-    //         data = await prisma.$queryRaw`
-
-    // SELECT 
-    //     party.name AS PartyName,
-    //    po.supplierDcNo AS PartyInvoiceNo,
-    //    po.createdAt as PurchaseDate,
-    //    pobill.price AS Amount
-
-
-    // FROM
-    // PurchaseBill po
-    // LEFT JOIN
-    // PoBillItems pobill ON pobill.purchaseBillId=po.id
-    // LEFT JOIN
-    // party ON party.id = po.supplierId      
-    // LEFT JOIN
-    // branch ON branch.id = po.branchId
-    // WHERE
-    // po.branchId = ${branchId} AND po.createdAt BETWEEN ${fromDate} AND ${toDate}
-    // GROUP BY  party.name, branch.branchName,po.supplierDcNo,po.createdAt, pobill.price;
-
-    //         `;
-    //         return { statusCode: 0, data };
-    //     }
-
+    const partyListData = partyList? JSON.parse(partyList) : []
+    const productListData = productList? JSON.parse(productList) : []
+   const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
+   const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
+   const PartyData = partyListData.map(party => `'${party}'`).join(", ");
+   const ProductData = productListData.map(product => `'${product}'`).join(", ");
+   console.log(PartyData,"partyData")
+   console.log(ProductData,"ProductData")
+   if (purchaseReport) {
+    const pData =PartyData.length > 0 ?` AND party.name IN (${PartyData})` :''  
+    const prodData = ProductData.length>0 ?`And product.name IN (${ProductData})`: ''
+    const dateFilter = (startDateStartTime && endDateEndTime) ? 
+    ` DATE(purchaseBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
+ 
+     const sql = `
+         SELECT
+             DATE(purchaseBill.createdAt) AS Date,
+             party.name AS Party,
+             product.name AS Product,
+             SUM(poBillItems.qty) AS Qty,
+             FORMAT(AVG(poBillItems.price), 2) AS AvgPrice,
+             SUM(poBillItems.qty) * FORMAT(AVG(poBillItems.price), 2) AS TotalPrice
+         FROM
+             poBillItems
+         JOIN
+             product ON poBillItems.productId = product.id
+         JOIN
+             purchaseBill ON purchaseBill.id = poBillItems.purchaseBillId
+         JOIN
+             party ON party.id = purchaseBill.supplierId
+         WHERE
+         ${dateFilter}
+             ${pData}
+             ${prodData}
+         GROUP BY
+             DATE(purchaseBill.createdAt), party.name, product.name
+     `;
+     
+     console.log(sql);
+  
+ 
+     
+     data = await prisma.$queryRawUnsafe(sql);
+     return { statusCode: 0, data };
+ }
+     
+else{
     data = await prisma.purchaseBill.findMany({
         where: {
             companyId: companyId ? parseInt(companyId) : undefined,
@@ -112,6 +134,8 @@ async function get(req) {
     let newDocId = await getNextDocId(branchId)
 
     return { statusCode: 0, nextDocId: newDocId, data, totalCount };
+}
+    
 }
 
 
