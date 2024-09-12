@@ -149,18 +149,17 @@ export default function Form() {
       setNetBillValue(data?.netBillValue ? data.netBillValue : 0);
       setSupplierDcNo(data?.supplierDcNo ? data?.supplierDcNo  :"")
       childRecord.current = data?.childRecord ? data?.childRecord : 0;
+      seticePrice(data?.icePrice? data?.icePrice: 0);
+      setPackingCharge(data?.packingCharge? data?.packingCharge: 0) ;
+      setLabourCharge(data?.labourCharge? data?.labourCharge : 0);
+      setTollgate(data?.tollgate? data?.tollgate: 0)
+      setTransport(data?.transport? data?.transport: 0)
     }, [id])
 
 
   useEffect(() => {
     syncFormWithDb(singleData?.data);
   }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData])
-
-
-  //  useEffect(()=>{
-  //        setAddress(singleSupplier?.data ? singleSupplier.data.address :"");
-  //        setPlace(singleSupplier?.data ? singleSupplier.data?.City?.name :"") 
-  //  },[singleSupplier,isSingleSupplierFetching,isSingleSupplierLoading,supplierId])
 
   const data = {
     branchId,

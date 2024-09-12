@@ -331,7 +331,8 @@ async function updatePoBillItems(tx, poBillItems, purchaseBill) {
 
 async function update(id, body) {
     let data
-    const { supplierId, dueDate, address, place, poBillItems, companyId, supplierDcNo, branchId, active, netBillValue } = await body
+    const { supplierId, dueDate, address, place, poBillItems, companyId, supplierDcNo, branchId, active, netBillValue,  icePrice, packingCharge, labourCharge, tollgate, 
+        transport, ourPrice } = await body
     const dataFound = await prisma.purchaseBill.findUnique({
         where: {
             id: parseInt(id)
@@ -349,6 +350,13 @@ async function update(id, body) {
                 dueDate: dueDate ? new Date(dueDate) : undefined,
                 branchId: parseInt(branchId),
                 netBillValue: parseInt(netBillValue),
+                netBillValue: netBillValue ? parseFloat(netBillValue) : 0,
+                icePrice: icePrice ? parseFloat(icePrice) : 0,
+                packingCharge: packingCharge ? parseFloat(packingCharge) : 0,
+                labourCharge: labourCharge ? parseFloat(labourCharge) : 0,
+                tollgate: tollgate ? parseFloat(tollgate) : 0,
+                transport: transport ? parseFloat(transport) : 0,
+                ourPrice: ourPrice ? parseFloat(ourPrice) : 0
 
             },
             include: {
