@@ -88,11 +88,11 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
         </View>
         {(poBillItems || []).map((item, index) => (
   <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowOdd]}>
-    <Text style={styles.tableCell}>
+    <Text style={styles.tableCellitem}>
       {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
     </Text>
     <Text style={styles.tableCell}>{item?.qty || 0}</Text>
-    <Text style={styles.tableCell}>{item?.price || 0}</Text>
+    <Text style={styles.tableCell}>{(item?.price || 0).toFixed(2)}</Text>
     <Text style={[styles.tableCell, styles.withBorder]}>
       {(item.price * item.qty).toFixed(2)}
     </Text>
@@ -258,23 +258,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#333',
   },
   value: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#333',
   },
   highlightRow: {
     backgroundColor: '#f0f9ff', // Light blue background to highlight
-    padding: 10,
+    padding: 2,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#007bff', // Blue border
   },
   highlightText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#007bff', // Blue text color for emphasis
   },
@@ -404,7 +404,14 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     fontSize: 10,
-    textAlign: 'center',
+    textAlign: 'right',
+    paddingRight: 28
+  },
+  tableCellitem: {
+    flex: 1,
+    fontSize: 10,
+    textAlign: 'left',
+    paddingRight: 31
   },
   tableFooter: {
     flexDirection: 'row',
