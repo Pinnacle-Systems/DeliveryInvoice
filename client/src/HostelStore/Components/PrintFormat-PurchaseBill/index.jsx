@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
-import numberToWords from 'number-to-words';
+import numWords from 'num-words';
 import logo from "../../../assets/armlogo0.jpg";
 import secureLocalStorage from 'react-secure-storage';
 import moment from 'moment';
@@ -20,11 +20,12 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
   }
 
   const totalAmount = getTotal("qty", "price").toFixed(2);
+    const discount =   parseFloat(data.ourPrice || 0) - parseFloat(totalAmount || 0)
 
   return (
     <Document>
   <Page style={styles.page}>
-    <View style={styles.headerContainer}>
+    <View fixed style={styles.headerContainer}>
       <Image style={styles.logo} src={logo} />
       <Text style={styles.title}>PURCHASE BILL</Text>
       <View style={styles.billInfoContainer}>
@@ -100,16 +101,13 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
 ))}
 
         <View style={styles.tableFooter}>
-          <Text style={styles.tableFooterCell}>Total</Text>
+          <Text style={styles.tableFooterCell}>Sub Total</Text>
           <Text style={styles.tableFooterCell1}>{totalAmount}</Text>
         </View>
       </View>
 
-      <View style={styles.amountInWordsContainer}>
-        <Text style={styles.amountInWordsText}>
-          Amount in Words: {numberToWords.toWords(parseFloat(totalAmount)).toUpperCase()}
-        </Text>
-      </View>
+
+     
 
       {/* Additional Charges Table */}
       <View style={styles.table}>
@@ -156,6 +154,28 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
             <Text style={styles.textValue}>{parseFloat(data.ourPrice || 0) - parseFloat(totalAmount)}</Text>
           </View>
         </View>
+        <View style={styles.footerce}>
+  <View style={styles.footerRow}>
+    <Text style={styles.label}>Subtotal:</Text>
+    <Text style={styles.value}>{totalAmount}</Text>
+  </View>
+  <View style={styles.footerRow}>
+    <Text style={styles.label}>Discount:</Text>
+    <Text style={styles.value}>{discount.toFixed(2)}</Text>
+  </View>
+  <View style={[styles.footerRow, styles.highlightRow]}>
+    <Text style={[styles.label, styles.highlightText]}>Total Amount:</Text>
+    <Text style={[styles.value, styles.highlightText]}>
+      {((parseFloat(totalAmount)) + (parseFloat(discount))).toFixed(2)}
+    </Text>
+  </View>
+  <View style={styles.amountInWordsContainer}>
+    <Text style={styles.amountInWordsText}>
+      Amount in Words: {numWords((parseFloat(totalAmount)) + (parseFloat(discount)))}
+    </Text>
+  </View>
+</View>
+
       </View>
     </View>
 
@@ -229,6 +249,43 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     marginBottom: 5,
   },
+  footerce: {
+    padding: 20,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  value: {
+    fontSize: 14,
+    color: '#333',
+  },
+  highlightRow: {
+    backgroundColor: '#f0f9ff', // Light blue background to highlight
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#007bff', // Blue border
+  },
+  highlightText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007bff', // Blue text color for emphasis
+  },
+  amountInWordsContainer: {
+    marginTop: 20,
+  },
+  amountInWordsText: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: '#666',
+  },
   logo: {
     width: 60,
     height: 60,
@@ -250,9 +307,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   border: {
-    borderBottomWidth: 1, // Specifies the border thickness
-    borderBottomColor: '#000',  // Specifies the border color
-    marginVertical: 10,   // Adjusts space above and below the line
+    borderBottomWidth: 1, 
+    borderBottomColor: '#000', 
+    marginVertical: 10,  
   },
   fromInfoContainer: {
     width: '45%',
@@ -272,6 +329,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     color: '#0381EF',
+  },
+  footer: {
+    marginTop: 'auto',
+    borderTop: '1px solid #EEE',
+    paddingTop: 10,
+  },
+  footerRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    color: '#333',
+
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  value: {
+    fontSize: 12,
+    color: '#333',
   },
   infoText2: {
     fontSize: 10,

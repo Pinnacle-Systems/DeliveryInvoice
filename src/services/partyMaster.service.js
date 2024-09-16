@@ -87,6 +87,7 @@ async function getOne(id) {
                     paidAmount: true,
                     partyId: true,
                     paymentType: true,
+                    discount: true
                 }
             }
         }
@@ -100,6 +101,8 @@ async function getOne(id) {
     
     const totalPaymentSalesBill = data.Payment.reduce((acc, payment) => 
         payment.paymentType === 'SALESBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
+    const totalDiscount = data.Payment.reduce((acc, payment) => acc + (payment.discount || 0), 0);
+ 
 
     const totalPaymentPurchaseBill = data.Payment.reduce((acc, payment) => 
         payment.paymentType === 'PURCHASEBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
@@ -114,6 +117,7 @@ async function getOne(id) {
             totalSalesNetBillValue, 
             totalPaymentSalesBill, 
             totalPaymentPurchaseBill, 
+            totalDiscount,
             childRecord 
         } 
     };

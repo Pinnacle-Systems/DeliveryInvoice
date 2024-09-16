@@ -4,12 +4,14 @@ import tw from '../../../Utils/tailwind-react-pdf'
 import { getDateFromDateTimeToDisplay } from '../../../Utils/helper';
 import commaNumber from 'comma-number';
 
-const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
+const  LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
+
     const ledgerDetails = ledgerData?.data ? ledgerData.data : []
     // Calculate the total credit and debit amounts
     const totalCredit = ledgerDetails.filter(item => item.type === "Sales").reduce((total, entry) => total + Math.abs(entry.amount), 0);
     const totalDebit = ledgerDetails.filter(item => item.type === "Payment").reduce((total, entry) => total + Math.abs(entry.amount), 0);
-
+     const totalDiscount = ledgerDetails.reduce((total,entry) => total + Math.abs(entry.discount))
+     console.log(totalDiscount,"totalDiscount")
     const openingBalance = ledgerData?.openingBalance;
     const closingBalance = ledgerData?.closingBalance;
     const partyName = ledgerData?.partyDetails?.name;

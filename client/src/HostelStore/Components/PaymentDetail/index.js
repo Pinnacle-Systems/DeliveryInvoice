@@ -366,7 +366,7 @@ console.log(PartyData,"partyData")
       <label className="block text-gray-600 font-medium mb-2">Outstanding Amount</label>
       <input
         type="text"
-        value={(Number(totalBillAmount) || 0).toFixed(2)}
+        value={(Number(totalBillAmount) || 0) - (Number(PartyData?.data?.totalDiscount) || 0)}
         onChange={(e) => setTotalBillAmount(e.target.value)}
         className="w-full px-3 py-2 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
         placeholder="0"
@@ -411,7 +411,7 @@ console.log(PartyData,"partyData")
       <label className="block text-gray-600 font-medium mb-2">Balance Amount</label>
       <input
         type="text"
-        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)) || 0).toFixed(2)}
+        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)- (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
         onChange={(e) => setBalanceAmount(e.target.value)}
         className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${
           (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'

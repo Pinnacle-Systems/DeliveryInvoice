@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
-import numberToWords from 'number-to-words';
+import numWords from 'num-words';
 import logo from "../../../assets/armlogo0.jpg";
 import secureLocalStorage from 'react-secure-storage';
 import moment from 'moment';
@@ -24,7 +24,7 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
   return (
     <Document>
       <Page style={styles.page}>
-        <View style={styles.headerContainer}>
+        <View fixed style={styles.headerContainer}>
           <Image style={styles.logo} src={logo} />
           <Text style={styles.title}>
             {isOn ? "INVOICE" : "QUOTATION"}
@@ -108,7 +108,7 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
           <View style={styles.amountInWordsContainer}>
             <Text style={styles.amountInWordsText}>
               <Svg style={styles.icon} viewBox="0 0 24 24"><Path d="M4 4h16v16H4V4zm1.5 1.5v3H6v-3h2v3h1.5v-3h2v3h1.5v-3h2v3h1.5v-3H18v6h-6v-1.5H7.5V18h-2v-6H6v3H4.5v-6H6v1.5h2V6H6V4.5H5.5z" /></Svg>
-              Amount in Words: {numberToWords.toWords(parseFloat(totalAmount)).toUpperCase()}
+              Amount in Words: {numWords(parseFloat(totalAmount)).toUpperCase()}
             </Text>
           </View>
         </View>
