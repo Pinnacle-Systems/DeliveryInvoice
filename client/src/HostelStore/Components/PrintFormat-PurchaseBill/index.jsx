@@ -21,7 +21,9 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
 
   const totalAmount = getTotal("qty", "price").toFixed(2);
     const discount =   parseFloat(data.ourPrice || 0) - parseFloat(totalAmount || 0)
-
+   const totalOverallCharge =   parseFloat(data.icePrice || 0) + parseFloat(data.packingCharge || 0) + 
+    parseFloat(data.labourCharge || 0) + parseFloat(data.tollgate || 0) + 
+    parseFloat(data.transport || 0)
   return (
     <Document>
   <Page style={styles.page}>
@@ -144,9 +146,7 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
           <View style={styles.tableCol}>
             <Text style={styles.textLabel}>Total Overall Charge</Text>
             <Text style={styles.textValue}>
-              {parseFloat(data.icePrice || 0) + parseFloat(data.packingCharge || 0) + 
-               parseFloat(data.labourCharge || 0) + parseFloat(data.tollgate || 0) + 
-               parseFloat(data.transport || 0)}
+              {totalOverallCharge}
             </Text>
           </View>
           <View style={styles.tableCol}>
@@ -160,13 +160,18 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
     <Text style={styles.value}>{totalAmount}</Text>
   </View>
   <View style={styles.footerRow}>
+    <Text style={styles.label}>Total OverAll Charge</Text>
+    <Text style={styles.value}>{totalOverallCharge}</Text>
+  </View>
+  <View style={styles.footerRow}>
     <Text style={styles.label}>Discount:</Text>
     <Text style={styles.value}>{discount.toFixed(2)}</Text>
   </View>
+
   <View style={[styles.footerRow, styles.highlightRow]}>
     <Text style={[styles.label, styles.highlightText]}>Total Amount:</Text>
     <Text style={[styles.value, styles.highlightText]}>
-      {((parseFloat(totalAmount)) + (parseFloat(discount))).toFixed(2)}
+      {((parseFloat(totalAmount)) +(parseFloat(totalOverallCharge)) + (parseFloat(discount))).toFixed(2)}
     </Text>
   </View>
   <View style={styles.amountInWordsContainer}>
@@ -279,6 +284,7 @@ const styles = StyleSheet.create({
   },
   amountInWordsContainer: {
     marginTop: 20,
+    marginBottom:20
   },
 
   logo: {
