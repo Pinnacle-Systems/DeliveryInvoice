@@ -94,9 +94,9 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
                 <Text style={styles.tableCell}>
                   {id ? item?.Product?.name : findFromList(item?.productId, "name") || 'N/A'}
                 </Text>
-                <Text style={styles.tableCell}>{item?.qty || 0}</Text>
-                <Text style={styles.tableCell}>{item?.price || 0}</Text>
-                <Text style={styles.tableCell}>{(item.price * item.qty).toFixed(2)}</Text>
+                <Text style={styles.tableCell1}>{item?.qty || 0}</Text>
+                <Text style={styles.tableCell1}>{(item?.price || 0).toFixed(2)}</Text>
+                <Text style={styles.tableCell1}>{(item.price * item.qty).toFixed(2)}</Text>
                 <Text style={styles.tableCell}>{/* Add content here or keep it empty */}</Text>
               </View>
             ))}
@@ -250,7 +250,13 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     fontSize: 10,
-    textAlign: 'center',
+    textAlign: 'left',
+  },
+  tableCell1: {
+    flex: 1,
+    fontSize: 10,
+    textAlign: 'right',
+    paddingRight:33
   },
   tableFooter: {
     flexDirection: 'row',
@@ -272,10 +278,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'right',
-    paddingRight: 42,
+    paddingRight: 118,
   },
   amountInWordsContainer: {
-    marginTop: 5,
+    marginTop: 15,
+    marginBottom: 15,
+
     borderTopWidth: 1,
     borderTopColor: '#0381EF',
     paddingTop: 4,
@@ -285,7 +293,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   amountInWordsText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#003366',
     textTransform: 'uppercase',
