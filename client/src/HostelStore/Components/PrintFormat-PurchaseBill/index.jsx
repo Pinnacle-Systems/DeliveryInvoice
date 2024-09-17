@@ -178,7 +178,6 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
 
       </View>
     </View>
-
     <View style={styles.footer}>
       <Text style={styles.footerText}>Thank you for your business!</Text>
       <Text style={styles.footerText}>Contact us: fishmarinelife786@gmail.com</Text>
@@ -281,11 +280,7 @@ const styles = StyleSheet.create({
   amountInWordsContainer: {
     marginTop: 20,
   },
-  amountInWordsText: {
-    fontSize: 12,
-    fontStyle: 'italic',
-    color: '#666',
-  },
+
   logo: {
     width: 60,
     height: 60,
@@ -330,11 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     color: '#0381EF',
   },
-  footer: {
-    marginTop: 'auto',
-    borderTop: '1px solid #EEE',
-    paddingTop: 10,
-  },
+
   footerRow: {
     display: 'flex',
     flexDirection: 'row',
@@ -440,23 +431,24 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#0381EF',
     paddingTop: 4,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FC8B02',
     paddingHorizontal: 4,
     alignItems: 'center',
     flexDirection: 'row',
   },
   amountInWordsText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#003366',
+    fontStyle: 'italic',
+
     textTransform: 'uppercase',
     textAlign: 'center',
     flex: 1,
     paddingBottom: 6,
   },
   footer: {
-    position: 'absolute',
-    bottom: 15,
+    marginTop: 20,
     left: 15,
     right: 15,
     borderTopWidth: 1,
