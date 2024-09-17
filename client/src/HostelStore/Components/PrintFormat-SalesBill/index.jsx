@@ -275,10 +275,10 @@ const styles = StyleSheet.create({
   },
   tableFooterCell1: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 10, 
     fontWeight: 'bold',
     textAlign: 'right',
-    paddingRight: 118,
+    paddingRight: 123,
   },
   amountInWordsContainer: {
     marginTop: 15,
