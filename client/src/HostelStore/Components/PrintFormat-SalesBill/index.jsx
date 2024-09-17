@@ -102,7 +102,9 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
             ))}
             <View style={styles.tableFooter}>
               <Text style={styles.tableFooterCell}>Total</Text>
-              <Text style={styles.tableFooterCell1}>{totalAmount}</Text>
+              <Text style={styles.tableFooterCell1}>
+  {parseFloat(totalAmount).toLocaleString('en-IN')}
+</Text>
             </View>
           </View>
        

@@ -104,8 +104,9 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
 
         <View style={styles.tableFooter}>
           <Text style={styles.tableFooterCell}>Sub Total</Text>
-          <Text style={styles.tableFooterCell1}>{totalAmount}</Text>
-        </View>
+          <Text style={styles.tableFooterCell1}>
+  {parseFloat(totalAmount).toLocaleString('en-IN')}
+</Text>        </View>
       </View>
 
 
