@@ -57,7 +57,7 @@ export async function getPartyLedgerReportCus(partyId, startDate, endDate) {
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, coalesce(netBillValue,0) as amount
+    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, coalesce(ourPrice,0) as amount
 from purchasebill
 where  supplierId = ${partyId} and (DATE(createdAt) < ${startDateFormatted})
 union
@@ -67,7 +67,7 @@ where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, netBillValue as amount
+    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, ourPrice as amount
 from purchasebill
 where supplierId = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})
 union
@@ -77,7 +77,7 @@ where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Purchase' as type, docId as transId, createdAt as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
+   select * from (select 'Purchase' as type, docId as transId, createdAt as date, ourPrice as amount, '' as paymentType ,'' as paymentRefNo
 from purchasebill
 where supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
 union

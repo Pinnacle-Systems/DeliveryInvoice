@@ -176,7 +176,7 @@ export default function PrintFormat({ poBillItems = [], innerRef, date, data, id
   </View>
   <View style={styles.amountInWordsContainer}>
     <Text style={styles.amountInWordsText}>
-      Amount in Words: {numWords((parseFloat(totalAmount)) + (parseFloat(discount)))}
+      Amount in Words: {numWords((parseFloat(totalAmount)) + (parseFloat(discount)))} RUPEES
     </Text>
   </View>
 </View>
