@@ -114,7 +114,7 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
     <Svg style={styles.icon} viewBox="0 0 24 24">
       <Path d="M4 4h16v16H4V4zm1.5 1.5v3H6v-3h2v3h1.5v-3h2v3h1.5v-3h2v3h1.5v-3H18v6h-6v-1.5H7.5V18h-2v-6H6v3H4.5v-6H6v1.5h2V6H6V4.5H5.5z" />
     </Svg>
-    Amount in Words: {totalAmount ? numWords(parseInt(totalAmount)).toUpperCase() : 'Invalid amount'}
+    Amount in Words: {totalAmount ? numWords(parseInt(totalAmount)).toUpperCase() : 'Invalid amount'} RUPEES
   </Text>
 </View>
 
