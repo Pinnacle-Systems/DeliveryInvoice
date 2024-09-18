@@ -196,6 +196,7 @@
       place,
       netBillValue,
       icePrice,
+      selectedDate,
       packingCharge,
       labourCharge,
       tollgate,

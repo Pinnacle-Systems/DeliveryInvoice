@@ -28,12 +28,14 @@ const PurchaseBillFormReport = ({
   const [totalCount, setTotalCount] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
 const [searchSupplierDcDate,setSearchSupplierDcDate] =useState("")
+const [searchSelectedDate,setSearchSelectedDate] =useState("")
+
   const handleOnclick = (e) => {
     setCurrentPageNumber(reactPaginateIndexToPageNumber(e.selected));
   }
-  const searchFields = { searchDocId, searchBillDate, searchSupplierName,  searchSupplierDcNo,searchSupplierDcDate  }
+  const searchFields = { searchDocId, searchBillDate, searchSupplierName,  searchSupplierDcNo,searchSupplierDcDate ,searchSelectedDate }
 
-  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchSupplierName,searchSupplierDcNo,  searchSupplierDcDate])
+  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchSupplierName,searchSupplierDcNo,  searchSupplierDcDate,searchSelectedDate])
 
   const companyId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "userCompanyId"
@@ -177,7 +179,19 @@ const [searchSupplierDcDate,setSearchSupplierDcDate] =useState("")
                     }}
                   />
                 </th>
-              
+                <th
+                  className="border-2  top-0 stick-bg"
+                >
+                  <div>Manual Date</div><input
+                    type="text"
+                    className="text-black h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
+                    placeholder="Search"
+                    value={searchSelectedDate}
+                    onChange={(e) => {
+                      setSearchSelectedDate(e.target.value);
+                    }}
+                  />
+                </th>
 
               </tr>
             </thead>
@@ -205,9 +219,12 @@ const [searchSupplierDcDate,setSearchSupplierDcDate] =useState("")
                     <td className='py-1'> {(index + 1) + (dataPerPage * (currentPageNumber - 1))}</td>
                     <td className='py-1'> {dataObj.docId}</td>
                     <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.createdAt)} </td>
+
                     <td className='py-1'>{findFromList(dataObj.supplierId, supplierList.data, "name")}</td>
                     <td className='py-1'>{dataObj.supplierDcNo}</td>
                     <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.dueDate)}</td>
+                    <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.selectedDate)} </td>
+
                    
                   </tr>
                 ))}

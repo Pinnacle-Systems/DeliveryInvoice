@@ -41,17 +41,21 @@ async function getNextDocId(branchId) {
     return newDocId
 }
 
-function manualFilterSearchData(searchBillDate, searchSupplierDcDate, searchSupplierDcNo, data) {
+function manualFilterSearchData(searchBillDate, searchSupplierDcDate, searchSupplierDcNo,searchSelectedDate,data) {
     return data.filter(item =>
         (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true) &&
         (searchSupplierDcDate ? String(getDateFromDateTime(item.dueDate)).includes(searchSupplierDcDate) : true) &&
-        (searchSupplierDcNo ? String(item.supplierDcNo).includes(searchSupplierDcNo) : true)
+        (searchSupplierDcNo ? String(item.supplierDcNo).includes(searchSupplierDcNo) : true)&&
+        (searchSelectedDate ? String(getDateFromDateTime(item.selectedDate)).includes(searchSelectedDate) : true) 
+
     )
 }
 
 async function get(req) {
     const { companyId, purchaseReport, filterSupplier, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, 
-        searchBillDate, searchSupplierName, searchSupplierDcNo, fromDate, toDate,partyList,productList, searchSupplierDcDate } = req.query
+        searchBillDate, searchSupplierName, searchSupplierDcNo, fromDate, toDate,partyList,productList, searchSupplierDcDate,searchSelectedDate } = req.query
+   console.log(searchSelectedDate,"searchSelectedDate")
+   console.log(searchBillDate,"searchBillDate")
 
     let data;
     const partyListData = partyList? JSON.parse(partyList) : []
@@ -138,7 +142,7 @@ else{
     });
 
 
-    data = manualFilterSearchData(searchBillDate, searchSupplierDcDate, searchSupplierDcNo, data)
+    data = manualFilterSearchData(searchBillDate, searchSupplierDcDate,searchSelectedDate, searchSupplierDcNo, data)
     const totalCount = data.length
 
     if (pagination) {
@@ -261,7 +265,7 @@ async function create(body) {
     const { 
         supplierId, dueDate, address, place, poBillItems, supplierDcNo, 
         companyId, active, icePrice, packingCharge, labourCharge, tollgate, 
-        transport, ourPrice, branchId, netBillValue 
+        transport, ourPrice, branchId, netBillValue,selectedDate 
     } = body;
 
     let newDocId = await getNextDocId(branchId);
@@ -279,6 +283,7 @@ async function create(body) {
                 companyId: parseInt(companyId),
                 active,
                 dueDate: dueDate ? new Date(dueDate) : null, // Ensuring null if undefined
+                selectedDate: selectedDate? new Date(selectedDate) : 'null',
                 branchId: parseInt(branchId),
                 netBillValue: netBillValue ? parseFloat(netBillValue) : 0,
                 icePrice: icePrice ? parseFloat(icePrice) : 0,
@@ -368,8 +373,10 @@ async function updatePoBillItems(tx, poBillItems, purchaseBill) {
 
 async function update(id, body) {
     let data
-    const { supplierId, dueDate, address, place, poBillItems, companyId, supplierDcNo, branchId, active, netBillValue,  icePrice, packingCharge, labourCharge, tollgate, 
-        transport, ourPrice } = await body
+    const { supplierId, dueDate, address, place, poBillItems, companyId, supplierDcNo, branchId, active, netBillValue,
+          icePrice, packingCharge, labourCharge, tollgate, 
+        transport, ourPrice,selectedDate } = await body
+        console.log(selectedDate,"selectDate")
     const dataFound = await prisma.purchaseBill.findUnique({
         where: {
             id: parseInt(id)
@@ -385,6 +392,7 @@ async function update(id, body) {
                 address, place, supplierId: parseInt(supplierId), supplierDcNo,
                 companyId: parseInt(companyId), active,
                 dueDate: dueDate ? new Date(dueDate) : undefined,
+                selectedDate: selectedDate? new Date(selectedDate) : 'null',
                 branchId: parseInt(branchId),
                 netBillValue: parseInt(netBillValue),
                 netBillValue: netBillValue ? parseFloat(netBillValue) : 0,

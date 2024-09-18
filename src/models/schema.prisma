@@ -434,6 +434,7 @@ model PurchaseBill {
   docId          String?
   createdAt      DateTime         @default(now())
   dueDate        DateTime         @db.Date
+  selectedDate   DateTime?          @db.Date
   active         Boolean          @default(true)
   Company        Company?         @relation(fields: [companyId], references: [id])
   companyId      Int?
@@ -446,6 +447,7 @@ model PurchaseBill {
   ourPrice       Float?
   PoBillItems    PoBillItems[]
   PurchaseReturn PurchaseReturn[]
+
 }
 
 model PoBillItems {
