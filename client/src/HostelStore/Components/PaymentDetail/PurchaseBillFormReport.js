@@ -18,6 +18,8 @@ const PurchaseBillFormReport = ({
   const [searchBillDate, setSearchBillDate] = useState("");
   const [searchDueDate, setSearchDueDate] = useState("");
   const [searchCustomerName, setSearchCustomerName] = useState("");
+  const [searchType, setSearchType] = useState("");
+
   const [dataPerPage, setDataPerPage] = useState("10");
   const [totalCount, setTotalCount] = useState(0);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -25,9 +27,9 @@ const PurchaseBillFormReport = ({
   const handleOnclick = (e) => {
     setCurrentPageNumber(reactPaginateIndexToPageNumber(e.selected));
   }
-  const searchFields = { searchDocId, searchBillDate, searchCustomerName, }
+  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchType }
 
-  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName, searchDueDate])
+  useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchType, searchDueDate])
 
   const companyId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "userCompanyId"
@@ -142,8 +144,11 @@ const PurchaseBillFormReport = ({
                     }}
                   />
                 </th>
+             
+                
                 {/* <th
                   className="border-2  top-0 stick-bg"
+                  paymentType
                 >
                   <div>Due Date</div><input
                     type="text"
@@ -155,7 +160,20 @@ const PurchaseBillFormReport = ({
                     }}
                   />
                 </th> */}
+   <th
 
+className="border-2  top-0 stick-bg "
+>
+<div>Customer Name</div><input
+  type="text"
+  className="text-black  h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
+  placeholder="Search"
+  value={searchType}
+  onChange={(e) => {
+    setSearchType(e.target.value);
+  }}
+/>
+</th>
 
 
               </tr>
@@ -188,6 +206,8 @@ const PurchaseBillFormReport = ({
                     <td className='py-1'> {dataObj.docId}</td>
                     <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.createdAt)} </td>
                     <td className='py-1'>{dataObj.Party?.name}</td>
+                    <td className='py-1'>{dataObj.paymentType}</td>
+
                   </tr>
                 ))}
               </tbody>

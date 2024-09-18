@@ -35,15 +35,17 @@ async function getNextDocId(branchId, shortCode, startTime, endTime) {
     return newDocId
 }
 
-function manualFilterSearchData(searchBillDate, searchMobileNo, data) {
+function manualFilterSearchData(searchBillDate, searchMobileNo,searchType, data) {
     return data.filter(item =>
         (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true)
         && (searchMobileNo ? String(item.contactMobile).includes(searchMobileNo) : true)
+        && (searchType ? String(item.paymentType).includes(searchType) : true)
+
     )
 }
 
 async function get(req) {
-    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName, searchMobileNo, finYearId } = req.query
+    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchType, searchMobileNo, finYearId } = req.query
    console.log(finYearId,"finyearId")
     let data = await prisma.payment.findMany({
         where: {
@@ -68,7 +70,7 @@ async function get(req) {
             }
         }
     });
-    data = manualFilterSearchData(searchBillDate, searchMobileNo, data)
+    data = manualFilterSearchData(searchBillDate, searchMobileNo,searchType, data)
     const totalCount = data.length
     if (pagination) {
         data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)

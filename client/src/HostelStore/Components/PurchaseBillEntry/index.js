@@ -538,14 +538,15 @@
                       readOnly={readOnly}
                     />
        <div className="flex items-center space-x-20">
-  <label className=" text-right font-sm ">
+  <label className=" text-right font-xs ">
     Date:
   </label>
   <DatePicker
     selected={selectedDate}
     onChange={(date) => setSelectedDate(date)}
+    readOnly={readOnly}
     dateFormat="MMMM d, yyyy"
-    className="w-56 py-1 border border-2 h-6 border-red-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="w-56 py-1 border border-2 h-6 text-xs ml-3 border-red-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     placeholderText="Choose a date"
   />
 </div>

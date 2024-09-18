@@ -49,6 +49,7 @@ async function get(req) {
                     paidAmount: true,
                     partyId: true,
                     paymentType: true,
+                    discount: true
                 }
             }
         }

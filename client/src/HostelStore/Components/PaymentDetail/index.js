@@ -86,6 +86,7 @@ console.log(PartyData,"partyData")
       setPaymentMode(data?.paymentMode || '');
       setPaymentType(data?.paymentType || '')
       setPaymentRefNo(data?.paymentRefNo || '');
+      setTotalPayAmount(PartyData?.data?.soa ? data?.totalPaymentPurchaseBill: data?.totalPaymentSalesBill )
       setPartyId(data?.partyId || '');
       setTotalBillAmount(data?.totalBillAmount || '')
       childRecord.current = data?.childRecord ? data?.childRecord : 0;
@@ -232,12 +233,15 @@ console.log(PartyData,"partyData")
   const tableDataNames = ["dataObj.code", "dataObj.name", 'dataObj.active ? ACTIVE : INACTIVE']
     console.log(paymentType,"paymenttype")
     useEffect(() => {
-      const newAmount = paymentType === 'PURCHASEBILL' 
-        ? ((PartyData?.data?.soa +PartyData?.data?.totalPurchaseNetBillValue)-PartyData?.data?.totalPaymentPurchaseBill) 
-        : ((PartyData?.data?.coa+ PartyData?.data?.totalSalesNetBillValue)-PartyData?.data?.totalPaymentSalesBill)
-  
-      setTotalBillAmount(newAmount);
+      if (!id) {
+        const newAmount = paymentType === 'PURCHASEBILL' 
+          ? (PartyData?.data?.soa + PartyData?.data?.totalPurchaseNetBillValue - PartyData?.data?.totalPaymentPurchaseBill) 
+          : (PartyData?.data?.coa + PartyData?.data?.totalSalesNetBillValue - PartyData?.data?.totalPaymentSalesBill);
+    
+        setTotalBillAmount(newAmount);
+      }
     }, [paymentType, PartyData]);
+    
   if (!form)
     return <ReportTemplate
       heading={MODEL}
@@ -253,7 +257,8 @@ console.log(PartyData,"partyData")
       searchValue={searchValue}
       setSearchValue={setSearchValue}
     />
-
+   console.log(id,"id")
+   console.log(totalBillAmount,"totalBillAmount")
   return (
 
 
@@ -366,8 +371,11 @@ console.log(PartyData,"partyData")
       <label className="block text-gray-600 font-medium mb-2">Outstanding Amount</label>
       <input
         type="text"
-        value={(Number(totalBillAmount) || 0) - (Number(PartyData?.data?.totalDiscount) || 0)}
-        onChange={(e) => setTotalBillAmount(e.target.value)}
+        value={id 
+          ? Number(totalBillAmount) - Number(PartyData?.data?.totalDiscount || 0)
+          : (Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0))
+        }
+                onChange={(e) => setTotalBillAmount(e.target.value)}
         className="w-full px-3 py-2 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
         placeholder="0"
       />
@@ -375,15 +383,7 @@ console.log(PartyData,"partyData")
   </div>
 
   <div className="grid grid-cols-2 gap-6 mb-5">
-    <div>
-      <label className="block text-gray-600 font-medium mb-2">Total Paid Amount</label>
-      <input
-        type="text"
-        value={(Number(totalPayAmount ? totalPayAmount : 0) || 0).toFixed(2)}
-        className="w-full px-3 py-2 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
-        placeholder="0"
-      />
-    </div>
+  
     <div>
       <label className="block text-gray-600 font-medium mb-2">Reference No</label>
       <input
@@ -394,9 +394,6 @@ console.log(PartyData,"partyData")
         placeholder="Reference No"
       />
     </div>
-  </div>
-
-  <div className="grid grid-cols-2 gap-6 mb-5">
     <div>
       <label className="block text-gray-600 font-medium mb-2">Paid Amount</label>
       <input
@@ -407,11 +404,15 @@ console.log(PartyData,"partyData")
         placeholder="0"
       />
     </div>
+  </div>
+
+  <div className="grid grid-cols-1 gap-6 mb-5">
+   
     <div>
       <label className="block text-gray-600 font-medium mb-2">Balance Amount</label>
       <input
         type="text"
-        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount)- (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
+        value={id? Number(totalBillAmount)-Number(PartyData?.data?.totalDiscount)-Number(paidAmount):((Number(totalBillAmount) - Number(paidAmount) - Number(discount)- (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
         onChange={(e) => setBalanceAmount(e.target.value)}
         className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${
           (Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
