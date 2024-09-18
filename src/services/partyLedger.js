@@ -10,7 +10,7 @@ export async function getPartyLedgerReport(partyId, startDate, endDate) {
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) < ${startDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)
+select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)- discount
 from payment
 where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) < ${startDateFormatted})) a
     `;
@@ -20,7 +20,7 @@ where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) <
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount 
+select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount -discount
 from payment
 where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) <= ${endDateFormatted})) a
     `;
@@ -30,7 +30,7 @@ where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) <
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, paidAmount,paymentMode as paymentType, paymentRefNo
+select 'Payment' as type, docId as transId, createdAt as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
 from payment 
 where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
