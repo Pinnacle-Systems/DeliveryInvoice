@@ -241,6 +241,7 @@ console.log(PartyData,"partyData")
         setTotalBillAmount(newAmount);
       }
     }, [paymentType, PartyData]);
+    console.log(totalBillAmount,"totalBillAmount")
     
   if (!form)
     return <ReportTemplate

@@ -72,7 +72,7 @@ async function getOne(id) {
             },
             PurchaseBillSupplier: {
                 select: {
-                    netBillValue: true,
+                    ourPrice: true,
                     supplierId: true
                 }
             },
@@ -96,7 +96,7 @@ async function getOne(id) {
 
     if (!data) return NoRecordFound("party");
 
-    const totalPurchaseNetBillValue = data.PurchaseBillSupplier.reduce((acc, bill) => acc + (bill.netBillValue || 0), 0);
+    const totalPurchaseNetBillValue = data.PurchaseBillSupplier.reduce((acc, bill) => acc + (bill.ourPrice || 0), 0);
     const totalSalesNetBillValue = data.SalesBillSupplier.reduce((acc, bill) =>
         bill.isOn === true ? acc + (bill.netBillValue || 0) : acc, 0);
     
