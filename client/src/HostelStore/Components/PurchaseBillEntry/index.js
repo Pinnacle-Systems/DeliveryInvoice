@@ -497,7 +497,7 @@
                       required
                     />
                             <TextInput
-                      name={"OtherCharge"}
+                      name={"Comisson Amt"}
                       value={icePrice}
                       setValue={seticePrice}
                       readOnly={readOnly}

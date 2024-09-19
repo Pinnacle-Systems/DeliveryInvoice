@@ -438,7 +438,7 @@ model PurchaseBill {
   active         Boolean          @default(true)
   Company        Company?         @relation(fields: [companyId], references: [id])
   companyId      Int?
-  netBillValue   Int?
+  netBillValue   Float?
   icePrice       Float?
   packingCharge  Float?
   labourCharge   Float?
@@ -624,7 +624,7 @@ model OpeningStock {
   OpeningStockItems OpeningStockItems[]
 }
 
-model OpeningStockItems {
+model OpeningStockItems {y
   id             Int           @id @default(autoincrement())
   OpeningStock   OpeningStock? @relation(fields: [OpeningStockId], references: [id], onDelete: Cascade)
   OpeningStockId Int?
