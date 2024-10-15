@@ -135,7 +135,7 @@ async function create(body) {
                     createdById: parseInt(userId),
                     cvv: cvv ? new Date(cvv) : undefined,
                     paymentType,
-                    totalBillAmount
+                    totalBillAmount: totalBillAmount? parseInt(totalBillAmount): undefined
                 }
             });
         });
