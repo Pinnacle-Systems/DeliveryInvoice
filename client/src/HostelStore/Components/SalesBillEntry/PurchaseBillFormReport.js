@@ -34,7 +34,7 @@ const PurchaseBillFormReport = ({
   const handleOnclick = (e) => {
     setCurrentPageNumber(reactPaginateIndexToPageNumber(e.selected));
   }
-  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchSupplierName }
+  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchSupplierName ,searchDueDate}
 
   useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, searchDueDate])
 
@@ -165,10 +165,10 @@ const PurchaseBillFormReport = ({
                     />
                   </div>
                   </th>
-                {/* <th
+                <th
                   className="border-2  top-0 stick-bg"
                 >
-                  <div>Due Date</div><input
+                  <div>Manual Date</div><input
                     type="text"
                     className="text-black h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
                     placeholder="Search"
@@ -177,7 +177,7 @@ const PurchaseBillFormReport = ({
                       setSearchDueDate(e.target.value);
                     }}
                   />
-                </th> */}
+                </th>
 
 
 
@@ -213,7 +213,7 @@ const PurchaseBillFormReport = ({
                     <td className='py-1'>{dataObj.supplier.name}</td>
                     <td className='py-1'>{dataObj.isOn ? 'CONFIRMED':'NOTCONFIRMED'}</td>
 
-                    {/* <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.dueDate)}</td> */}
+                    <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.selectedDate)}</td>
 
                   </tr>
                 ))}

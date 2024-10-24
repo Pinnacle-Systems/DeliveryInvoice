@@ -27,7 +27,7 @@ const PurchaseBillFormReport = ({
   const handleOnclick = (e) => {
     setCurrentPageNumber(reactPaginateIndexToPageNumber(e.selected));
   }
-  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchType }
+  const searchFields = { searchDocId, searchBillDate, searchCustomerName,searchType,searchDueDate }
 
   useEffect(() => { setCurrentPageNumber(1) }, [dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchType, searchDueDate])
 
@@ -146,20 +146,7 @@ const PurchaseBillFormReport = ({
                 </th>
              
                 
-                {/* <th
-                  className="border-2  top-0 stick-bg"
-                  paymentType
-                >
-                  <div>Due Date</div><input
-                    type="text"
-                    className="text-black h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
-                    placeholder="Search"
-                    value={searchDueDate}
-                    onChange={(e) => {
-                      setSearchDueDate(e.target.value);
-                    }}
-                  />
-                </th> */}
+         
    <th
 
 className="border-2  top-0 stick-bg "
@@ -174,7 +161,20 @@ className="border-2  top-0 stick-bg "
   }}
 />
 </th>
-
+<th
+                  className="border-2  top-0 stick-bg"
+                  paymentType
+                >
+                  <div>Manual Date</div><input
+                    type="text"
+                    className="text-black h-6 focus:outline-none border md:ml-3 border-gray-400 rounded-lg"
+                    placeholder="Search"
+                    value={searchDueDate}
+                    onChange={(e) => {
+                      setSearchDueDate(e.target.value);
+                    }}
+                  />
+                </th>
 
               </tr>
             </thead>
@@ -207,6 +207,8 @@ className="border-2  top-0 stick-bg "
                     <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.createdAt)} </td>
                     <td className='py-1'>{dataObj.Party?.name}</td>
                     <td className='py-1'>{dataObj.paymentType}</td>
+                    <td className='py-1'>{getDateFromDateTimeToDisplay(dataObj.cvv)} </td>
+
 
                   </tr>
                 ))}

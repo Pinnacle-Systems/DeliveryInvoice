@@ -44,83 +44,80 @@ async function getNextDocId(branchId) {
     return newDocId
 }
 
-function manualFilterSearchData(searchBillDate, data) {
+function manualFilterSearchData(searchBillDate, searchDueDate, data) {
+    console.log(data,"data ")
     return data.filter(item =>
-        (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true)
-        // (searchSupplierDcDate ? String(getDateFromDateTime(item.dueDate)).includes(searchSupplierDcDate) : true) 
-        // (searchPurchaseBillNo ?String(item.purchaseBillId).includes(searchPurchaseBillNo) : true) 
-    )
+        (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true) &&
+        (searchDueDate ? String(getDateFromDateTime(item.selectedDate)).includes(searchDueDate) : true)
+    );
 }
 
-
 async function get(req) {
-    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn,partyList,productList } = req.query;
+    const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchDueDate, searchBillDate, searchCustomerName, searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn, partyList, productList } = req.query;
+console.log(searchBillDate,"searchBillDate")
+console.log(searchDueDate,"searchDueDate")
+
     let data;
-    console.log(partyList,"partyList")
-    console.log(productList,"productList")
-     const partyListData = partyList? JSON.parse(partyList) : []
-     const productListData = productList? JSON.parse(productList) : []
+    console.log(partyList, "partyList");
+    console.log(productList, "productList");
+
+    const partyListData = partyList ? JSON.parse(partyList) : [];
+    const productListData = productList ? JSON.parse(productList) : [];
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
-    
+
     if (isProfitReport) {
         data = await profitReport(startDateStartTime, endDateEndTime);
         return { statusCode: 0, data };
     }
+
     const PartyData = partyListData.map(party => `'${party}'`).join(", ");
     const ProductData = productListData.map(product => `'${product}'`).join(", ");
-    console.log(PartyData,"partyData")
-    console.log(ProductData,"ProductData")
+    console.log(PartyData, "partyData");
+    console.log(ProductData, "ProductData");
+
     if (salesReport) {
-   const pData =PartyData.length > 0 ?` AND party.name IN (${PartyData})` :''  
-   const prodData = ProductData.length>0 ?`And product.name IN (${ProductData})`: ''
-   const dateFilter = (startDateStartTime && endDateEndTime) ? 
-   ` DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
+        const pData = PartyData.length > 0 ? ` AND party.name IN (${PartyData})` : '';
+        const prodData = ProductData.length > 0 ? ` AND product.name IN (${ProductData})` : '';
+        const dateFilter = (startDateStartTime && endDateEndTime) ? 
+            ` DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
 
-    const sql = `
-        SELECT
-            DATE(salesBill.createdAt) AS Date,
-            party.name AS Party,
-            product.name AS Product,
-            SUM(salesBillItems.qty) AS Qty,
-            FORMAT(AVG(salesBillItems.price), 2) AS AvgPrice,
-            SUM(salesBillItems.qty) * FORMAT(AVG(salesBillItems.price), 2) AS TotalPrice
-        FROM
-            salesBillItems
-        JOIN
-            product ON salesBillItems.productId = product.id
-        JOIN
-            salesBill ON salesBill.id = salesBillItems.salesBillId
-        JOIN
-            party ON party.id = salesBill.supplierId
-        WHERE
-        ${dateFilter}
-        AND salesBill.isOn = '1'
-            ${pData}
-            ${prodData}
-        GROUP BY
-            DATE(salesBill.createdAt), party.name, product.name
-    `;
-    
-    console.log(sql);
- 
+        const sql = `
+            SELECT
+                DATE(salesBill.createdAt) AS Date,
+                party.name AS Party,
+                product.name AS Product,
+                SUM(salesBillItems.qty) AS Qty,
+                FORMAT(AVG(salesBillItems.price), 2) AS AvgPrice,
+                SUM(salesBillItems.qty) * FORMAT(AVG(salesBillItems.price), 2) AS TotalPrice
+            FROM
+                salesBillItems
+            JOIN
+                product ON salesBillItems.productId = product.id
+            JOIN
+                salesBill ON salesBill.id = salesBillItems.salesBillId
+            JOIN
+                party ON party.id = salesBill.supplierId
+            WHERE
+                ${dateFilter}
+                AND salesBill.isOn = '1'
+                ${pData}
+                ${prodData}
+            GROUP BY
+                DATE(salesBill.createdAt), party.name, product.name
+        `;
 
-    
-    data = await prisma.$queryRawUnsafe(sql);
-    return { statusCode: 0, data };
-}
-    
-    
-     else { 
+        console.log(sql);
+
+        data = await prisma.$queryRawUnsafe(sql);
+        return { statusCode: 0, data };
+    } else {
         data = await prisma.salesBill.findMany({
             where: {
                 companyId: companyId ? parseInt(companyId) : undefined,
                 active: active ? Boolean(active) : undefined,
-                isOn: typeof(isOn) === "undefined" ? undefined : JSON.parse(isOn),
-                docId: searchDocId ? {
-                    contains: searchDocId
-                } : undefined,
-               
+                isOn: typeof isOn === "undefined" ? undefined : JSON.parse(isOn),
+                docId: searchDocId ? { contains: searchDocId } : undefined,
                 supplier: {
                     name: searchCustomerName ? { contains: searchCustomerName } : undefined
                 }
@@ -129,7 +126,7 @@ async function get(req) {
                 SalesBillItems: {
                     select: {
                         qty: true,
-                        price: true,
+                        price: true
                     }
                 },
                 supplier: {
@@ -144,11 +141,13 @@ async function get(req) {
         });
     }
 
-    data = manualFilterSearchData(searchBillDate, data);
+    // Manual filtering by Bill Date and Due Date
+    data = manualFilterSearchData(searchBillDate, searchDueDate, data);
+
     const totalCount = data.length;
 
     if (pagination) {
-        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage);
+        data = data.slice(((parseInt(pageNumber) - 1) * parseInt(dataPerPage)), parseInt(pageNumber) * parseInt(dataPerPage));
     }
 
     let newDocId = await getNextDocId(branchId);

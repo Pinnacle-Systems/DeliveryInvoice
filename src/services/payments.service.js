@@ -5,7 +5,7 @@ import { getTableRecordWithId } from '../utils/helperQueries.js';
 import { getFinYearStartTimeEndTime } from '../utils/finYearHelper.js';
 
 
-async function getNextDocId(branchId, shortCode, startTime, endTime) {
+async function getNextDocId(branchId, shortCode, startTime, endTime,) {
     let lastObject = await prisma.payment.findFirst({
         where: {
             branchId: parseInt(branchId),
@@ -35,9 +35,11 @@ async function getNextDocId(branchId, shortCode, startTime, endTime) {
     return newDocId
 }
 
-function manualFilterSearchData(searchBillDate, searchMobileNo,searchType, data) {
+function manualFilterSearchData(searchBillDate, searchMobileNo,searchType,searchDueDate, data) {
     return data.filter(item =>
         (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true)
+        &&(searchDueDate ? String(getDateFromDateTime(item.cvv)).includes(searchDueDate) : true)
+
         && (searchMobileNo ? String(item.contactMobile).includes(searchMobileNo) : true)
         && (searchType ? String(item.paymentType).includes(searchType) : true)
 
@@ -45,8 +47,10 @@ function manualFilterSearchData(searchBillDate, searchMobileNo,searchType, data)
 }
 
 async function get(req) {
-    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchCustomerName,searchType, searchMobileNo, finYearId } = req.query
-   console.log(finYearId,"finyearId")
+    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate,searchDueDate, searchCustomerName,searchType, searchMobileNo, finYearId } = req.query
+   console.log(searchBillDate,"searchBillDate")
+   console.log(searchDueDate,"searchDueDate")
+
     let data = await prisma.payment.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
@@ -70,7 +74,7 @@ async function get(req) {
             }
         }
     });
-    data = manualFilterSearchData(searchBillDate, searchMobileNo,searchType, data)
+    data = manualFilterSearchData(searchBillDate, searchMobileNo,searchType,searchDueDate, data)
     const totalCount = data.length
     if (pagination) {
         data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)
