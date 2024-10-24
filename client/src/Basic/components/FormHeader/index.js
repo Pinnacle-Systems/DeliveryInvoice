@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import secureLocalStorage from "react-secure-storage";
 import { useGetPagePermissionsByIdQuery } from "../../../redux/services/PageMasterService";
+import { useGetPagesQuery } from "../../../redux/services/PageMasterService";
 
 
 const FormHeader = ({
@@ -30,8 +31,9 @@ const FormHeader = ({
   const openTabs = useSelector((state) => state.openTabs);
 
   const activeTab = openTabs.tabs.find(tab => tab.active);
+  const { data: pageData } = useGetPagesQuery({})
 
-  const currentPageId = activeTab.id
+  const currentPageId = (pageData?.data || []).find(i => i.name === activeTab.name)?.id || '';
 
   const userRoleId = secureLocalStorage.getItem(
     sessionStorage.getItem("sessionId") + "userRoleId"
