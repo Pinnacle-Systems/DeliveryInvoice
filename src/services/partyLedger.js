@@ -6,33 +6,33 @@ export async function getPartyLedgerReport(partyId, startDate, endDate) {
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, createdAt as date, coalesce(netBillValue,0) as amount
+    select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, coalesce(netBillValue,0) as amount
 from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) < ${startDateFormatted})
+where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)- discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)- discount
 from payment
-where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) < ${startDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) < ${startDateFormatted})) a
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, createdAt as date, netBillValue as amount
+    select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount
 from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})
+where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount -discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount -discount
 from payment
-where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) <= ${endDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Sales' as type, docId as transId, createdAt as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
+   select * from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
 from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
+where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
+select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
 from payment 
-where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
+where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
     `;
     const partyDetails = await prisma.party.findUnique({
@@ -57,33 +57,33 @@ export async function getPartyLedgerReportCus(partyId, startDate, endDate) {
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, coalesce(ourPrice,0) as amount
+    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, coalesce(ourPrice,0) as amount
 from purchasebill
-where  supplierId = ${partyId} and (DATE(createdAt) < ${startDateFormatted})
+where  supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - coalesce(paidAmount,0)
+select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)
 from payment
-where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) < ${startDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) < ${startDateFormatted})) a
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, createdAt as date, ourPrice as amount
+    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount
 from purchasebill
-where supplierId = ${partyId} and (DATE(createdAt) <= ${endDateFormatted})
+where supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, 0 - paidAmount - discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount - discount
 from payment
-where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) <= ${endDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Purchase' as type, docId as transId, createdAt as date, ourPrice as amount, '' as paymentType ,'' as paymentRefNo
+   select * from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount, '' as paymentType ,'' as paymentRefNo
 from purchasebill
-where supplierId = ${partyId} and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})
+where supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, createdAt as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
+select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
 from payment 
-where partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(createdAt) between ${startDateFormatted} and ${endDateFormatted})) a
+where partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
     `;
     const partyDetails = await prisma.party.findUnique({
