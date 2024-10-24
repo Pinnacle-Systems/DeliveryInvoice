@@ -431,7 +431,7 @@ console.log(PartyData,"partyData")
     </div>
   )}
 
-<div className="absolute top-20 right-0 w-58 max-w-xs">
+<div className="absolute top-40 right-0 w-58 max-w-xs">
       <input
         type="text"
         placeholder="Enter discount"

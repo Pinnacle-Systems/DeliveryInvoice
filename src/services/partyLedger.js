@@ -16,21 +16,21 @@ where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) < ${sta
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount
+    select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount,'' as discount
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount -discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount -discount, discount as discount
 from payment
 where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo
+   select * from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo,'' as discount
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
+select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo,discount as discount
 from payment 
 where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
