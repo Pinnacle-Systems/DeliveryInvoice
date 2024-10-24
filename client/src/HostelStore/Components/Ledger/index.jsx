@@ -26,11 +26,11 @@ const Ledger = () => {
     const dispatch = useDispatch();
  
     useEffect(() => {
-        const currentTabPreviewId = openTabs.tabs.find(i => i.name === "PARTY LEDGER")?.previewId
+        const currentTabPreviewId = openTabs.tabs.find(i => i.name === "PARTY SALES LEDGER")?.previewId
         if (!currentTabPreviewId) return
         setPartyId(currentTabPreviewId);
         dispatch(push({
-            name: "PARTY LEDGER",
+            name: "PARTY SALES LEDGER",
             previewId: null
         }))
     }, [openTabs, dispatch])

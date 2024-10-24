@@ -14,7 +14,7 @@ const LedgerReportPrintFormatcus = ({ ledgerData, startDate, endDate }) => {
     const closingBalance = ledgerData?.closingBalance;
     const partyName = ledgerData?.partyDetails?.name;
     const columnWidth = [
-        5, 10, 15, 20, 20, 15, 15
+        5, 10, 10, 15, 20,10, 15, 15
 
     ];
     const columns = [
@@ -27,6 +27,8 @@ const LedgerReportPrintFormatcus = ({ ledgerData, startDate, endDate }) => {
             name: "Credit", columnWidthPercentage: columnWidth[6], openingBalanceRow: "Open. Balance", openingBalanceStyle: "text-center", valueGetter: (entry, index) => entry.type === "Purchase" ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalCredit).toFixed(2)),
             closingBalanceData: "Closing Balance"
         },
+        { name: "DisCount.", columnWidthPercentage: columnWidth[7], valueGetter: (entry, index) => entry.discount },
+
         { name: "Debit", columnWidthPercentage: columnWidth[5], openingBalanceRow: parseFloat(openingBalance || 0).toFixed(2), openingBalanceStyle: "text-center", valueGetter: (entry, index) => entry.type === "Payment" ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalDebit).toFixed(2)), closingBalanceData: parseFloat(closingBalance).toFixed(2) },
     ];
     return (

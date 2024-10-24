@@ -7,6 +7,7 @@ import commaNumber from 'comma-number';
 const  LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
 
     const ledgerDetails = ledgerData?.data ? ledgerData.data : []
+    // Calculate the total credit and debit amounts
     console.log(ledgerData,)
     const totalCredit = ledgerDetails.filter(item => item.type === "Sales").reduce((total, entry) => total + Math.abs(entry.amount), 0);
     const totalDebit = ledgerDetails.filter(item => item.type === "Payment").reduce((total, entry) => total + Math.abs(entry.amount), 0);
@@ -15,7 +16,7 @@ const  LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
     const closingBalance = ledgerData?.closingBalance;
     const partyName = ledgerData?.partyDetails?.name;
     const columnWidth = [
-        5, 10, 10, 20, 20, 15,5, 15
+        5, 10, 10, 15, 20,10, 15, 15
     ];
     const columns = [
         { name: "S.No.", columnWidthPercentage: columnWidth[0], valueGetter: (entry, index) => index + 1, className: "text-center" },
@@ -28,7 +29,7 @@ const  LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
             closingBalanceData: "Closing Balance"
         },
 
-        { name: "DisCount.", columnWidthPercentage: columnWidth[3], valueGetter: (entry, index) => entry.discount },
+        { name: "DisCount.", columnWidthPercentage: columnWidth[7], valueGetter: (entry, index) => entry.discount },
 
         { name: "Debit", columnWidthPercentage: columnWidth[5], openingBalanceRow: parseFloat(openingBalance || 0).toFixed(2), openingBalanceStyle: "text-center", valueGetter: (entry, index) => entry.type === "Payment" ? commaNumber(Math.abs(entry.amount).toFixed(2)) : "", totalsData: commaNumber(Math.abs(totalDebit).toFixed(2)), closingBalanceData: parseFloat(closingBalance).toFixed(2) },
     ];

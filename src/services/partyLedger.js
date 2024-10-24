@@ -57,31 +57,31 @@ export async function getPartyLedgerReportCus(partyId, startDate, endDate) {
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, coalesce(ourPrice,0) as amount
+    select coalesce(sum(amount),0) as openingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, coalesce(ourPrice,0) as amount,'' as discount
 from purchasebill
 where  supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)
+select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0), discount as discount
 from payment
 where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) < ${startDateFormatted})) a
     `;
 
     const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount
+    select coalesce(sum(amount),0) as closingBalance from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount,'' as discount
 from purchasebill
 where supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount - discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount - discount, discount as discount
 from payment
-where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(vcvv) <= ${endDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
-   select * from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount, '' as paymentType ,'' as paymentRefNo
+   select * from (select 'Purchase' as type, docId as transId, selectedDate as date, ourPrice as amount, '' as paymentType ,'' as paymentRefNo,'' as discount
 from purchasebill
 where supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo
+select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo, discount as discount
 from payment 
 where partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
 order by date;
