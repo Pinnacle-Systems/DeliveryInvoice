@@ -6,11 +6,11 @@ export async function getPartyLedgerReport(partyId, startDate, endDate) {
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, coalesce(netBillValue,0) as amount
+    select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, coalesce(netBillValue,0) as amount,'' as discount
 from salesbill
 where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
 union
-select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)- discount
+select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)- discount,discount as discount
 from payment
 where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) < ${startDateFormatted})) a
     `;
