@@ -33,7 +33,7 @@ const Ledger = () => {
             name: "PARTY LEDGER",
             previewId: null
         }))
-    }, [openTabs, dispatch])
+    }, [openTabs, dispatch])    
     return (
         <>
             <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >

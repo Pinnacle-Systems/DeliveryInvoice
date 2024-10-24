@@ -10,8 +10,7 @@ const  LedgerReportPrintFormat = ({ ledgerData, startDate, endDate }) => {
     // Calculate the total credit and debit amounts
     const totalCredit = ledgerDetails.filter(item => item.type === "Sales").reduce((total, entry) => total + Math.abs(entry.amount), 0);
     const totalDebit = ledgerDetails.filter(item => item.type === "Payment").reduce((total, entry) => total + Math.abs(entry.amount), 0);
-     const totalDiscount = ledgerDetails.reduce((total,entry) => total + Math.abs(entry.discount))
-     console.log(totalDiscount,"totalDiscount")
+    const totalDiscount = ledgerDetails.reduce((total, entry) => total + Math.abs(entry.discount || 0), 0);
     const openingBalance = ledgerData?.openingBalance;
     const closingBalance = ledgerData?.closingBalance;
     const partyName = ledgerData?.partyDetails?.name;

@@ -102,8 +102,9 @@ const QuatationStock = () => {
                   <td className="py-2 px-3 border-b border-gray-200">{parseFloat(product._sum.qty).toFixed(2)}</td>
                   <td className="py-2 px-3 border-b border-gray-200">{parseFloat(product.QuatationStock).toFixed(2)}</td>
                   <td className={`py-2 px-3 border-b border-gray-200 ${product._sum.qty - product.QuatationStock < 11 ? 'text-red-500 bg-red-200' : ''}`}>
-                    {product._sum.qty - product.QuatationStock}
-                  </td>
+  {(product._sum.qty - product.QuatationStock).toFixed(2)}
+</td>
+
                 </tr>
               ))
             ) : (
