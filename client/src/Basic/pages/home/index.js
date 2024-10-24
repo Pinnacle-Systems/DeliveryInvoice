@@ -43,7 +43,7 @@ const Home = () => {
             <AppHeader setIsGlobalOpen={setIsGlobalOpen} setLogout={setLogout} />
           )}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 mt-10">
           <ActiveTabList />
         </div>
         {/* <AppFooter /> */}

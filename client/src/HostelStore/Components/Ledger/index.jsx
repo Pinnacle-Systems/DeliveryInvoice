@@ -24,7 +24,7 @@ const Ledger = () => {
     const { data } = useGetPartyQuery({ params: { isPartyLedgerReport: true, partyId, startDate, endDate } }, { skip: !partyId || !startDate || !endDate })
     const ledgerData = data?.data;
     const dispatch = useDispatch();
-   console.log(partyId,"partyId")
+ 
     useEffect(() => {
         const currentTabPreviewId = openTabs.tabs.find(i => i.name === "PARTY LEDGER")?.previewId
         if (!currentTabPreviewId) return
@@ -34,6 +34,7 @@ const Ledger = () => {
             previewId: null
         }))
     }, [openTabs, dispatch])
+    console.log(ledgerData,"ledgerData")
     return (
         <>
             <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >
@@ -43,13 +44,13 @@ const Ledger = () => {
             </Modal>
             <div id='registrationFormReport' className="flex flex-col w-full h-[95%]">
                 <div className="md:flex md:items-center md:justify-between page-heading p-1">
-                    <div className="heading text-center md:mx-10">Party Ledger</div>
+                <div className="heading text-center md:mx-10">Party Sales Ledger</div>
                 </div>
                 <fieldset className='frame my-1'>
                     <legend className='sub-heading'>Parameters</legend>
                     <div className='grid grid-cols-5 my-2 '> 
                         <div className='col-span-2'>
-                            <PartyDropdownSearchCus
+                        <PartyDropdownSearchCus
                                 name={"Customer"} selected={partyId} setSelected={setPartyId} />
                         </div>
                         <TextInput name="Start.Date" value={startDate} setValue={setStartDate} type={"Date"} required={true} />

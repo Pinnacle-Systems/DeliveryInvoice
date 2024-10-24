@@ -3,7 +3,7 @@ import { DropdownWithSearch } from '../../../Inputs';
 import { getCommonParams } from '../../../Utils/helper';
 import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
 import baseQuery from '../../../redux/services/baseQuery';
-const PartyDropdownSearch = ({ readOnly, name, selected, setSelected, id }) => {
+const PartyDropdownSearchSup = ({ readOnly, name, selected, setSelected, id }) => {
     const { token, ...params } = getCommonParams();
     const { data: partyList } = useGetPartyQuery({ params: { ...params } });
     return (
@@ -13,12 +13,9 @@ const PartyDropdownSearch = ({ readOnly, name, selected, setSelected, id }) => {
                 <DropdownWithSearch key={selected} value={selected} className='h-32'
                     readOnly={readOnly}
                     setValue={(value) => setSelected(value)}
-                    options={(partyList?.data || []).filter(item => id ? true : (item?.active && item?.isSupplier === true))} />
+                    options={(partyList?.data || []).filter(item => id ? true : (item?.active && item?.isCustomer === true))} />
             </div>
         </div>
     )
 }
-
-export default PartyDropdownSearch
-
-
+export default PartyDropdownSearchSup

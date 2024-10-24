@@ -16,6 +16,7 @@ import useOutsideClick from "../../../CustomHooks/handleOutsideClick";
 import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
    SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail,OpeningStock,PaymentLedgre,QuatationStock,Ledger,PurchaseLedger, PurchasepayLedgre } from "../../../HostelStore/Components";
 
+
 const ActiveTabList = () => {
   const openTabs = useSelector((state) => state.openTabs);
   const dispatch = useDispatch();
@@ -68,26 +69,29 @@ const ActiveTabList = () => {
 
   const currentShowingTabs = openTabs.tabs.slice(0, parseInt(itemsToShow));
   const hiddenTabs = openTabs.tabs.slice(parseInt(itemsToShow));
+  console.log(currentShowingTabs, 'currentShowingTabs');
+
   return (
-    <div className="relative">
+    // <div className="relative ">
+    <div className="fixed md:top-16 left-0 w-full ">
       <div className="flex justify-between">
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           {currentShowingTabs.map((tab, index) => (
             <div
               key={index}
-              className={`p-1 rounded-t-md text-[10px] flex justify-center gap-1 ${tab.active ? "bg-red-300" : "bg-gray-300"
+              className={`p-1 rounded-t-md text-[10px] flex justify-center gap-1 text-xs p-2  ${tab.active ? "bg-[#009688] text-white" : "bg-gray-300"
                 }`}
             >
               <button
                 onClick={() => {
-                  dispatch(push({ id: tab.id }));
+                  dispatch(push({ name: tab.name }));
                 }}
               >
                 {tab.name}
               </button>
-              <button className="hover:bg-red-400 px-1 rounded-xs transition"
+              <button className="px-1 rounded-xs transition"
                 onClick={() => {
-                  dispatch(remove({ id: tab.id }));
+                  dispatch(remove({ name: tab.name }));
                 }}
               >
                 {CLOSE_ICON}
@@ -105,18 +109,18 @@ const ActiveTabList = () => {
         {showHidden &&
           <ul ref={ref} className="absolute right-0 top-5 bg-gray-200 z-50 text-xs p-1">
             {hiddenTabs.map(tab =>
-              <li key={tab.id} className={`flex justify-between hover:bg-blue-200  ${tab.active ? "bg-red-300" : "bg-gray-300"
+              <li key={tab.name} className={`flex justify-between  ${tab.active ? "bg-[#009688]" : "bg-gray-300"
                 } `}>
                 <button
                   onClick={() => {
-                    dispatch(push({ id: tab.id }));
+                    dispatch(push({ name: tab.name }));
                   }}
                 >
                   {tab.name}
                 </button>
                 <button className="hover:bg-red-400 px-1 rounded-xs transition"
                   onClick={() => {
-                    dispatch(remove({ id: tab.id }));
+                    dispatch(remove({ name: tab.name }));
                   }}
                 >
                   {CLOSE_ICON}
@@ -126,9 +130,8 @@ const ActiveTabList = () => {
           </ul>
         }
       </div>
-      {/* <MonthlySales /> */}
       {openTabs.tabs.map((tab, index) => (
-        <div key={index} className={`${tab.active ? "block" : "hidden"}`}>
+        <div key={index} className={`${tab.active ? "block" : "hidden"} `}>
           {tabs[tab.name]}
         </div>
       ))}

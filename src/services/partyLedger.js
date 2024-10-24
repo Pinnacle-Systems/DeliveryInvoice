@@ -73,7 +73,7 @@ where supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
 union
 select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount - discount
 from payment
-where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(cvv) <= ${endDateFormatted})) a
+where  partyid = ${partyId} and paymentType = 'PURCHASEBILL' and (DATE(vcvv) <= ${endDateFormatted})) a
     `;
 
     const data = await prisma.$queryRaw`
