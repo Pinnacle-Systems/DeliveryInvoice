@@ -41,10 +41,7 @@ export default function EmployeeReport({employees, loading, onClick, searchValue
               <>
                 <div className='flex-1 items-center overflow-auto' style={{ width: "100%" }}>
                   <div className='grid md:grid-cols-6 p-2 gap-2' >
-                    {employees.map((employee) =>
-                      <ProfileCard key={employee.id} regNo={employee.regNo} name={employee.name} image={employee.imageBase64}
-                        employeeCategory={employee?.EmployeeCategory?.name} mobile={employee.mobile} active={employee.active}
-                        onClick={()=>onClick(employee.id)} />)}
+                   
                   </div>
                 </div>
                 <ReactPaginate
