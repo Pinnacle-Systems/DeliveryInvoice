@@ -282,3 +282,30 @@ export const DropdownWithSearch = ({ options, value, setValue, readOnly }) => {
 }
 
 
+export function ReusableInput(
+  { setValue, label, type, value, className = "", placeholder, readOnly, disabled }
+) {
+  return (
+    <div className="mb-2">
+      {label && (
+        <label htmlFor="id" className="text-xs ">
+          {label}
+        </label>
+      )}
+      <input
+        type={type}
+        value={value}
+        onChange={(e) =>
+          type === "number" ? setValue(e.target.value) : handleOnChange(e, setValue)
+        }
+        placeholder={placeholder}
+        readOnly={readOnly}
+        disabled={disabled}
+        className={`ml-4 border-emerald-800 border-2 rounded py-1 text-xs  
+          focus:border-indigo-300 focus:outline-none transition-all duration-200
+          hover:border-slate-400 ${readOnly || disabled ? "bg-slate-100" : ""
+          } ${className}`}
+      />
+    </div>
+  );
+}

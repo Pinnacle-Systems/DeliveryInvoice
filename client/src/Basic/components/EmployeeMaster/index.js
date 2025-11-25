@@ -1,768 +1,469 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useGetSizeTableMasterQuery, useGetAllocationMasterQuery } from "../../../redux/uniformService/SizeTableMasterService";
-import secureLocalStorage from 'react-secure-storage';
-import { useAddAqlInspectionMutation, useGetAqlInspectionsQuery, useGetAqlInspectionByIdQuery, useDeleteAqlInspectionMutation } from "../../../redux/uniformService/AqlInspectionService";
-import Mastertable from '../MasterTable/Mastertable';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import secureLocalStorage from "react-secure-storage";
+import {
+    useGetEmployeeQuery,
+    useGetEmployeeByIdQuery,
+    useAddEmployeeMutation,
+    useUpdateEmployeeMutation,
+    useDeleteEmployeeMutation,
+} from "../../../redux/services/EmployeeMasterService";
+import { useGetCountriesQuery } from "../../../redux/services/CountryMasterService";
+import { useGetCityQuery } from "../../../redux/services/CityMasterService";
+import LiveWebCam from "../LiveWebCam";
+import FormHeader from "../FormHeader";
+import FormReport from "../FormReportTemplate";
+import { toast } from "react-toastify";
+import { TextInput, DropdownInput, TextArea, CurrencyInput, DateInput, DisabledInput } from "../../../Inputs";
+import ReportTemplate from "../ReportTemplate";
+import { dropDownListObject, dropDownListMergedObject } from '../../../Utils/contructObject';
+import Modal from "../../../UiComponents/Modal";
+import { statusDropdown, employeeType, genderList, maritalStatusList, bloodList } from "../../../Utils/DropdownData";
+import moment from "moment";
+import { useGetEmployeeCategoryQuery } from "../../../redux/services/EmployeeCategoryMasterService";
+import { viewBase64String } from '../../../Utils/helper';
+import SingleImageFileUploadComponent from "../SingleImageUploadComponent";
+import EmployeeLeavingForm from "./EmployeeLeavingForm";
+import { useGetDepartmentQuery } from "../../../redux/services/DepartmentMasterService";
+import EmployeeReport from "./Report";
+import { useDispatch } from "react-redux";
+import Loader from "../Loader";
+const MODEL = "Employee Master";
 
-const Aql = () => {
-  const [selectedReference, setSelectedReference] = useState('');
-  const [inspectionDate, setInspectionDate] = useState(new Date().toISOString().split('T')[0]);
-  const [id, setId] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [newItem, setNewItem] = useState(false);
 
-  const [showSizeDropdown, setShowSizeDropdown] = useState(false);
-  const [allMeasurementsCache, setAllMeasurementsCache] = useState({});
-  const [measurements, setMeasurements] = useState([]);
-  const [checkValues, setCheckValues] = useState({});
-  const [savedSizes, setSavedSizes] = useState([]);
-  const [savedMeasurements, setSavedMeasurements] = useState({});
-  const [partialSavedMeasurements, setPartialSavedMeasurements] = useState({});
-  const [formStatus, setFormStatus] = useState({
-    isDirty: false,
-    lastSaved: null,
-    isSubmitting: false
-  });
-  const [readOnly, setReadOnly] = useState(false);
-  const { data: aqlData } = useGetAqlInspectionsQuery();
-  const PIECES_COUNT = 5; 
-  const companyId = secureLocalStorage.getItem(
-    sessionStorage.getItem("sessionId") + "userCompanyId"
-  );
+export default function Form() {
+    const [form, setForm] = useState(false);
+    const [cameraOpen, setCameraOpen] = useState(false);
 
-  const storageKey = `aqlFormData_${companyId}_${selectedReference}`;
+    const [readOnly, setReadOnly] = useState(false);
 
-  const { data: sizeData } = useGetSizeTableMasterQuery(
-    { productReference: selectedReference },
-    { skip: !selectedReference }
-  );
-  const {
-    data: singleData,
-    isLoading: isSingleLoading,
-    isFetching: isSingleFetching
-  } = useGetAqlInspectionByIdQuery(id, { skip: !id });
+    const [id, setId] = useState("");
+    const [panNo, setPanNo] = useState("");
+    const [name, setName] = useState("");
+    const [fatherName, setFatherName] = useState("");
+    const [dob, setDob] = useState("");
+    const [chamberNo, setChamberNo] = useState("");
+    const [localAddress, setlocalAddress] = useState("");
+    const [localCity, setLocalCity] = useState("");
+    const [localPincode, setLocalPincode] = useState("");
+    const [mobile, setMobile] = useState("");
+    const [degree, setDegree] = useState("");
+    const [specialization, setSpecialization] = useState("");
+    const [salaryPerMonth, setSalaryPerMonth] = useState("");
+    const [commissionCharges, setCommissionCharges] = useState("");
+    const [gender, setGender] = useState("");
+    const [regNo, setRegNo] = useState("");
+    const [joiningDate, setJoiningDate] = useState("");
+    const [permAddress, setPermAddress] = useState("");
+    const [permCity, setPermCity] = useState("");
+    const [permPincode, setPermPincode] = useState("")
+    const [email, setEmail] = useState("");
+    const [maritalStatus, setMaritalStatus] = useState("");
+    const [consultFee, setConsultFee] = useState("");
+    const [accountNo, setAccountNo] = useState("");
+    const [ifscNo, setIfscNo] = useState("");
+    const [branchName, setbranchName] = useState("");
+    const [bloodGroup, setBloodGroup] = useState("");
+    const [department, setDepartment] = useState("");
+    const [employeeCategory, setEmployeeCategory] = useState();
+    const [permanent, setPermanent] = useState("");
+    const [active, setActive] = useState(true);
 
-  const { data: sizeTableData } = useGetAllocationMasterQuery();
-  const [addAqlInspection, { isLoading: isSubmitting }] = useAddAqlInspectionMutation();
-  const [removeData] = useDeleteAqlInspectionMutation();
-  const [mergedReportData, setMergedReportData] = useState([]);
+    const [branchPrefixCategory, setBranchPrefixCategory] = useState("");
+    // Employee Leaving form fields
+    const [leavingForm, setLeavingForm] = useState(false);
 
-  const references = [...new Set(sizeTableData?.data?.map(item => item.reference) || [])];
-  const selectedProduct = sizeData?.data;
-  const availableSizes = selectedProduct?.availableSizes || [];
-  
-  useEffect(() => {
-    if (sizeTableData?.data && aqlData?.data) {
-      const merged = aqlData.data.map(aqlItem => {
-        const matchingAllocations = sizeTableData.data.filter(
-          allocItem => allocItem.reference === aqlItem.reference
-        );
+    const [leavingDate, setLeavingDate] = useState("");
+    const [leavingReason, setLeavingReason] = useState("");
+    const [canRejoin, setCanRejoin] = useState("");
+    const [rejoinReason, setRejoinReason] = useState("");
 
-        return {
-          ...aqlItem,
-          allocations: matchingAllocations,
-          allocationDetails: matchingAllocations.map(alloc => ({
-            id: alloc.id,
-            partyName: alloc.Party?.name,
-            lineName: alloc.LineMaster?.lineName,
-            deliveryDate: alloc.DeliveryDate,
-            allocationDate: alloc.allocationDate
-          }))
-        };
-      });
+    const [searchValue, setSearchValue] = useState("");
+    const [image, setImage] = useState(null);
 
-      setMergedReportData(merged);
+    const childRecord = useRef(0);
+    const dispatch = useDispatch();
+
+
+    const params = {
+        companyId: secureLocalStorage.getItem(
+            sessionStorage.getItem("sessionId") + "userCompanyId"
+        ),
+    };
+    const { data: countriesList, isLoading: isCountryLoading, isFetching: isCountryFetching } =
+        useGetCountriesQuery({ params });
+
+    const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =
+        useGetCityQuery({ params });
+
+    const { data: employeeCategoryList } =
+        useGetEmployeeCategoryQuery({ params });
+
+    const { data: departmentList } =
+        useGetDepartmentQuery({ params });
+    const { data: allData, isLoading, isFetching } = useGetEmployeeQuery({ params, searchParams: searchValue });
+
+
+
+    const isCurrentEmployeeDoctor = (employeeCategory) => employeeCategoryList.data.find((cat) => parseInt(cat.id) === parseInt(employeeCategory))?.name?.toUpperCase() === "DOCTOR";
+    const {
+        data: singleData,
+        isFetching: isSingleFetching,
+        isLoading: isSingleLoading,
+    } = useGetEmployeeByIdQuery(id, { skip: !id });
+
+    const [addData] = useAddEmployeeMutation();
+    const [updateData] = useUpdateEmployeeMutation();
+    const [removeData] = useDeleteEmployeeMutation();
+
+    const syncFormWithDb = useCallback((data) => {
+        if (id) setReadOnly(true);
+        setPanNo(data?.panNo ? data?.panNo : "");
+        setName(data?.name ? data?.name : "");
+        setFatherName(data?.fatherName ? data?.fatherName : "");
+        setDob(data?.dob ? moment.utc(data?.dob).format('YYYY-MM-DD') : "");
+        setChamberNo(data?.chamberNo ? data?.chamberNo : "");
+        setlocalAddress(data?.localAddress ? data?.localAddress : "");
+        setLocalCity(data?.localCity?.id ? data?.localCity?.id : "");
+        setLocalPincode(data?.localPincode ? data?.localPincode : "");
+        setMobile(data?.mobile ? data?.mobile : "");
+        setDegree(data?.degree ? data?.degree : "");
+        setSpecialization(data?.specialization ? data?.specialization : "");
+        setSalaryPerMonth(data?.salaryPerMonth ? data?.salaryPerMonth : "");
+        setCommissionCharges(data?.commissionCharges ? data?.commissionCharges : "");
+        setGender(data?.gender ? data?.gender : "");
+        setRegNo(data?.regNo ? data?.regNo : "");
+        setJoiningDate(data?.joiningDate ? moment.utc(data?.joiningDate).format('YYYY-MM-DD') : "");
+        setPermAddress(data?.permAddress ? data?.permAddress : "");
+        setPermCity(data?.permCity ? data?.permCity?.id : "");
+        setPermPincode(data?.permPincode ? data?.permPincode : "");
+        setEmail(data?.email ? data?.email : "");
+        setMaritalStatus(data?.maritalStatus ? data?.maritalStatus : "");
+        setConsultFee(data?.consultFee ? data?.consultFee : "");
+        setAccountNo(data?.accountNo ? data?.accountNo : "");
+        setIfscNo(data?.ifscNo ? data?.ifscNo : "");
+        setbranchName(data?.branchName ? data?.branchName : "");
+        setBloodGroup(data?.bloodGroup ? data?.bloodGroup : "");
+        setDepartment(data?.departmentId ? data?.department?.id : "");
+        setImage(data?.imageBase64 ? viewBase64String(data?.imageBase64) : null);
+        setEmployeeCategory(data?.employeeCategoryId ? data?.employeeCategoryId : "");
+        setPermanent(data?.permanent ? data?.permanent : "");
+        setActive(data ? data.active : "");
+
+        // Employee Leaving Form states
+        setLeavingDate(data?.leavingDate ? data?.leavingDate : "");
+        setLeavingReason(data?.leavingReason ? data?.leavingReason : "");
+        setCanRejoin(data?.canRejoin ? data?.canRejoin : false);
+        setRejoinReason(data?.rejoinReason ? data?.rejoinReason : "");
+        secureLocalStorage.setItem(sessionStorage.getItem("sessionId") + "currentEmployeeSelected", data?.id);
+    }, [id]);
+
+    useEffect(() => {
+        syncFormWithDb(singleData?.data);
+    }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
+
+    const data = {
+        branchId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "currentBranchId"), panNo, name, fatherName, dob, chamberNo, localAddress, localCity, localPincode, mobile, degree, specialization, salaryPerMonth,
+        commissionCharges, gender, joiningDate, permAddress, permCity, permPincode, email, maritalStatus, consultFee, accountNo,
+        ifscNo, branchName, bloodGroup, ...department && { department }, employeeCategoryId: employeeCategory, permanent, active,
+        id, leavingReason, leavingDate, canRejoin, rejoinReason
     }
-  }, [sizeTableData, aqlData]);
 
-  const tableHeaders = [
-    "ID",
-    "Reference",
-    "Inspection Date",
-    "Party",
-    "Line",
-    "Delivery Date",
-  ];
+    const validateData = (data) => {
+        return data.name && data.joiningDate && data.fatherName && data.dob && data.gender && data.maritalStatus && data.bloodGroup &&
+            data.panNo && data.email && data.mobile && data.degree && data.specialization &&
+            data.localAddress && data.localCity && data.localPincode && data.employeeCategoryId && (isCurrentEmployeeDoctor(employeeCategory) ? data.department && data.chamberNo : true)
 
-  const tableDataNames = [
-    "dataObj?.id",
-    "dataObj?.reference",
-    "new Date(dataObj?.inspectionDate).toLocaleDateString()",
-    "dataObj?.allocationDetails?.[0]?.partyName || 'N/A'",
-    "dataObj?.allocationDetails?.[0]?.lineName || 'N/A'",
-    "dataObj?.allocationDetails?.[0]?.deliveryDate ? new Date(dataObj.allocationDetails[0].deliveryDate).toLocaleDateString() : 'N/A'",
-  ];
-
-  const loadSavedData = () => {
-    const savedData = secureLocalStorage.getItem(storageKey);
-    if (savedData) {
-      setSavedSizes(savedData.savedSizes || []);
-      setSavedMeasurements(savedData.savedMeasurements || {});
-      setPartialSavedMeasurements(savedData.partialSavedMeasurements || {});
-      setFormStatus(prev => ({
-        ...prev,
-        lastSaved: new Date(savedData.lastUpdated).toLocaleString()
-      }));
-
-      if (savedData.savedSizes?.length > 0 && !selectedSize) {
-        setSelectedSize(savedData.savedSizes[0]);
-      }
-    } else {
-      setSavedSizes([]);
-      setSavedMeasurements({});
-      setPartialSavedMeasurements({});
     }
-  };
 
-  const saveDataToStorage = () => {
-    if (!selectedReference) return;
+    const handleSubmitCustom = async (callback, data, text) => {
+        try {
+            let returnData;
+            const formData = new FormData()
+            for (let key in data) {
+                formData.append(key, data[key]);
+            }
+            if (image instanceof File) {
+                formData.append("image", image);
+            } else if (!image) {
+                formData.append("isDeleteImage", true);
+            }
+            if (text === "Updated") {
+                returnData = await callback({ id, body: formData }).unwrap();
+            } else {
+                returnData = await callback(formData).unwrap();
+            }
+            setId("")
+            syncFormWithDb(undefined)
+            toast.success(text + "Successfully");
+            dispatch({
+                type: `EmployeeCategoryMaster/invalidateTags`,
+                payload: ['Employee Category'],
+            });
+            dispatch({
+                type: `DepartmentMaster/invalidateTags`,
+                payload: ['Department'],
+            });
+            dispatch({
+                type: `CityMaster/invalidateTags`,
+                payload: ['City/State Name'],
+            });
 
-    const formData = {
-      savedSizes,
-      savedMeasurements,
-      partialSavedMeasurements,
-      lastUpdated: new Date().toISOString()
+        } catch (error) {
+            console.log("handle");
+        }
     };
 
-    secureLocalStorage.setItem(storageKey, formData);
-    setFormStatus(prev => ({
-      ...prev,
-      isDirty: false,
-      lastSaved: new Date().toLocaleString()
-    }));
-  };
-
-  useEffect(() => {
-    if (selectedReference) {
-      loadSavedData();
-    } else {
-      resetForm();
+    const saveData = () => {
+        if (!validateData(data)) {
+            toast.info("Please fill all required fields...!", { position: "top-center" })
+            return
+        }
+        // if (!validateEmail(data.email)) {
+        //     toast.info("Please enter proper email id!", { position: "top-center" })
+        //     return
+        // }
+        // if (!validateMobile(data.mobile)) {
+        //     toast.info("Please enter proper mobile number...!", { position: "top-center" })
+        //     return
+        // }
+        // if (!validatePan(data.panNo)) {
+        //     toast.info("Please enter proper pan number...!", { position: "top-center" })
+        //     return
+        // }
+        // if (!validatePincode(data.localPincode)) {
+        //     toast.info("Please enter proper local Pincode...!", { position: "top-center" })
+        //     return
+        // }
+        // if (data.permPincode && !validatePincode(data.permPincode)) {
+        //     toast.info("Please enter proper perm. Pincode...!", { position: "top-center" })
+        //     return
+        // }
+        if (!JSON.parse(active)) {
+            setLeavingForm(true);
+        } else {
+            if (id) {
+                handleSubmitCustom(updateData, data, "Updated");
+            } else {
+                handleSubmitCustom(addData, data, "Added");
+            }
+        }
     }
-  }, [selectedReference]);
 
-  useEffect(() => {
-    if (selectedReference && formStatus.isDirty) {
-      const saveTimer = setTimeout(() => {
-        saveDataToStorage();
-      }, 1000);
 
-      return () => clearTimeout(saveTimer);
-    }
-  }, [savedSizes, savedMeasurements, partialSavedMeasurements, selectedReference, formStatus.isDirty]);
-
-  // Sync form with existing inspection data
-  const syncFormWithDb = useCallback((data) => {
-    if (!data) return;
-    
-    setSelectedReference(data.reference || '');
-    if (data.inspectionDate) {
-      setInspectionDate(new Date(data.inspectionDate).toISOString().split('T')[0]);
-    }
-    
-    const savedSizesArr = data.samples?.map(sample => sample.size) || [];
-    setSavedSizes(savedSizesArr);
-    
-    const savedMeas = {};
-    const partialSavedMeas = {};
-    
-    data.samples?.forEach(sample => {
-      const size = sample.size;
-      savedMeas[size] = {};
-      
-      sample.measurements?.forEach(measurement => {
-        const values = measurement.values
-          .sort((a, b) => a.pieceNumber - b.pieceNumber)
-          .map(item => item.actualValue);
-          
-        savedMeas[size][measurement.measurementId] = values;
-      });
-    });
-    
-    setSavedMeasurements(savedMeas);
-    setPartialSavedMeasurements(partialSavedMeas);
-    
-    if (savedSizesArr.length > 0) {
-      setSelectedSize(savedSizesArr[0]);
-    }
-    
-    setReadOnly(true);
-    secureLocalStorage.setItem(sessionStorage.getItem("sessionId") + "aqlSelected", data?.id);
-  }, []);
-
-  useEffect(() => {
-    if (singleData?.data) {
-      syncFormWithDb(singleData.data);
-    }
-  }, [singleData, syncFormWithDb]);
-
-  useEffect(() => {
-    if (selectedProduct && selectedSize) {
-      const measurementData = selectedProduct.measurements
-        ?.filter(m => m.values?.some(v => v.size === selectedSize))
-        ?.map(m => {
-          const valueObj = m.values?.find(v => v.size === selectedSize);
-          return {
-            id: m.id,
-            name: m.description,
-            standardValue: valueObj?.value,
-            toleranceMin: m.toleranceMin || '0',
-            toleranceMax: m.toleranceMax || '0',
-            unit: m.unit || ''
-          };
-        }) || [];
-
-      setMeasurements(measurementData);
-
-      const savedData = savedMeasurements[selectedSize] || partialSavedMeasurements[selectedSize] || {};
-      const initialCheckValues = {};
-      measurementData.forEach(m => {
-        initialCheckValues[m.id] = savedData[m.id] || Array(PIECES_COUNT).fill('');
-      });
-
-      setCheckValues(initialCheckValues);
-    } else {
-      setMeasurements([]);
-      setCheckValues({});
-    }
-  }, [selectedProduct, selectedSize, savedMeasurements, partialSavedMeasurements]);
-
-  const handleCheckValueChange = (measurementId, pieceIndex, value) => {
-    if (readOnly) return;
-    
-    setCheckValues(prev => ({
-      ...prev,
-      [measurementId]: prev[measurement.id].map((val, idx) =>
-        idx === pieceIndex ? value : val)
-    }));
-    setFormStatus(prev => ({ ...prev, isDirty: true }));
-  };
-
-  const isSizeComplete = (size) => {
-    const sizeData = savedMeasurements[size];
-    if (!sizeData) return false;
-
-    return measurements.every(measurement => {
-      const values = sizeData[measurement.id];
-      return values && values.length === PIECES_COUNT && values.every(val => val !== '');
-    });
-  };
-
-  const isSizePartiallySaved = (size) => {
-    return partialSavedMeasurements.hasOwnProperty(size) &&
-      !isSizeComplete(size);
-  };
-
-  const handlePartialSave = () => {
-    if (!selectedSize || readOnly) return;
-
-    const updatedPartialMeasurements = {
-      ...partialSavedMeasurements,
-      [selectedSize]: checkValues
+    const deleteData = async () => {
+        if (id) {
+            if (!window.confirm("Are you sure to delete...?")) {
+                return;
+            }
+            try {
+                await removeData(id)
+                setId("");
+                dispatch({
+                    type: `EmployeeCategoryMaster/invalidateTags`,
+                    payload: ['Employee Category'],
+                });
+                dispatch({
+                    type: `DepartmentMaster/invalidateTags`,
+                    payload: ['Department'],
+                });
+                dispatch({
+                    type: `cityMaster/invalidateTags`,
+                    payload: ['City/State Name'],
+                });
+                toast.success("Deleted Successfully");
+            } catch (error) {
+                toast.error("something went wrong");
+            }
+        }
     };
-    setPartialSavedMeasurements(updatedPartialMeasurements);
 
-    if (!savedSizes.includes(selectedSize)) {
-      setSavedSizes(prev => [...prev, selectedSize]);
-    }
-
-    setFormStatus(prev => ({ ...prev, isDirty: true }));
-    toast.info('Partially saved measurements for this size.');
-  };
-
-  const handleSaveSize = () => {
-    if (!selectedSize || readOnly) return;
-
-    const isComplete = measurements.every(measurement => {
-      return checkValues[measurement.id] &&
-        checkValues[measurement.id].length === PIECES_COUNT &&
-        checkValues[measurement.id].every(val => val !== '');
-    });
-
-    if (!isComplete) {
-      toast.error(`Please fill all measurements for all ${PIECES_COUNT} pieces before fully saving this size.`);
-      return;
-    }
-
-    const updatedMeasurements = {
-      ...savedMeasurements,
-      [selectedSize]: checkValues
+    const handleKeyDown = (event) => {
+        let charCode = String.fromCharCode(event.which).toLowerCase();
+        if ((event.ctrlKey || event.metaKey) && charCode === "s") {
+            event.preventDefault();
+            saveData();
+        }
     };
-    setSavedMeasurements(updatedMeasurements);
 
-    const updatedPartial = { ...partialSavedMeasurements };
-    delete updatedPartial[selectedSize];
-    setPartialSavedMeasurements(updatedPartial);
-
-    if (!savedSizes.includes(selectedSize)) {
-      setSavedSizes(prev => [...prev, selectedSize]);
-    }
-
-    setSelectedSize('');
-    setShowSizeDropdown(false);
-    setFormStatus(prev => ({ ...prev, isDirty: true }));
-    toast.success('Size measurements saved successfully!');
-  };
-
-  const handleLoadSize = (size) => {
-    setSelectedSize(size);
-    setShowSizeDropdown(false);
-  };
-
-  const checkTolerance = (measurement, value) => {
-    if (!value || isNaN(value)) return '';
-    const numericValue = parseFloat(value);
-    const standardValue = parseFloat(measurement.standardValue);
-    const toleranceMin = parseFloat(measurement.toleranceMin);
-    const toleranceMax = parseFloat(measurement.toleranceMax);
-
-    const deviation = numericValue - standardValue;
-
-    if (deviation < 0 && Math.abs(deviation) > Math.abs(toleranceMin)) {
-      return 'bg-red-100 text-red-800';
-    }
-    else if (deviation > 0 && deviation > toleranceMax) {
-      return 'bg-red-100 text-red-800';
-    }
-    return 'bg-green-100 text-green-800';
-  };
-
-  const prepareDatabasePayload = () => {
-    const validSamples = savedSizes.filter(size =>
-      isSizeComplete(size)
-    ).map(size => ({
-      size: size,
-      measurements: measurements.map(measurement => ({
-        measurementId: measurement.id,
-        measurementName: measurement.name,
-        standardValue: measurement.standardValue.toString(),
-        toleranceMin: measurement.toleranceMin.toString(),
-        toleranceMax: measurement.toleranceMax.toString(),
-        unit: measurement.unit,
-        values: (savedMeasurements[size]?.[measurement.id] || []).map((value, index) => ({
-          pieceNumber: index + 1,
-          actualValue: value.toString(),
-          status: value ? checkTolerance(measurement, value).includes('red') ? 'out_of_tolerance' : 'within_tolerance' : 'not_measured'
-        }))
-      }))
-    }));
-
-    return {
-      companyId: companyId.toString(),
-      reference: selectedReference,
-      inspectionDate: new Date(inspectionDate),
-      samples: validSamples
-    };
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const validSamples = savedSizes.filter(size => isSizeComplete(size));
-    if (validSamples.length === 0) {
-      toast.error('Please save at least one complete size (all measurements filled) before submitting.');
-      return;
-    }
-
-    setFormStatus(prev => ({ ...prev, isSubmitting: true }));
-
-    try {
-      const payload = prepareDatabasePayload();
-      const response = await addAqlInspection(payload).unwrap();
-
-      if (response.success) {
-        toast.success('AQL Form submitted successfully!');
-        secureLocalStorage.removeItem(storageKey);
-        resetForm();
-      } else {
-        throw new Error(response.message || 'Submission failed');
-      }
-    } catch (error) {
-      console.error('Submission error:', error);
-      toast.error(`Failed to submit AQL form: ${error.message}`);
-    } finally {
-      setFormStatus(prev => ({ ...prev, isSubmitting: false }));
-    }
-  };
-
-  const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset the form? All unsaved data will be lost.')) {
-      secureLocalStorage.removeItem(storageKey);
-      resetForm();
-      toast.info('Form has been reset');
-    }
-  };
-
-  const resetForm = () => {
-    setSelectedReference('');
-    setSelectedSize('');
-    setMeasurements([]);
-    setCheckValues({});
-    setSavedSizes([]);
-    setSavedMeasurements({});
-    setPartialSavedMeasurements({});
-    setFormStatus({
-      isDirty: false,
-      lastSaved: null,
-      isSubmitting: false
-    });
-    setReadOnly(false);
-    setId('');
-  };
-
-  const handleManualSave = () => {
-    saveDataToStorage();
-    toast.success('Form progress saved successfully!');
-  };
-
-  const getSizeStatus = (size) => {
-    if (isSizeComplete(size)) return 'complete';
-    if (isSizePartiallySaved(size)) return 'partial';
-    return 'none';
-  };
-
-  const onDataClick = (id) => {
-    setId(id);
-    setNewItem(true);
-  };
-
-  const deleteData = async () => {
-    if (id) {
-      if (!window.confirm("Are you sure to delete this inspection?")) {
-        return;
-      }
-      try {
-        await removeData(id);
+    const onNew = () => {
         setId("");
-        toast.success("Deleted Successfully");
-        setNewItem(false);
-      } catch (error) {
-        toast.error("Something went wrong");
-      }
+        setReadOnly(false);
+        setForm(true);
+        setSearchValue("");
+    };
+
+    function onDataClick(id) {
+        setId(id);
+        setForm(true);
     }
-  };
-
-  const handleCancel = () => {
-    if (formStatus.isDirty) {
-      if (!window.confirm('You have unsaved changes. Are you sure you want to cancel?')) {
-        return;
-      }
+    const tableHeaders = ["Employee Id", "Name", "Employee Category"]
+    const tableDataNames = ["dataObj.regNo", "dataObj.name", 'dataObj?.EmployeeCategory?.name']
+    const submitLeavingForm = () => {
+        console.log("sdfsdfsdfsdf")
+        if (id) {
+            console.log("called id")
+            handleSubmitCustom(updateData, data, "Updated");
+        } else {
+            console.log("called no id")
+            handleSubmitCustom(addData, data, "Added");
+        }
+        setLeavingForm(false);
     }
-    setNewItem(false);
-    resetForm();
-  };
 
-  return (
-    <>
-      {newItem === false ? (
-        <>
-          <div className="bg-white px-4 py-2 flex items-center justify-between">
-            <h1 className="text-lg font-bold text-gray-800">AQL Inspection Report</h1>
-            <button 
-              onClick={() => {
-                setId('');
-                setNewItem(true);
-              }} 
-              className="text-indigo-600 hover:text-white rounded-md border border-indigo-600 bg-white hover:bg-indigo-600 px-3 py-1 text-xs"
-            >
-              Add New +
-            </button>
-          </div>
+    if (!form)
+        return (
+            <EmployeeReport
+                loading={
+                    isLoading || isFetching
+                }
+                setForm={setForm}
+                employees={allData?.data}
+                onClick={onDataClick}
+                onNew={onNew}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+            />
+        );
+    if (!countriesList?.data || !employeeCategoryList?.data || !cityList?.data) return <Loader />
 
-          <Mastertable
-            header={`AQL Inspection Report`}
-            onDataClick={onDataClick}
-            tableHeaders={tableHeaders}
-            tableDataNames={tableDataNames}
-            data={mergedReportData}
-            deleteData={deleteData}
-          />
-        </>
-      ) : (
-        <div className="min-h-screen bg-gray-50">
-          <div className="w-full">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ minHeight: 'calc(100vh - 2rem)' }}>
-              <div className="bg-white px-4 py-2 flex items-center justify-between">
-                <h1 className="text-lg font-bold text-gray-800">
-                  {id ? 'AQL Inspection Details' : 'AQL Inspection Form'}
-                </h1>
-                <div
-                  className="text-indigo-600 hover:text-white rounded-md border border-indigo-600 bg-white hover:bg-indigo-600 px-2 py-1 text-xs flex items-center cursor-pointer"
-                  onClick={handleCancel}
-                >
-                  <span>Back to Report</span>
-                </div>
-              </div>
-
-              <div className="p-4 flex-1 flex flex-col">
-                <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-                  <div className="grid grid-cols-3 w-full md:grid-cols-3 gap-3 mb-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Order Id <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={selectedReference}
-                          onChange={(e) => {
-                            setSelectedReference(e.target.value);
-                            setSelectedSize('');
-                            setFormStatus(prev => ({ ...prev, isDirty: false }));
-                          }}
-                          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
-                          required
-                          disabled={readOnly}
-                        >
-                          <option value="">Select a reference</option>
-                          {references.map((ref, index) => (
-                            <option key={index} value={ref}>{ref}</option>
-                          ))}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                          <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Inspection Date
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="date"
-                          value={inspectionDate}
-                          onChange={(e) => !readOnly && setInspectionDate(e.target.value)}
-                          readOnly={readOnly}
-                          className={`w-full px-3 py-2 text-xs border rounded-md shadow-sm ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Size <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => !readOnly && setShowSizeDropdown(!showSizeDropdown)}
-                          disabled={!selectedReference || readOnly}
-                          className={`w-full px-3 py-2 text-left text-xs border rounded-md shadow-sm flex justify-between items-center 
-                            ${!selectedReference || readOnly ? 'bg-gray-100 cursor-not-allowed' : 'bg-white hover:border-blue-500'}
-                            ${selectedSize ? 'border-blue-500' : 'border-gray-300'}`}
-                        >
-                          <span className={selectedSize ? 'text-gray-900' : 'text-gray-500'}>
-                            {selectedSize || 'Select size'}
-                          </span>
-                          <svg className={`h-4 w-4 text-gray-400 transition-transform ${showSizeDropdown ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                        {showSizeDropdown && (
-                          <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 text-xs ring-1 ring-black ring-opacity-5 max-h-60 overflow-auto focus:outline-none">
-                            {availableSizes.length > 0 ? (
-                              availableSizes.map((size, index) => {
-                                const status = getSizeStatus(size);
-                                return (
-                                  <div
-                                    key={index}
-                                    className={`px-3 py-1 hover:bg-blue-50 cursor-pointer flex justify-between items-center 
-                                      ${status === 'complete' ? 'bg-green-50' : status === 'partial' ? 'bg-yellow-50' : ''}
-                                      ${selectedSize === size ? 'bg-blue-50' : ''}`}
-                                    onClick={() => handleLoadSize(size)}
-                                  >
-                                    <span>{size}</span>
-                                    <div className="flex items-center">
-                                      {status === 'complete' && (
-                                        <span className="text-green-500 ml-2">✓</span>
-                                      )}
-                                      {status === 'partial' && (
-                                        <span className="text-yellow-500 ml-2">~</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })
-                            ) : (
-                              <div className="px-3 py-1 text-gray-500">No sizes available</div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {savedSizes.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-xs font-medium text-gray-700 mb-1">Saved Sizes:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {savedSizes.map((size, index) => {
-                          const status = getSizeStatus(size);
-                          return (
-                            <button
-                              key={index}
-                              type="button"
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                ${selectedSize === size ? 'ring-2 ring-blue-500' : ''}
-                                ${status === 'complete' ? 'bg-green-100 text-green-800' :
-                                  status === 'partial' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-gray-100 text-gray-800'}`}
-                              onClick={() => handleLoadSize(size)}
-                            >
-                              {size}
-                              {status === 'complete' && (
-                                <span className="ml-1">✓</span>
-                              )}
-                              {status === 'partial' && (
-                                <span className="ml-1">~</span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {measurements.length > 0 && (
-                    <div className="flex-1 overflow-hidden flex flex-col mb-3">
-                      <div className="overflow-auto flex-1">
-                        <table className="min-w-full bg-white border border-gray-200">
-                          <thead className="bg-gray-50 sticky top-0">
-                            <tr>
-                              <th rowSpan="2" className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Measurement
-                              </th>
-                              <th rowSpan="2" className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Std Value
-                              </th>
-                              <th rowSpan="2" className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Tolerance
-                              </th>
-                              <th colSpan={PIECES_COUNT} className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                                Pieces (1-{PIECES_COUNT})
-                              </th>
-                            </tr>
-                            <tr>
-                              {Array.from({ length: PIECES_COUNT }, (_, i) => i + 1).map(num => (
-                                <th key={num} className="px-1 py-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  #{num}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-200">
-                            {measurements.map(measurement => (
-                              <tr key={measurement.id}>
-                                <td className="px-2 py-1 whitespace-nowrap text-xs font-medium text-gray-900">
-                                  {measurement.name} ({measurement.unit})
-                                </td>
-                                <td className="px-2 py-1 whitespace-nowrap text-xs text-gray-500">
-                                  {measurement.standardValue}
-                                </td>
-                                <td className="px-2 py-1 whitespace-nowrap text-xs text-gray-500">
-                                  -{measurement.toleranceMin}/+{measurement.toleranceMax}
-                                </td>
-                                {checkValues[measurement.id]?.map((value, index) => (
-                                  <td key={index} className="px-1 py-1 whitespace-nowrap">
-                                    <input
-                                      type="text"
-                                      value={value}
-                                      onChange={(e) => {
-                                        if (readOnly) return;
-                                        let raw = e.target.value;
-                                        raw = raw.replace(/[^\d.]/g, '');
-                                        const parts = raw.split('.');
-                                        if (parts.length > 2) return;
-                                        if (parts[1]?.length > 2) return;
-
-                                        handleCheckValueChange(measurement.id, index, raw);
-                                      }}
-                                      onBlur={(e) => {
-                                        if (readOnly) return;
-                                        let val = e.target.value;
-                                        if (/^\d{3}$/.test(val)) {
-                                          val = (parseFloat(val) / 10).toFixed(2); 
-                                        } else {
-                                          val = parseFloat(val || 0).toFixed(2);
+    return (
+        <div
+            onKeyDown={handleKeyDown}
+            className="md:items-start md:justify-items-center grid h-full bg-theme"
+        >
+            <Modal isOpen={cameraOpen} onClose={() => setCameraOpen(false)}>
+                <LiveWebCam picture={image} setPicture={setImage} onClose={() => setCameraOpen(false)} />
+            </Modal>
+            <Modal isOpen={leavingForm} onClose={() => setLeavingForm(false)}>
+                <EmployeeLeavingForm leavingReason={leavingReason} setLeavingReason={setLeavingReason}
+                    leavingDate={leavingDate} setLeavingDate={setLeavingDate}
+                    canRejoin={canRejoin} setCanRejoin={setCanRejoin}
+                    rejoinReason={rejoinReason} setRejoinReason={setRejoinReason}
+                    onSubmit={submitLeavingForm} onClose={() => { setLeavingForm(false) }} />
+            </Modal>
+            <div className="flex flex-col frame w-full h-full">
+                <FormHeader
+                    onNew={onNew}
+                    onClose={() => {
+                        setForm(false);
+                        setSearchValue("");
+                    }}
+                    model={MODEL}
+                    saveData={saveData}
+                    setReadOnly={setReadOnly}
+                    deleteData={deleteData}
+                // childRecord={childRecord.current}
+                />
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-x-2">
+                    <div className="col-span-3 grid md:grid-cols-2 border h-[520px] overflow-auto">
+                        <div className='col-span-3 grid md:grid-cols-2 border'>
+                            <div className='mr-1 md:ml-2'>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Employee Category Info</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <DropdownInput name="Employee Category" options={dropDownListObject(id ? employeeCategoryList.data : employeeCategoryList.data.filter(item => item.active), "name", "id")} value={employeeCategory} setValue={(value) => { setEmployeeCategory(value); if (!isCurrentEmployeeDoctor(value)) { setDepartment("") }; setChamberNo(""); }} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        {(branchPrefixCategory === "Specific")
+                                            ?
+                                            <DropdownInput name="Employee Type" options={employeeType} value={permanent} setValue={setPermanent} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                            :
+                                            ""
                                         }
-                                        handleCheckValueChange(measurement.id, index, val);
-                                      }}
-                                      className={`w-full px-1 py-1 text-xs border rounded-sm text-center 
-                                        ${value ? checkTolerance(measurement, value) : 'border-gray-300'}
-                                        ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                      readOnly={readOnly}
-                                    />
-                                  </td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1 flex'>
+                                    <legend className='sub-heading'>Official Details</legend>
+                                    <SingleImageFileUploadComponent setWebCam={setCameraOpen} disabled={readOnly} image={image} setImage={setImage} />
+                                    <div className='flex flex-col justify-start gap-2 mt- flex-1'>
+                                        {id ? <DisabledInput name="Employee Id" type={"text"} value={regNo} /> : ""}
+                                        <TextInput name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Chamber no" type="text" value={chamberNo} setValue={setChamberNo} readOnly={readOnly} required={isCurrentEmployeeDoctor(employeeCategory)} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="Department" options={dropDownListObject(id ? departmentList.data : departmentList.data.filter(item => item.active), "name", "id")} value={department} setValue={setDepartment} required={isCurrentEmployeeDoctor(employeeCategory)} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DateInput name="Joining Date" value={joiningDate} setValue={setJoiningDate} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Personal Details</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextInput name="Father Name" type="text" value={fatherName} setValue={setFatherName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DateInput name="Date Of Birth" value={dob} setValue={setDob} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="Gender" options={genderList} value={gender} setValue={setGender} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="Marital Status" options={maritalStatusList} value={maritalStatus} setValue={setMaritalStatus} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="Blood Group" options={bloodList} value={bloodGroup} setValue={setBloodGroup} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Pan No" type="pan_no" value={panNo} setValue={setPanNo} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame  my-1'>
+                                    <legend className='sub-heading'>Payment</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <CurrencyInput name="Consult Fee" value={consultFee} setValue={setConsultFee} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <CurrencyInput name="Salary/Month" value={salaryPerMonth} setValue={setSalaryPerMonth} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <CurrencyInput name="Commission charges" value={commissionCharges} setValue={setCommissionCharges} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Perm. Address</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextArea name="Perm. Address" value={permAddress} setValue={setPermAddress} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Pincode" type="number" value={permPincode} setValue={setPermPincode} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="City/State Name" options={dropDownListMergedObject(id ? cityList.data : cityList.data.filter(item => item.active), "name", "id")} value={permCity} setValue={setPermCity} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div className='mr-1'>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Contact Details</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextInput name="Email Id" type="text" value={email} setValue={setEmail} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Mobile No" type="number" value={mobile} setValue={setMobile} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Bank Details</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextInput name="Account No" type="number" value={accountNo} setValue={setAccountNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="IFSC No" type="text" value={ifscNo} setValue={setIfscNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Branch Name" type="text" value={branchName} setValue={setbranchName} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Education</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextInput name="Degree" type="text" value={degree} setValue={setDegree} readOnly={readOnly} required={true} />
+                                        <TextInput name="Specialization" type="text" value={specialization} setValue={setSpecialization} readOnly={readOnly} required={true} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Local Address</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <TextArea name="Local Address" value={localAddress} setValue={setlocalAddress} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <TextInput name="Pincode" type="number" value={localPincode} setValue={setLocalPincode} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                        <DropdownInput name="City/State Name" options={dropDownListMergedObject(id ? cityList.data : cityList.data.filter(item => item.active), "name", "id")} value={localCity} setValue={setLocalCity} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                                <fieldset className='frame my-1'>
+                                    <legend className='sub-heading'>Employee Status</legend>
+                                    <div className='grid grid-cols-1 my-2'>
+                                        <DropdownInput name="Status" options={statusDropdown} value={active} setValue={setActive} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
                     </div>
-                  )}
-
-                  <div className="flex justify-end space-x-3 pt-3 border-t border-gray-200">
-                    {!readOnly && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleReset}
-                          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 transition-all"
-                        >
-                          Reset
-                        </button>
-
-                        {measurements.length > 0 && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={handlePartialSave}
-                              disabled={!selectedSize}
-                              className={`px-4 py-2 rounded-md shadow-sm text-xs font-medium text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 transition-all 
-                                ${!selectedSize ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-500 hover:bg-yellow-600'}`}
-                            >
-                              Partial Save
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={handleSaveSize}
-                              disabled={!selectedSize}
-                              className={`px-4 py-2 rounded-md shadow-sm text-xs font-medium text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 transition-all 
-                                ${!selectedSize ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                            >
-                              Save Size
-                            </button>
-                          </>
-                        )}
-                      </>
-                    )}
-
-                    {!readOnly && (
-                      <button
-                        type="submit"
-                        disabled={savedSizes.filter(size => isSizeComplete(size)).length === 0 || isSubmitting}
-                        className={`px-4 py-2 rounded-md shadow-sm text-xs font-medium text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 transition-all 
-                          ${savedSizes.filter(size => isSizeComplete(size)).length === 0
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-green-600 hover:bg-green-700'}`}
-                      >
-                        {isSubmitting ? 'Submitting...' : 'Submit All'}
-                      </button>
-                    )}
-                  </div>
-                </form>
-              </div>
+                    <div className="frame hidden md:block overflow-x-hidden">
+                        <FormReport
+                            searchValue={searchValue}
+                            setSearchValue={setSearchValue}
+                            setId={setId}
+                            tableHeaders={tableHeaders}
+                            tableDataNames={tableDataNames}
+                            data={allData?.data}
+                            loading={
+                                isLoading || isFetching
+                            }
+                        />
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      )}
-    </>
-  );
-};
-
-export default Aql;
+    );
+}

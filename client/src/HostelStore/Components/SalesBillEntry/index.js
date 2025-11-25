@@ -10,6 +10,7 @@ import {
   CheckBox,
   DropdownInput,
   DisabledInput,
+  ReusableInput,
 } from "../../../Inputs";
 import ReportTemplate from "../../../Basic/components/ReportTemplate";
 import { RetailPrintFormatFinishedGoodsSales } from "..";
@@ -56,6 +57,7 @@ export default function Form() {
   const [active, setActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [poBillItems, setPoBillItems] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(moment(new Date()).format("YYYY-MM-DD"));
 
   const [printReportOpen, setPrintReportOpen] = useState(false);
   const childRecord = useRef(0);
@@ -108,7 +110,7 @@ export default function Form() {
       if (data?.createdAt)
         setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
       setActive(data?.active ? data.active : false);
-      setSelectedDate(data?. selectedDate? moment.utc(data?.selectedDate).format("YYYY-MM-DD") : "")
+      setSelectedDate(data?.selectedDate ? moment.utc(data?.selectedDate).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD"))
       setIsOn(data?.isOn ? data.isOn : false);
       setSupplierId(data?.supplierId ? data?.supplierId : "");
       setContactMobile(data?.contactMobile ? data.contactMobile : "");
@@ -123,8 +125,7 @@ export default function Form() {
     },
     [id]
   );
-    const [selectedDate, setSelectedDate] = useState(null);
-  
+
 
   useEffect(() => {
     syncFormWithDb(singleData?.data);
@@ -138,7 +139,7 @@ export default function Form() {
     place,
     isOn,
     supplierId,
-    netBillValue,selectedDate,
+    netBillValue, selectedDate,
     salesBillItems: poBillItems.filter(
       (item) => item.qty != 0 && item.salePrice != 0
     ),
@@ -149,12 +150,18 @@ export default function Form() {
     id,
   };
 
+
   const validateData = (data) => {
-    return true;
+    if (data.selectedDate) {
+      return true;
+    }
+
+
+    return false;
   };
 
   const handleSubmitCustom = async (callback, data, text) => {
-    try { 
+    try {
       let returnData = await callback(data).unwrap();
       setId(returnData.data.id)
       if (returnData.statusCode === 0) {
@@ -163,7 +170,7 @@ export default function Form() {
       } else {
         toast.error(returnData?.message);
       }
-     
+
       dispatch({
         type: `stock/invalidateTags`,
         payload: ["Stock"],
@@ -364,9 +371,10 @@ export default function Form() {
                     required={true}
                     readOnly={readOnly}
                   />
-                     <DisabledInput
-                    name="Bill. Date"
-                    value={date}
+                  <ReusableInput
+                    label="Bill. Date"
+                    value={selectedDate}
+                    setValue={setSelectedDate}
                     type={"Date"}
                     required={true}
                     readOnly={readOnly}
@@ -377,8 +385,8 @@ export default function Form() {
                       id
                         ? supplierData
                         : supplierData
-                            .filter((value) => value.isCustomer)
-                            .filter((item) => item.active),
+                          .filter((value) => value.isCustomer)
+                          .filter((item) => item.active),
                       "name",
                       "id"
                     )}
@@ -396,9 +404,8 @@ export default function Form() {
                     required
                   />
                   <div
-                    className={`ml-5 border-2 ml-24 ${
-                      isOn ? "border-emerald-800" : "border-red-800"
-                    } w-48 rounded-xl p-1`}
+                    className={`ml-5 border-2 ml-24 ${isOn ? "border-emerald-800" : "border-red-800"
+                      } w-48 rounded-xl p-1`}
                   >
                     <ToggleButton
                       label={isOn ? "Confirmed" : "Not Confirmed"}
@@ -407,15 +414,15 @@ export default function Form() {
                       readOnly={readOnly}
                     />
                   </div>
-                  <div className="w-full max-w-xs mx-auto">
-      <DatePicker
-        selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        dateFormat="MMMM d, yyyy"
-        className="w-full px-4 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholderText="Choose a date"
-      />
-    </div>
+                  {/* <div className="w-full max-w-xs mx-auto">{console.log("selectedDate", selectedDate)}
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={(date) => setSelectedDate(date)}
+                      dateFormat="MMMM d, yyyy"
+                      className="w-full px-4 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholderText="Choose a date"
+                    />
+                  </div> */}
                 </div>
               </fieldset>
               <fieldset className="frame rounded-tr-lg rounded-bl-lg rounded-br-lg my-1 w-full border border-gray-400 md:pb-5 flex flex-1 overflow-auto">

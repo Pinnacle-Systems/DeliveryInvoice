@@ -45,7 +45,7 @@ async function getNextDocId(branchId) {
 }
 
 function manualFilterSearchData(searchBillDate, searchDueDate, data) {
-    console.log(data,"data ")
+    // console.log(data, "data ")
     return data.filter(item =>
         (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true) &&
         (searchDueDate ? String(getDateFromDateTime(item.selectedDate)).includes(searchDueDate) : true)
@@ -54,17 +54,21 @@ function manualFilterSearchData(searchBillDate, searchDueDate, data) {
 
 async function get(req) {
     const { companyId, active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchDueDate, searchBillDate, searchCustomerName, searchSupplierName, salesReport, fromDate, toDate, isProfitReport, isOn, partyList, productList } = req.query;
-console.log(searchBillDate,"searchBillDate")
-console.log(searchDueDate,"searchDueDate")
+    console.log(searchBillDate, "searchBillDate")
+    console.log(searchDueDate, "searchDueDate")
 
     let data;
-    console.log(partyList, "partyList");
-    console.log(productList, "productList");
+    // console.log(partyList, "partyList");
+    // console.log(productList, "productList");
 
     const partyListData = partyList ? JSON.parse(partyList) : [];
     const productListData = productList ? JSON.parse(productList) : [];
     const { startTime: startDateStartTime, endTime: startDateEndTime } = getDateTimeRange(fromDate);
     const { startTime: endDateStartTime, endTime: endDateEndTime } = getDateTimeRange(toDate);
+
+
+    console.log(startDateStartTime, "startDateStartTime", fromDate);
+    console.log(endDateEndTime, "endDateEndTime");
 
     if (isProfitReport) {
         data = await profitReport(startDateStartTime, endDateEndTime);
@@ -73,18 +77,20 @@ console.log(searchDueDate,"searchDueDate")
 
     const PartyData = partyListData.map(party => `'${party}'`).join(", ");
     const ProductData = productListData.map(product => `'${product}'`).join(", ");
-    console.log(PartyData, "partyData");
-    console.log(ProductData, "ProductData");
+    // console.log(PartyData, "partyData");
+    // console.log(ProductData, "ProductData");
 
     if (salesReport) {
         const pData = PartyData.length > 0 ? ` AND party.name IN (${PartyData})` : '';
         const prodData = ProductData.length > 0 ? ` AND product.name IN (${ProductData})` : '';
-        const dateFilter = (startDateStartTime && endDateEndTime) ? 
+        const dateFilter = (startDateStartTime && endDateEndTime) ?
             ` DATE(salesBill.createdAt) BETWEEN '${getDateFromDateTimeDB(startDateStartTime)}' AND '${getDateFromDateTimeDB(endDateEndTime)}'` : '';
 
+
+        console.log(dateFilter, "dateFilter");
         const sql = `
             SELECT
-                DATE(salesBill.createdAt) AS Date,
+                DATE(salesBill.selectedDate) AS Date,
                 party.name AS Party,
                 product.name AS Product,
                 SUM(salesBillItems.qty) AS Qty,
@@ -99,12 +105,12 @@ console.log(searchDueDate,"searchDueDate")
             JOIN
                 party ON party.id = salesBill.supplierId
             WHERE
-                ${dateFilter}
+                 salesBill.selectedDate BETWEEN '${fromDate}' AND '${toDate}'
                 AND salesBill.isOn = '1'
                 ${pData}
                 ${prodData}
             GROUP BY
-                DATE(salesBill.createdAt), party.name, product.name
+                DATE(salesBill.selectedDate), party.name, product.name
         `;
 
         console.log(sql);
@@ -166,16 +172,16 @@ async function getOne(id) {
             supplier: {
                 select: {
                     name: true,
-                    contactMobile:true,
+                    contactMobile: true,
                     contactPersonName: true,
-                    address:true,
-                    pincode:true,
+                    address: true,
+                    pincode: true,
                 }
             },
             SalesBillItems: {
                 select: {
                     id: true,
-                 
+
                     Product: {
                         select: {
                             name: true
@@ -264,25 +270,25 @@ async function createSalesBillItems(tx, salesBillItems, salesBill, isOn) {
 
 async function create(body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId,isOn,netBillValue,selectedDate } = await body
-   console.log(selectedDate,"selectedDate")
+    const { dueDate, address, place, salesBillItems, companyId, active, branchId, contactMobile, supplierId, isOn, netBillValue, selectedDate } = await body
+    console.log(selectedDate, "selectedDate")
     let newDocId = await getNextDocId(branchId)
     await prisma.$transaction(async (tx) => {
         data = await tx.salesBill.create(
             {
                 data: {
                     docId: newDocId,
-                    address, place,supplierId: parseInt(supplierId),
+                    address, place, supplierId: parseInt(supplierId),
                     contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
                     companyId: parseInt(companyId),
                     dueDate: dueDate ? new Date(dueDate) : undefined,
                     branchId: parseInt(branchId),
-                    isOn,netBillValue:parseInt(netBillValue),
-                    selectedDate: selectedDate ? new Date(selectedDate): undefined
+                    isOn, netBillValue: parseInt(netBillValue),
+                    selectedDate: selectedDate ? new Date(selectedDate) : undefined
 
                 }
             })
-        await createSalesBillItems(tx, salesBillItems, data,isOn)
+        await createSalesBillItems(tx, salesBillItems, data, isOn)
 
     })
     return { statusCode: 0, data };
@@ -383,8 +389,8 @@ async function updateSalesBillItems(tx, salesBillItems, salesBill, isOn) {
 
 async function update(id, body) {
     let data;
-    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile, isOn,netBillValue,selectedDate } = await body;
-    console.log(netBillValue,"netBill")
+    const { dueDate, address, place, salesBillItems, companyId, branchId, name, contactMobile, isOn, netBillValue, selectedDate } = await body;
+    console.log(netBillValue, "netBill")
     const dataFound = await prisma.salesBill.findUnique({
         where: {
             id: parseInt(id)
@@ -401,10 +407,10 @@ async function update(id, body) {
                 companyId: parseInt(companyId),
                 dueDate: dueDate ? new Date(dueDate) : undefined,
                 branchId: parseInt(branchId),
-                name,isOn,
+                name, isOn,
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
                 netBillValue: parseInt(netBillValue),
-                selectedDate: selectedDate ? new Date(selectedDate): undefined
+                selectedDate: selectedDate ? new Date(selectedDate) : undefined
 
             },
 
