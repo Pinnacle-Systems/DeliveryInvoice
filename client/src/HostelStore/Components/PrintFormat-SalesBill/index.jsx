@@ -72,7 +72,7 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
                 <Text style={styles.bold}>Contact Person</Text>: {data?.supplier?.contactPersonName || 'N/A'}
               </Text>
               <Text style={styles.infoText}>
-                <Text style={styles.bold}>Address</Text>: {data?.supplier?.address   || 'N/A'}
+                <Text style={styles.bold}>Address</Text>: {data?.supplier?.address || 'N/A'}
               </Text>
               <Text style={styles.infoText}>
                 <Text style={styles.bold}>Pincode</Text>: {data?.supplier?.pincode || 'N/A'}
@@ -100,9 +100,22 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
                 <Text style={styles.tableCell}>{/* Add content here or keep it empty */}</Text>
               </View>
             ))}
-           
+            <View style={styles.tableFooter}>
+              <Text style={styles.tableFooterCell}>Total</Text>
+              <Text style={styles.tableFooterCell1}>
+                {parseFloat(totalAmount).toLocaleString('en-IN')}
+              </Text>
+            </View>
+            <View style={styles.amountInWordsContainer}>
+              <Text style={styles.amountInWordsText}>
+                <Svg style={styles.icon} viewBox="0 0 24 24">
+                  <Path d="M4 4h16v16H4V4zm1.5 1.5v3H6v-3h2v3h1.5v-3h2v3h1.5v-3h2v3h1.5v-3H18v6h-6v-1.5H7.5V18h-2v-6H6v3H4.5v-6H6v1.5h2V6H6V4.5H5.5z" />
+                </Svg>
+                Amount in Words: {totalAmount ? numWords(parseInt(totalAmount)).toUpperCase() : 'Invalid amount'} RUPEES
+              </Text>
+            </View>
           </View>
-       
+
 
 
         </View>
@@ -112,7 +125,7 @@ export default function Form({ poBillItems = [], innerRef, date, data, id, docId
           <Text style={styles.footerText}>Phone: 8220468448</Text>
         </View>
       </Page>
-    </Document>
+    </Document >
   );
 }
 
@@ -245,7 +258,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 10,
     textAlign: 'right',
-    paddingRight:33
+    paddingRight: 33
   },
   tableFooter: {
     flexDirection: 'row',
@@ -264,7 +277,7 @@ const styles = StyleSheet.create({
   },
   tableFooterCell1: {
     flex: 1,
-    fontSize: 10, 
+    fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'right',
     paddingRight: 123,
