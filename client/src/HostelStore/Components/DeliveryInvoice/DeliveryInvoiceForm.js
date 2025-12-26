@@ -301,7 +301,7 @@ const InvoiceForm = ({
 
 
 
-        return data.supplierId
+        return data.supplierId  && data?.taxTemplateId
 
             && isGridDatasValid(data?.invoiceItems, false, mandatoryFields)
             && data?.invoiceItems?.length !== 0
