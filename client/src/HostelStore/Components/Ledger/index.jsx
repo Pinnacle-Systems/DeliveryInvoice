@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { push } from '../../../redux/features/opentabs';
 import { PartyDropdownSearchCus } from '../PurchaseLedger/PartyDropdowncustomer';
+import { getCommonParams } from '../../../Utils/helper';
+import { useGetBranchByIdQuery } from '../../../redux/services/BranchMasterService';
 
 
 const Ledger = () => {
@@ -22,15 +24,26 @@ const Ledger = () => {
     const [endDate, setEndDate] = useState(currentDate);
     const [printModalOpen, setPrintModalOpen] = useState(false);
     const { data } = useGetPartyQuery({ params: { isPartyLedgerReport: true, partyId, startDate, endDate } }, { skip: !partyId || !startDate || !endDate })
+      const { token, ...params } = getCommonParams();
+
+
+      const {branchId } = getCommonParams()
+        const { data: partyList } = useGetPartyQuery({ params: { ...params } });
+
+  const { data: branchData } = useGetBranchByIdQuery(branchId, { skip: !branchId });
+
+        console.log(branchId,"branchdata")
+
     const ledgerData = data?.data;
     const dispatch = useDispatch();
  
     useEffect(() => {
-        const currentTabPreviewId = openTabs.tabs.find(i => i.name === "PARTY SALES LEDGER")?.previewId
+        const currentTabPreviewId = openTabs.tabs.find(i => i.name === "CUSTOMER LEDGER")?.previewId
+        console.log(currentTabPreviewId,"currentTabPreviewId")
         if (!currentTabPreviewId) return
         setPartyId(currentTabPreviewId);
         dispatch(push({
-            name: "PARTY SALES LEDGER",
+            name: "CUSTOMER LEDGER",
             previewId: null
         }))
     }, [openTabs, dispatch])
@@ -39,12 +52,12 @@ const Ledger = () => {
         <>
             <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >
                 <PDFViewer style={tw("w-full h-full")} >
-                    <LedgerReportPrintFormat ledgerData={ledgerData} startDate={startDate} endDate={endDate} />
+                    <LedgerReportPrintFormat ledgerData={ledgerData} startDate={startDate} endDate={endDate} partyId={partyId} partyData={partyList?.data} branchData={branchData?.data} />
                 </PDFViewer>
             </Modal>
             <div id='registrationFormReport' className="flex flex-col w-full h-[95%]">
                 <div className="md:flex md:items-center md:justify-between page-heading p-1">
-                <div className="heading text-center md:mx-10">Party Sales Ledger</div>
+                <div className="heading text-center md:mx-10">Customer Ledger</div>
                 </div>
                 <fieldset className='frame my-1'>
                     <legend className='sub-heading'>Parameters</legend>

@@ -1,12 +1,16 @@
 import { PrismaClient } from '@prisma/client'
 import { NoRecordFound } from '../configs/Responses.js';
-import { getPartyOverAllReport,getPartyLedgerReport,getPartyLedgerReportCus,getPartyPurchaseOverAllReport } from './partyLedger.js';
+import { getPartyOverAllReport, getPartyLedgerReport, getPartyLedgerReportCus, getPartyPurchaseOverAllReport } from './partyLedger.js';
 
 const prisma = new PrismaClient()
 
 
 async function get(req) {
-    const { companyId, active,isPartyOverAllReport,searchValue, partyId, startDate, endDate,isPartyLedgerReport,isPartyLedgerReportCus,isPartyPurchaseOverAllReport } = req.query
+    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport } = req.query
+    // if (isPartyLedgerReport) {
+    //     const data = await getPartyLedgerReport(partyId, startDate, endDate)
+    //     return { statusCode: 0, data };
+    // }
     if (isPartyLedgerReport) {
         const data = await getPartyLedgerReport(partyId, startDate, endDate)
         return { statusCode: 0, data };
@@ -16,11 +20,11 @@ async function get(req) {
         return { statusCode: 0, data };
     }
     if (isPartyOverAllReport) {
-        const data = await getPartyOverAllReport(searchValue)
+        const data = await getPartyOverAllReport(searchValue,startDate)
         return { statusCode: 0, data };
 
     }
-    if(isPartyPurchaseOverAllReport){
+    if (isPartyPurchaseOverAllReport) {
         const data = await getPartyPurchaseOverAllReport(searchValue)
         return { statusCode: 0, data };
     }
@@ -30,7 +34,7 @@ async function get(req) {
             active: active ? Boolean(active) : undefined,
         },
         include: {
-          
+
             PurchaseBillSupplier: {
                 select: {
                     netBillValue: true,
@@ -41,7 +45,7 @@ async function get(req) {
                 select: {
                     netBillValue: true,
                     supplierId: true,
-                    isOn:true
+                    isOn: true
                 }
             },
             Payment: {
@@ -51,9 +55,10 @@ async function get(req) {
                     paymentType: true,
                     discount: true
                 }
-            }
+            },
+            ledgers: true
         }
-       
+
     });
     return { statusCode: 0, data };
 }
@@ -80,7 +85,7 @@ async function getOne(id) {
                 select: {
                     netBillValue: true,
                     supplierId: true,
-                    isOn:true
+                    isOn: true
                 }
             },
             Payment: {
@@ -90,7 +95,8 @@ async function getOne(id) {
                     paymentType: true,
                     discount: true
                 }
-            }
+            },
+            ledgers: true
         }
     });
 
@@ -99,28 +105,45 @@ async function getOne(id) {
     const totalPurchaseNetBillValue = data.PurchaseBillSupplier.reduce((acc, bill) => acc + (bill.ourPrice || 0), 0);
     const totalSalesNetBillValue = data.SalesBillSupplier.reduce((acc, bill) =>
         bill.isOn === true ? acc + (bill.netBillValue || 0) : acc, 0);
-    
-    const totalPaymentSalesBill = data.Payment.reduce((acc, payment) => 
+
+    const totalPaymentSalesBill = data.Payment.reduce((acc, payment) =>
         payment.paymentType === 'SALESBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
     const totalDiscount = data.Payment.reduce((acc, payment) => acc + (payment.discount || 0), 0);
- 
 
-    const totalPaymentPurchaseBill = data.Payment.reduce((acc, payment) => 
+
+    const totalPaymentPurchaseBill = data.Payment.reduce((acc, payment) =>
         payment.paymentType === 'PURCHASEBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
+
+
+    const totaloutstanding = data?.ledgers?.reduce((acc, next) =>
+        next?.creditOrDebit === "Credit" ? acc + (next.amount || 0) : acc, 0
+    )
+
+
+    const totalPaymentAgainstInvoice = data?.Payment?.reduce((acc, next) =>
+        acc + (next.paidAmount || 0), 0
+    )
 
     const childRecord = data.PurchaseBillSupplier.length + data.SalesBillSupplier.length;
 
-    return { 
-        statusCode: 0, 
-        data: { 
-            ...data, 
-            totalPurchaseNetBillValue, 
-            totalSalesNetBillValue, 
-            totalPaymentSalesBill, 
-            totalPaymentPurchaseBill, 
+    return {
+        statusCode: 0,
+        data: {
+            ...data,
+            totalPurchaseNetBillValue,
+            totalSalesNetBillValue,
+            totalPaymentSalesBill,
+            totalPaymentPurchaseBill,
             totalDiscount,
-            childRecord 
-        } 
+
+
+            totaloutstanding,
+            totalPaymentAgainstInvoice,
+
+
+
+            childRecord
+        }
     };
 }
 
@@ -151,23 +174,23 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { name, code, aliasName, displayName, address,isSupplier, isCustomer,
+    const { name, code, aliasName, displayName, address, isSupplier, isCustomer,
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
-        cinNo, faxNo, email, website, contactPersonName,contactMobile,
-        gstNo, currencyId, costCode,soa,coa, 
+        cinNo, faxNo, email, website, contactPersonName, contactMobile,
+        gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId } = await body
     const data = await prisma.party.create(
         {
             data: {
-                name, code, aliasName, displayName, address,isSupplier, isCustomer,
-                cityId: cityId ? parseInt(cityId): undefined, pincode : pincode ? parseInt(pincode): undefined, 
+                name, code, aliasName, displayName, address, isSupplier, isCustomer,
+                cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
                 panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
                 cinNo, faxNo, email, website, contactPersonName,
-                gstNo, currencyId: currencyId ? parseInt(currencyId): undefined, costCode, 
-                createdById: userId ? parseInt(userId): undefined,
-                companyId: parseInt(companyId), active,coa: coa? parseInt(coa):parseInt(0),soa : soa? parseInt(soa):parseInt(0),
+                gstNo, currencyId: currencyId ? parseInt(currencyId) : undefined, costCode,
+                createdById: userId ? parseInt(userId) : undefined,
+                companyId: parseInt(companyId), active, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
-              
+
             }
         }
     )
@@ -175,12 +198,12 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, code, aliasName, displayName, address,isSupplier, isCustomer,
+    const { name, code, aliasName, displayName, address, isSupplier, isCustomer,
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
-        cinNo, faxNo, email, website, contactPersonName,contactMobile,
-        gstNo,coa,soa,
+        cinNo, faxNo, email, website, contactPersonName, contactMobile,
+        gstNo, coa, soa,
         companyId, active, userId } = await body
-        
+
     const dataFound = await prisma.party.findUnique({
         where: {
             id: parseInt(id)
@@ -192,14 +215,14 @@ async function update(id, body) {
             id: parseInt(id),
         },
         data: {
-            name, code, aliasName, displayName, address,isSupplier, isCustomer,
-            cityId: cityId ? parseInt(cityId): undefined, pincode : pincode ? parseInt(pincode): undefined, 
+            name, code, aliasName, displayName, address, isSupplier, isCustomer,
+            cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
             panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
             cinNo, faxNo, email, website, contactPersonName,
-            gstNo, 
-            createdById: userId ? parseInt(userId): undefined,
+            gstNo,
+            createdById: userId ? parseInt(userId) : undefined,
             companyId: parseInt(companyId), active,
-            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,coa: coa? parseInt(coa):parseInt(0),soa : soa? parseInt(soa): parseInt(0),
+            contactMobile: contactMobile ? parseInt(contactMobile) : undefined, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
         }
     })
     return { statusCode: 0, data };

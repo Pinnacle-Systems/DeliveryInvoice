@@ -284,3 +284,10 @@ export function getDiscountAmount(discountType, discountValue, grossAmount) {
 export function removeComma(str) {
   return str ? str.replace(/,/g, '') : ''
 }
+export function renameFile(originalFile) {
+  const file = new File([originalFile], Date.now() + originalFile.name, {
+    type: originalFile.type,
+    lastModified: originalFile.lastModified,
+  });
+  return file;
+}

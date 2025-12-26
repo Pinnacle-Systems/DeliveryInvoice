@@ -34,7 +34,13 @@ export { default as salesBill } from "./salesBill.route.js"
 export { default as salesReturn } from "./salesReturn.route.js"
 export { default as uom } from "./uom.route.js"
 export {default as payments} from "./payments.route.js"
-
+export { default as style } from "./style.routes.js";
+export { default as styleItem } from "./styleItem.route.js";
+export { default as deliveryChallan } from "./deliveryChallan.route.js";
+export { default as deliveryInvoice } from "./deliveryInvoice.route.js";
+export { default as color } from "./color.route.js";
+export { default as taxTerm } from "./taxTerm.route.js"
+export { default as taxTemplate } from "./taxTemplate.route.js"
 
 
 

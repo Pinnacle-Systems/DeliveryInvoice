@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { NoRecordFound } from '../configs/Responses.js';
 import { exclude, base64Tobuffer } from "../utils/helper.js"
+import { getFinYearStartTimeEndTime } from '../utils/finYearHelper.js';
+import { getTableRecordWithId } from '../utils/helperQueries.js';
 
 const prisma = new PrismaClient()
 
@@ -184,7 +186,7 @@ async function getSearch(req) {
 
 async function create(req) {
     const image = req.file
-    const { branchId, name, email, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
+    const { branchId,finYearId, name, email, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
         panNo, consultFee, salaryPerMonth, commissionCharges, mobile, accountNo, ifscNo, branchName, degree,
         specialization, localAddress, localCity, localPincode, permAddress, permCity,
         permPincode, department, employeeCategoryId, permanent, active } = await req.body
@@ -223,10 +225,50 @@ async function create(req) {
             : parseInt(permanent ? JSON.parse(permanent) : false ? branch.idSequence : branch.tempSequence) + 1);
         employeeId = prefix + "/" + sequenceNumber;
     }
+async function getEmployeeId(branchId,startTime,endTime) {
+
+    let lastObject = await prisma.employee.findFirst({
+        where: {
+            branchId: parseInt(branchId),
+            // isTaxBill: typeof (isTaxBill) === "undefined" ? undefined : JSON.parse(isTaxBill),
+            AND: [
+                {
+                    createdAt: {
+                        gte: startTime
+
+                    }
+                },
+                {
+                    createdAt: {
+                        lte: endTime
+                    }
+                }
+            ],
+    
+        },
+        orderBy: {
+            id: 'desc'
+        }
+    });
+    console.log(lastObject,"lastObject")
+    const code = "EMP"
+    const branchObj  = await getTableRecordWithId(branchId, "branch")
+    let newDocId = `${branchObj.branchCode}/${code}/1`
+    
+    if (lastObject) {
+        newDocId = `${branchObj.branchCode}/${code}/${parseInt(lastObject.regNo.split("/").at(-1)) + 1}`
+    }
+    console.log(newDocId,"newDocId")
+    return newDocId
+}
+
+    let finYearDate = await getFinYearStartTimeEndTime(finYearId);
+    console.log("Regno", finYearDate)
+    let Regno = finYearDate ? (await getEmployeeId(branchId, finYearDate?.startDateStartTime, finYearDate?.endDateEndTime)) : "";
     const data = await prisma.employee.create(
         {
             data: {
-                regNo: employeeId,
+                regNo: Regno,
                 EmployeeCategory: { connect: { id: parseInt(employeeCategoryId) } },
                 Branch: { connect: { id: parseInt(branchId) } },
                 name, email, chamberNo, fatherName, dob: dob ? new Date(dob) : null, joiningDate: dob ? new Date(joiningDate) : null, gender, maritalStatus,
@@ -235,7 +277,7 @@ async function create(req) {
                 } : undefined,
                 active: active ? JSON.parse(active) : undefined,
                 bloodGroup, panNo, consultFee, salaryPerMonth, commissionCharges, mobile: mobile ? parseInt(mobile) : null, accountNo: accountNo,
-                ifscNo, branchName, degree, specialization, localAddress, localCity: { connect: { id: parseInt(localCity) } }, localPincode: localPincode ? parseInt(localPincode) : null, permAddress,
+                ifscNo, branchName, degree, specialization, localAddress, localPincode: localPincode ? parseInt(localPincode) : null, permAddress,
                 permCity: permCity ? { connect: { id: parseInt(permCity) } } : undefined, permPincode: permPincode ? parseInt(permPincode) : null,
                 image: image ? image.buffer : undefined,
                 permanent: permanent ? JSON.parse(permanent) : undefined
@@ -264,7 +306,9 @@ async function update(id, req) {
         },
         data:
         {
-            name, email, regNo, chamberNo, fatherName, dob: dob ? new Date(dob) : undefined, joiningDate: dob ? new Date(joiningDate) : undefined, gender, maritalStatus,
+            name, email, regNo, chamberNo, fatherName, dob: dob ? new Date(dob) : undefined, joiningDate: dob ? new Date(joiningDate) : undefined, gender,
+
+            maritalStatus,
             bloodGroup, panNo, consultFee, salaryPerMonth, commissionCharges, mobile: mobile ? parseInt(mobile) : undefined, accountNo: accountNo,
             ifscNo, branchName, degree, specialization, localAddress,
             image: image ? image.buffer : (removeImage ? null : undefined),

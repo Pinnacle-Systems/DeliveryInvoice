@@ -13,8 +13,17 @@ import { CLOSE_ICON, DOUBLE_NEXT_ICON } from "../../../icons";
 import CompanyMaster from "../CompanyMaster";
 import { useState } from "react";
 import useOutsideClick from "../../../CustomHooks/handleOutsideClick";
-import { PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
-   SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit,PaymentDetail,OpeningStock,PaymentLedgre,QuatationStock,Ledger,PurchaseLedger, PurchasepayLedgre } from "../../../HostelStore/Components";
+import {
+  PartyCategoryMaster, PartyMaster, ProductBrandMaster, ProductCategoryMaster, ProductMaster, PurchaseBillEntry, PurchaseRegister, PurchaseReturn, SalesBillEntry, SalesRegister,
+  SalesReturn, UomMaster, StockRegister, MonthlySales, MonthlyPurchase, CurrentStock, MonthlyProfit, PaymentDetail, OpeningStock, PaymentLedgre, QuatationStock, Ledger, PurchaseLedger, PurchasepayLedgre,
+  DeliveryChallan,
+  StyleMaster,
+  StyleItemMaster,
+  DeliveryInvoice,
+  ColorMaster,
+  TaxTermMaster,
+  TaxTemplate
+} from "../../../HostelStore/Components";
 
 
 const ActiveTabList = () => {
@@ -43,7 +52,7 @@ const ActiveTabList = () => {
     "PRODUCT CATEGORY MASTER": <ProductCategoryMaster />,
     "PRODUCT MASTER": <ProductMaster />,
     "PURCHASE BILL ENTRY": <PurchaseBillEntry />,
-    "PARTY MASTER": <PartyMaster />,
+    "CUSTOMER/SUPPLIER MASTER": <PartyMaster />,
     "SALES BILL ENTRY": <SalesBillEntry />,
     "PURCHASE RETURN": <PurchaseReturn />,
     "SALES RETURN": <SalesReturn />,
@@ -54,15 +63,22 @@ const ActiveTabList = () => {
     "MONTHLY SALES REPORTS": <MonthlySales />,
     "MONTHLY PURCHASE REPORT": <MonthlyPurchase />,
     "CURRENT STOCK": <CurrentStock />,
-    "PROFIT REPORT" :<MonthlyProfit/>,
-    "PAYMENT DETAIL" : <PaymentDetail />,
-    "OPENING STOCK"   : <OpeningStock />,
-    "QUATATION STOCK"  : <QuatationStock />,
-    "PAYMENT SALES LEDGRE" : <PaymentLedgre />,
-    "PURCHASE PAYMENT LEDGRE" : <PurchasepayLedgre />,
+    "PROFIT REPORT": <MonthlyProfit />,
+    "PAYMENT DETAIL": <PaymentDetail />,
+    "OPENING STOCK": <OpeningStock />,
+    "QUATATION STOCK": <QuatationStock />,
+    "PAYMENT OUTSTANDING LEDGER": <PaymentLedgre />,
+    "PURCHASE PAYMENT LEDGRE": <PurchasepayLedgre />,
+    "CUSTOMER LEDGER": <Ledger />,
+    "PURCHASE LEDGER": <PurchaseLedger />,
+    "DELIVERY CHALLAN": <DeliveryChallan />,
+    "STYLE MASTER": <StyleMaster />,
+    "STYLE ITEM MASTER": <StyleItemMaster />,
+    "INVOICE": <DeliveryInvoice />,
+    "COLOR MASTER": <ColorMaster />,
+    "TAX TYPE MASTER": <TaxTermMaster />,
 
-    "PARTY SALES LEDGER": <Ledger />,
-    "PURCHASE LEDGER" : <PurchaseLedger />
+
   };
   const innerWidth = window.innerWidth;
   const itemsToShow = innerWidth / 130;
@@ -74,12 +90,14 @@ const ActiveTabList = () => {
   return (
     // <div className="relative ">
     <div className="w-full ">
-      <div className="flex justify-between">
+      <div className="flex justify-between bg-gray-200">
         <div className="flex gap-2 ">
           {currentShowingTabs.map((tab, index) => (
             <div
               key={index}
-              className={`p-1 rounded-t-md text-[10px] flex justify-center gap-1 text-xs p-2  ${tab.active ? "bg-[#009688] text-white" : "bg-gray-300"
+              className={`px-2 rounded-lg text-[11px] d-flex content-center items-center gap-1 hover:bg-gray-500 hover:text-white transition my-1 ${tab.active
+                ? "bg-gray-500 text-white border border-gray-500"
+                : "text-gray-500 border border-gray-500"
                 }`}
             >
               <button

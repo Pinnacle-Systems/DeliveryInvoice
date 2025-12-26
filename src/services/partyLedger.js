@@ -1,59 +1,64 @@
 import prisma from "../models/getPrisma.js";
 import moment from "moment"
 
-export async function getPartyLedgerReport(partyId, startDate, endDate) {
-    console.log(partyId,"partyId")
-    const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
-    const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
-    const openingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, coalesce(netBillValue,0) as amount,'' as discount
-from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
-union
-select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)- discount,discount as discount
-from payment
-where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) < ${startDateFormatted})) a
-    `;
+// export async function getPartyLedgerReport(partyId, startDate, endDate) {
+//     console.log(partyId,"partyId")
+//     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
+//     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
 
-    const closingBalanceResults = await prisma.$queryRaw`
-    select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount,'' as discount
-from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
-union
-select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount -discount, discount as discount
-from payment
-where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) <= ${endDateFormatted})) a
-    `;
 
-    const data = await prisma.$queryRaw`
-   select * from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo,'' as discount
-from salesbill
-where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
-union
-select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo,discount as discount
-from payment 
-where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
-order by date;
-    `;
-    const partyDetails = await prisma.party.findUnique({
-        where: {
-            id: parseInt(partyId)
-        },
-        select: {
-            name: true,
-            coa: true
-        }
-    })
-    console.log(typeof partyDetails.coa)
-    return {
-        openingBalance:parseFloat(openingBalanceResults[0]?.openingBalance)  + parseFloat(partyDetails.coa) ,
-        closingBalance:parseFloat( closingBalanceResults[0]?.closingBalance) + parseFloat(partyDetails.coa),
-        data,
-        partyDetails
-    }
-}
+//     const openingBalanceResults = await prisma.$queryRaw`
+//     select coalesce(sum(amount),0) as openingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, coalesce(netBillValue,0) as amount,'' as discount
+// from salesbill
+// where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) < ${startDateFormatted})
+// union
+// select 'Payment' as type, docId as transId, cvv as date, 0 - coalesce(paidAmount,0)- discount,discount as discount
+// from payment
+// where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) < ${startDateFormatted})) a
+//     `;
+
+
+
+
+//     const closingBalanceResults = await prisma.$queryRaw`
+//     select coalesce(sum(amount),0) as closingBalance from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount,'' as discount
+// from salesbill
+// where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) <= ${endDateFormatted})
+// union
+// select 'Payment' as type, docId as transId, cvv as date, 0 - paidAmount -discount, discount as discount
+// from payment
+// where  partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) <= ${endDateFormatted})) a
+//     `;
+
+//     const data = await prisma.$queryRaw`
+//    select * from (select 'Sales' as type, docId as transId, selectedDate as date, netBillValue as amount, '' as paymentType ,'' as paymentRefNo,'' as discount
+// from salesbill
+// where isOn = 1 and supplierId = ${partyId} and (DATE(selectedDate) between ${startDateFormatted} and ${endDateFormatted})
+// union
+// select 'Payment' as type, docId as transId, cvv as date, paidAmount+ discount,paymentMode as paymentType, paymentRefNo,discount as discount
+// from payment 
+// where partyid = ${partyId} and paymentType = 'SALESBILL' and (DATE(cvv) between ${startDateFormatted} and ${endDateFormatted})) a
+// order by date;
+//     `;
+//     const partyDetails = await prisma.party.findUnique({
+//         where: {
+//             id: parseInt(partyId)
+//         },
+//         select: {
+//             name: true,
+//             coa: true
+//         }
+//     })
+//     console.log(typeof partyDetails.coa)
+//     return {
+//         openingBalance:parseFloat(openingBalanceResults[0]?.openingBalance)  + parseFloat(partyDetails.coa) ,
+//         closingBalance:parseFloat( closingBalanceResults[0]?.closingBalance) + parseFloat(partyDetails.coa),
+//         data,
+//         partyDetails
+//     }
+// }
 export async function getPartyLedgerReportCus(partyId, startDate, endDate) {
-    console.log(partyId,"partyIdsss")
+    console.log(partyId, "partyIdsss")
     const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
     const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
     const openingBalanceResults = await prisma.$queryRaw`
@@ -97,81 +102,81 @@ order by date;
     })
     console.log(typeof partyDetails.coa)
     return {
-        openingBalance:parseFloat(openingBalanceResults[0]?.openingBalance)  + parseFloat(partyDetails.soa) ,
-        closingBalance:parseFloat( closingBalanceResults[0]?.closingBalance) + parseFloat(partyDetails.soa),
+        openingBalance: parseFloat(openingBalanceResults[0]?.openingBalance) + parseFloat(partyDetails.soa),
+        closingBalance: parseFloat(closingBalanceResults[0]?.closingBalance) + parseFloat(partyDetails.soa),
         data,
         partyDetails
     }
 }
 
 
-export async function getPartyOverAllReport(searchPartyName) {
-    const sql = `SELECT 
-    id, 
-    name, 
-    FORMAT(SUM(saleAmount), 2) AS saleAmount, 
-    FORMAT(SUM(paymentAmount), 2) AS paymentAmount, 
-    FORMAT(SUM(saleAmount) - SUM(paymentAmount), 2) AS balance
-FROM (
-    SELECT 
-        party.id,
-        party.name, 
-        party.coa AS saleAmount, 
-        0 AS paymentAmount 
-    FROM 
-        party
-    where 
-        isCustomer = '1'    
+// export async function getPartyOverAllReport(searchPartyName) {
+//     const sql = `SELECT 
+//     id, 
+//     name, 
+//     FORMAT(SUM(saleAmount), 2) AS saleAmount, 
+//     FORMAT(SUM(paymentAmount), 2) AS paymentAmount, 
+//     FORMAT(SUM(saleAmount) - SUM(paymentAmount), 2) AS balance
+// FROM (
+//     SELECT 
+//         party.id,
+//         party.name, 
+//         party.coa AS saleAmount, 
+//         0 AS paymentAmount 
+//     FROM 
+//         party
+//     where 
+//         isCustomer = '1'    
 
-    UNION ALL
+//     UNION ALL
 
-    SELECT 
-        party.id, 
-        party.name, 
-        SUM(salesbill.netBillValue) AS saleAmount, 
-        0 AS paymentAmount
-    FROM 
-        salesbill 
-    JOIN 
-        party 
-    ON 
-        party.id = salesbill.supplierId
-    WHERE 
-        salesbill.isOn = 1 AND isCustomer = 1
-    GROUP BY 
-        salesbill.supplierId, 
-        party.name
+//     SELECT 
+//         party.id, 
+//         party.name, 
+//         SUM(salesbill.netBillValue) AS saleAmount, 
+//         0 AS paymentAmount
+//     FROM 
+//         salesbill 
+//     JOIN 
+//         party 
+//     ON 
+//         party.id = salesbill.supplierId
+//     WHERE 
+//         salesbill.isOn = 1 AND isCustomer = 1
+//     GROUP BY 
+//         salesbill.supplierId, 
+//         party.name
 
-    UNION ALL
+//     UNION ALL
 
-    SELECT 
-        party.id, 
-        party.name, 
-        0 AS saleAmount, 
-        SUM(payment.paidAmount) AS paymentAmount
-    FROM 
-        payment 
-    JOIN 
-        party 
-    ON 
-        party.id = payment.partyId
-        where paymentType = 'SALESBILL'
-  
-    GROUP BY 
-        payment.partyId, 
-        party.name
-) a 
-where a.name like '%${searchPartyName}%'
-GROUP BY 
-    id, 
-    name
-HAVING 
-    SUM(saleAmount) > 0 OR SUM(paymentAmount) > 0 
-ORDER BY 
-    name
-`
-    return await prisma.$queryRawUnsafe(sql)
-}
+//     SELECT 
+//         party.id, 
+//         party.name, 
+//         0 AS saleAmount, 
+//         SUM(payment.paidAmount) AS paymentAmount
+//     FROM 
+//         payment 
+//     JOIN 
+//         party 
+//     ON 
+//         party.id = payment.partyId
+//         where paymentType = 'SALESBILL'
+
+//     GROUP BY 
+//         payment.partyId, 
+//         party.name
+// ) a 
+// where a.name like '%${searchPartyName}%'
+// GROUP BY 
+//     id, 
+//     name
+// HAVING 
+//     SUM(saleAmount) > 0 OR SUM(paymentAmount) > 0 
+// ORDER BY 
+//     name
+// `
+//     return await prisma.$queryRawUnsafe(sql)
+// }
 export async function getPartyPurchaseOverAllReport(searchPartyName) {
     const sql = `SELECT 
     id, 
@@ -241,5 +246,165 @@ HAVING
 ORDER BY 
     name
 `
+    return await prisma.$queryRawUnsafe(sql)
+}
+
+export async function getPartyLedgerReport(partyId, startDate, endDate) {
+    console.log(partyId, "partyId")
+    const startDateFormatted = moment(startDate).format("YYYY-MM-DD");
+    const endDateFormatted = moment(endDate).format("YYYY-MM-DD");
+
+    //   AND DATE(createdAt) BETWEEN '${startDateFormatted}' AND '${endDateFormatted}'
+    // ${partyId} 
+
+
+    const sql = `
+WITH opening AS (
+    SELECT
+        p.id AS partyId,
+        COALESCE(p.coa, 0)
+        + COALESCE(SUM(pmt.paidAmount), 0)
+        - COALESCE(SUM(ld.amount), 0) AS openingBalance
+    FROM Party p
+    LEFT JOIN Ledger ld
+        ON ld.partyId = p.id
+        AND DATE(ld.createdAt) <  '${startDateFormatted}'  -- Ledger before period
+    LEFT JOIN Payment pmt
+        ON pmt.partyId = p.id
+        AND DATE(pmt.createdAt) <  '${endDateFormatted}' -- Payments before period
+    WHERE p.id =${partyId} 
+    GROUP BY p.id, p.coa
+),
+
+txns AS (
+    -- Ledger transactions (DEBIT)
+    SELECT
+        id AS transactionId,
+        createdAt AS txnDate,
+        'INVOICE' AS txnType,
+        amount AS debit,
+        0 AS credit,
+        partyId
+    FROM Ledger
+    WHERE partyId = ${partyId} 
+      AND DATE(createdAt) BETWEEN  '${startDateFormatted}' AND  '${endDateFormatted}'
+
+    UNION ALL
+
+    -- Payment transactions (CREDIT)
+    SELECT
+        docId AS transactionId,
+        createdAt AS txnDate,
+        'PAYMENT' AS txnType,
+        0 AS debit,
+        paidAmount AS credit,
+        partyId
+    FROM Payment
+    WHERE partyId = ${partyId} 
+      AND DATE(createdAt) BETWEEN  '${startDateFormatted}' AND  '${endDateFormatted}'
+)
+
+-- 🔹 Opening Balance row (ALWAYS DEBIT)
+SELECT
+    NULL AS transactionId,
+    DATE_SUB('${startDateFormatted}', INTERVAL 1 DAY) AS txnDate,
+    'OPENING BALANCE' AS txnType,
+    ABS(openingBalance) AS debit,
+    NULL AS credit,
+    openingBalance AS runningBalance
+FROM opening
+
+UNION ALL
+
+-- 🔹 Transaction rows with running balance
+SELECT
+    t.transactionId,
+    t.txnDate,
+    t.txnType,
+    t.debit,
+    t.credit,
+    o.openingBalance
+    + SUM(t.credit - t.debit)
+        OVER (
+            ORDER BY t.txnDate, t.transactionId
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS runningBalance
+FROM txns t
+CROSS JOIN opening o
+
+ORDER BY
+    txnDate,
+    transactionId;
+
+
+        `
+
+
+    const data = await prisma.$queryRawUnsafe(sql);
+
+    console.log(sql, "sql fro report")
+
+
+
+    return {
+
+        data,
+    }
+}
+
+
+export async function getPartyOverAllReport(searchPartyName, date) {
+
+    const DateFormatted = moment(date).format("YYYY-MM-DD");
+
+    const sql = `
+
+	SELECT
+		p.id,
+		p.name,
+
+		-- Opening balance
+		COALESCE(p.coa, 0) AS openingBalance,
+
+		-- Ledger amount
+		COALESCE(l.ledgerAmount, 0) AS ledgerAmount,
+
+		-- Paid amount
+		COALESCE(pay.paidAmount, 0) AS paidAmount,
+
+		-- Outstanding calculation
+		(
+			COALESCE(l.ledgerAmount, 0)
+			+ COALESCE(p.coa, 0)
+			- COALESCE(pay.paidAmount, 0)
+		) AS outstandingAmount
+
+	FROM party p
+
+	LEFT JOIN (
+		SELECT
+			partyId,
+			SUM(amount) AS ledgerAmount
+		FROM Ledger
+		WHERE creditOrDebit = 'Credit'
+		GROUP BY partyId
+	) l ON p.id = l.partyId
+
+	LEFT JOIN (
+		SELECT
+			partyId,
+			SUM(paidAmount) AS paidAmount
+		FROM Payment
+		WHERE DATE(createdAt) <= '${DateFormatted}'
+		GROUP BY partyId
+	) pay ON p.id = pay.partyId
+
+	WHERE p.name LIKE '%${searchPartyName}%'
+	ORDER BY p.name;
+
+`
+
+    console.log(sql, "sql for overall outsatnding")
+
     return await prisma.$queryRawUnsafe(sql)
 }

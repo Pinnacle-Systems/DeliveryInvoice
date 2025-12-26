@@ -29,6 +29,13 @@ export const SALES_BILL_API = "salesBill"
 export const PURCHASE_RETURN_API = "purchaseReturn"
 export const SALES_RETURN_API = "salesReturn"
 export const UOM_API = "uom"
+export const DELIVERY_CHALLAN_API = "deliveryChallan"
+export const STYLE_API = "style"
+export const STYLE_ITEM_API = "styleItem"
+export const DELIVERY_INVOICE_API = "deliveryInvoice"
+export const COLOR_API = "color"
+export const TAX_TEMPLATE_API = 'taxTemplate'
+export const TAX_TERM_API = 'taxTerm'
 
 
 

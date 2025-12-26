@@ -5,11 +5,18 @@ import {
   cityMasterApi, departmentMasterApi, employeeCategoryMasterApi,
   finYearMasterApi, rolesMasterApi, employeeMasterApi, userMasterApi,
   branchMasterApi, companyMasterApi, pageGroupMasterApi, productBrandMasterApi, productCategoryMasterApi, productMasterApi, partyMasterApi,
-   partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi,openingStockApi
+  partyCategoryMasterApi, purchaseBillApi, stockApi, salesBillApi, purchaseReturnApi, salesReturnApi, uomMasterApi, openingStockApi,
+  DeliveryInvoiceApi,
+  ColorMasterApi,
+  TaxTermMasterApi,
+  TaxTemplateApi
 } from "./services"
 import paymentApi from "./services/PaymentService";
+import StyleMasterApi from "./services/StyleMasterService";
+import DeliveryChallanApi from "./services/DeliveryChallanService";
+import StyleItemMasterApi from "./services/StyleItemMasterService";
 
-const commonReducers = {  
+const commonReducers = {
   openTabs,
   countryMaster: countryMasterApi.reducer,
   pageMaster: pageMasterApi.reducer,
@@ -28,8 +35,14 @@ const commonReducers = {
   productCategoryMaster: productCategoryMasterApi.reducer,
   productMaster: productMasterApi.reducer,
   partyMaster: partyMasterApi.reducer,
-  payment:paymentApi.reducer,
- 
+  payment: paymentApi.reducer,
+  styleMaster: StyleMasterApi.reducer,
+  DeliveryChallan: DeliveryChallanApi.reducer,
+  StyleItemMaster: StyleItemMasterApi.reducer,
+  DeliveryInvoice: DeliveryInvoiceApi.reducer,
+  colorMaster: ColorMasterApi.reducer,
+  taxTermMaster: TaxTermMasterApi.reducer,
+  taxTemplate: TaxTemplateApi.reducer,
   [openingStockApi.reducerPath]: openingStockApi.reducer,
 
 
@@ -70,6 +83,13 @@ salesBillApi.middleware,
 purchaseReturnApi.middleware,
 salesReturnApi.middleware,
 uomMasterApi.middleware,
+StyleMasterApi.middleware,
+DeliveryChallanApi.middleware,
+StyleItemMasterApi.middleware,
+DeliveryInvoiceApi.middleware,
+ColorMasterApi.middleware,
+TaxTermMasterApi.middleware,
+TaxTemplateApi.middleware,
 ];
 
 

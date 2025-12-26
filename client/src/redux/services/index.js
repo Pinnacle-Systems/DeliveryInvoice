@@ -26,7 +26,9 @@ export { default as purchaseReturnApi } from './PurchaseReturnService'
 export { default as salesReturnApi } from './SalesReturnService'
 export { default as uomMasterApi } from "./UomMasterService"
 export {default as paymentApi} from "./PaymentService"
-
-
+export {default as DeliveryInvoiceApi} from "./DeliveryInvoiceService"
+export {default as ColorMasterApi} from "./ColorMasterService"
+export { default as TaxTermMasterApi } from './TaxTermMasterServices'
+export { default as TaxTemplateApi } from './TaxTemplateServices'
 
 

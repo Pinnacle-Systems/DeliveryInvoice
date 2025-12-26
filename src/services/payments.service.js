@@ -47,21 +47,21 @@ function manualFilterSearchData(searchBillDate, searchMobileNo,searchType,search
 }
 
 async function get(req) {
-    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate,searchDueDate, searchCustomerName,searchType, searchMobileNo, finYearId } = req.query
+    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate,searchDueDate, searchCustomerName,searchType, searchMobileNo, finYearId ,serachDocNo , searchDate ,supplier} = req.query
    console.log(searchBillDate,"searchBillDate")
    console.log(searchDueDate,"searchDueDate")
 
     let data = await prisma.payment.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
-            docId: Boolean(searchDocId) ?
+            docId: Boolean(serachDocNo) ?
                 {
-                    contains: searchDocId
+                    contains: serachDocNo
                 }
                 : undefined,
             Party: {
-                name: Boolean(searchCustomerName) ? {
-                    contains: searchCustomerName
+                name: Boolean(supplier) ? {
+                    contains: supplier
                 } : undefined
             },
             isDeleted: false,
@@ -74,11 +74,11 @@ async function get(req) {
             }
         }
     });
-    data = manualFilterSearchData(searchBillDate, searchMobileNo,searchType,searchDueDate, data)
+    data = manualFilterSearchData(searchDate, searchMobileNo,searchType,searchDueDate, data)
     const totalCount = data.length
-    if (pagination) {
-        data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)
-    }
+    // if (pagination) {
+    //     data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)
+    // }
     let finYearDate = await getFinYearStartTimeEndTime(finYearId);
     const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startTime, finYearDate?.endTime) : "";
     let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startTime, finYearDate?.endTime)) : "";

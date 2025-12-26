@@ -21,7 +21,14 @@ import {
   purchaseReturn,
   salesReturn,
   payments,
-  uom
+  uom,
+  style,
+  styleItem,
+  deliveryChallan,
+  deliveryInvoice,
+  color,
+  taxTerm,
+  taxTemplate
 } from './src/routes/index.js';
 
 import { socketMain } from './src/sockets/socket.js';
@@ -84,6 +91,7 @@ app.use("/productCategory", productCategory);
 app.use("/product", product);
 app.use("/purchaseBill", purchaseBill);
 app.use("/OpeningStock", OpeningStock);
+app.use("/color", color);
 
 app.use("/stock", stock);
 app.use("/salesBill", salesBill);
@@ -91,6 +99,12 @@ app.use("/purchaseReturn", purchaseReturn)
 app.use("/salesReturn", salesReturn)
 app.use('/uom', uom)
 app.use('/payments', payments)
+app.use('/style', style)
+app.use('/styleItem', styleItem)
+app.use('/deliveryChallan', deliveryChallan)
+app.use('/deliveryInvoice', deliveryInvoice)
+app.use("/taxTerm", taxTerm);
+app.use("/taxTemplate", taxTemplate);
 
 
 

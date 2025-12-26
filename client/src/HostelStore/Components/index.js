@@ -25,6 +25,13 @@ export { default as PaymentLedgre } from './PartyOverAllLedger'
 export {default as Ledger} from './Ledger'
 export { default as PurchaseLedger} from './PurchaseLedger'
 export { default as PurchasepayLedgre } from './PurchaseOverAllLedger'
+export { default as DeliveryChallan } from './DeliveryChallan'
+export { default as StyleMaster } from './StyleMaster'
+export { default as StyleItemMaster } from './StyleItemMaster'
+export { default as DeliveryInvoice } from './DeliveryInvoice'
+export { default as ColorMaster } from './ColorMaster'
+export { default as TaxTermMaster } from './TaxTermMaster'
+export { default as TaxTemplate } from './TaxTemplate'
 
 
 
