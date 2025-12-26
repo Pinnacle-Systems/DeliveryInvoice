@@ -139,8 +139,16 @@ export default function Form() {
         return;
       }
       try {
-        await removeData(id)
-        setId("");
+        let deldata = await removeData(id).unwrap();
+        console.log(deldata, "deldata")
+        if (deldata?.statusCode == 1) {
+          Swal.fire({
+            icon: 'error',
+            // title: 'Submission error',
+            text: deldata?.message || 'Something went wrong!',
+          });
+          return;
+        } setId("");
         // toast.success("Deleted Successfully");
         setForm(false);
         Swal.fire({
@@ -245,7 +253,7 @@ export default function Form() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={deleteData}
-          itemsPerPage={10}
+          itemsPerPage={15}
         />
       </div>
 

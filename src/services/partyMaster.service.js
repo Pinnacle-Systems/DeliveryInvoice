@@ -20,7 +20,7 @@ async function get(req) {
         return { statusCode: 0, data };
     }
     if (isPartyOverAllReport) {
-        const data = await getPartyOverAllReport(searchValue,startDate)
+        const data = await getPartyOverAllReport(searchValue, startDate)
         return { statusCode: 0, data };
 
     }
@@ -178,7 +178,10 @@ async function create(body) {
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, currencyId, costCode, soa, coa,
-        companyId, active, userId } = await body
+        companyId, active, userId,
+        landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
+        bankBranchName, accountNumber, ifscCode
+    } = await body
     const data = await prisma.party.create(
         {
             data: {
@@ -190,7 +193,17 @@ async function create(body) {
                 createdById: userId ? parseInt(userId) : undefined,
                 companyId: parseInt(companyId), active, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
-
+                landMark: landMark ? landMark : undefined,
+                contact: contact ? parseInt(contact) : undefined,
+                designation: designation ? designation : undefined,
+                department: department ? department : undefined,
+                contactPersonEmail: contactPersonEmail ? contactPersonEmail : undefined,
+                contactNumber: contactNumber ? contactNumber : undefined,
+                alterContactNumber: alterContactNumber ? alterContactNumber : undefined,
+                bankname: bankname ? bankname : "",
+                bankBranchName: bankBranchName ? bankBranchName : undefined,
+                accountNumber: accountNumber ? accountNumber : undefined,
+                ifscCode: ifscCode ? ifscCode : undefined
             }
         }
     )
@@ -202,7 +215,9 @@ async function update(id, body) {
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
-        companyId, active, userId } = await body
+        companyId, active, userId , landMark  , contact , designation , department , contactPersonEmail , contactNumber ,
+        alterContactNumber, bankname , bankBranchName , accountNumber ,ifscCode
+    } = await body
 
     const dataFound = await prisma.party.findUnique({
         where: {
@@ -223,6 +238,18 @@ async function update(id, body) {
             createdById: userId ? parseInt(userId) : undefined,
             companyId: parseInt(companyId), active,
             contactMobile: contactMobile ? parseInt(contactMobile) : undefined, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
+            landMark: landMark ? landMark : "",
+            contact: contact ? parseInt(contact) : undefined,
+            designation: designation ? designation : undefined,
+            department: department ? department : undefined,
+            contactPersonEmail: contactPersonEmail ? contactPersonEmail : undefined,
+            contactNumber: contactNumber ? contactNumber : undefined,
+            alterContactNumber: alterContactNumber ? alterContactNumber : undefined,
+            bankname: bankname ? bankname : undefined,
+            bankBranchName: bankBranchName ? bankBranchName : undefined,
+            accountNumber: accountNumber ? accountNumber : undefined,
+            ifscCode: ifscCode ? ifscCode : undefined
+
         }
     })
     return { statusCode: 0, data };

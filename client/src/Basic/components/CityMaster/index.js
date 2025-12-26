@@ -76,7 +76,7 @@ export default function Form() {
     };
 
     const validateData = (data) => {
-        if (data.name && data.code) {
+        if (data.name && data.code && data?.state) {
             return true;
         }
         return false;
@@ -87,7 +87,6 @@ export default function Form() {
         try {
             let returnData = await callback(data).unwrap();
             setId(returnData.data.id)
-            // toast.success(text + "Successfully");
             Swal.fire({
                 title: text + "Successfully",
                 icon: "success",
@@ -97,12 +96,7 @@ export default function Form() {
             if (exit) {
                 setForm(false)
             }
-            // if (exit) {
-            //     if (openPartyModal === true) {
-            //         dispatch(push({ name: lastTapName }));
-            //     }
-            //     dispatch(setOpenPartyModal(false));
-            // }
+            setForm(false)
             dispatch({
                 type: `StateMaster/invalidateTags`,
                 payload: ['State'],
@@ -116,10 +110,11 @@ export default function Form() {
 
     const saveData = () => {
         if (!validateData(data)) {
-            toast.info("Please fill all required fields...!", {
-                position: "top-center",
+            Swal.fire({
+                title: 'Please fill all required fields...!',
+                icon: 'error',
             });
-            return;
+            return
         }
         if (!window.confirm("Are you sure save the details ...?")) {
             return;
@@ -281,7 +276,7 @@ export default function Form() {
                     onView={handleView}
                     onEdit={handleEdit}
                     onDelete={deleteData}
-                    itemsPerPage={10}
+                    itemsPerPage={15}
                 />
             </div>
 

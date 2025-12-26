@@ -180,7 +180,40 @@ async function getOne(id) {
             id: parseInt(id)
         },
         include: {
-            DeliveryChallanItems: true
+            DeliveryChallanItems: {
+                select : {
+                    id : true,
+                    deliveryChallanId : true ,
+                    styleId : true,
+                    Style : {
+                        select : {
+                            name : true
+                        }
+                    },
+                    styleItemId : true ,
+                    StyleItem : {
+                        select : {
+                            name : true
+                        }
+                    },
+                    noOfBox : true ,
+                    uomId : true ,
+                    Uom : {
+                        select : {
+                            name : true
+                        }
+                    },
+                    colorId : true ,
+                    Color : {
+                        select : {
+                            name : true
+                        }
+                    },
+                    qty : true ,
+                    isInvoice : true,
+                    active : true
+                }
+            }
         }
     })
     if (!data) return NoRecordFound("styleItem");

@@ -76,6 +76,7 @@ export default function Form() {
                     icon: "success",
 
                 });
+                setForm(false)
             } else {
                 Swal.fire({
                     icon: 'error',

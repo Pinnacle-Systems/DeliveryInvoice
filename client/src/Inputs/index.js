@@ -717,7 +717,8 @@ export const DropdownInputNew = forwardRef(({
   autoFocus = false,
   width = "full",
   country,
-  openOnFocus = false,   // new prop
+  openOnFocus = false,
+  show   // new prop
 }, ref) => {
 
 
@@ -968,7 +969,7 @@ export const ReusableTable = ({
                             {onDelete && (
                               <button
                                 className=" text-red-800 flex items-center gap-1 px-1  bg-red-50 rounded"
-                                onClick={() => onDelete(item.id)}
+                                onClick={() => onDelete(item.id, item?.childRecord)}
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                   <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -1022,7 +1023,7 @@ export const ToggleButton = ({
   return (
     <div>
       <div className="">
-        {/* <label className={`md:text-start flex`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label> */}
+        <label className={`block  font-bold text-slate-700 mb-1 text-xs`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
         <div className="flex items-center">
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -1102,10 +1103,7 @@ export const TextInputNew1 = ({
   );
 };
 
-
-
-
-export const ReusableSearchableInputNew = forwardRef(
+export const ReusableSearchableInputNewCustomer = forwardRef(
   (
     {
       label,
@@ -1119,6 +1117,7 @@ export const ReusableSearchableInputNew = forwardRef(
       required,
       name,
       disabled,
+      show,
       id
     },
     ref
@@ -1153,7 +1152,289 @@ export const ReusableSearchableInputNew = forwardRef(
 
 
 
-    
+  const filtered = partyList?.data?.filter(i => i.isCustomer)
+
+    /* ---------------------------- OUTSIDE CLICK ---------------------------- */
+    // useEffect(() => {
+    //   if (id) return;
+    //   setIsDropdownOpen(true);
+    // }, []);
+
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+          setIsDropdownOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    /* ---------------------------- FILTER PARTIES ---------------------------- */
+
+    useEffect(() => {
+      if (!partyList?.data) return;
+
+      if (!search.trim()) {
+        setFilteredPages(partyList?.data?.filter(i => i.isCustomer));
+        return;
+      }
+
+      const filtered = partyList?.data?.filter((item) =>
+        item.isCustomer &&
+        item?.name?.toLowerCase().includes(search.toLowerCase())   
+      );
+
+      setFilteredPages(filtered);
+    }, [search, partyList]);
+
+
+    /* ---------------------------- ARROW NAVIGATION --------------------------- */
+
+    useEffect(() => {
+      const pageSearch = document.getElementById("pageSearch");
+      if (!pageSearch) return;
+
+      const handler = (e) => {
+        const items = pageSearch.querySelectorAll('[tabindex="0"]');
+        const index = Array.from(items).indexOf(document.activeElement);
+
+        if (e.key === "ArrowDown") {
+          items[index + 1]?.focus();
+          e.preventDefault();
+        }
+
+        if (e.key === "ArrowUp") {
+          items[index - 1]?.focus();
+          e.preventDefault();
+        }
+      };
+
+      pageSearch.addEventListener("keydown", handler);
+      return () => pageSearch.removeEventListener("keydown", handler);
+    }, []);
+
+    /* ---------------------------------- HANDLERS ------------------------------ */
+
+    const handleEdit = (id, e) => {
+      e.stopPropagation();
+      setEditingItem(id);
+      setIsDropdownOpen(false);
+      setIsListShow(false);
+
+      setOpenModel(true);
+    };
+
+    const handleDelete = (id, e) => {
+      e.stopPropagation();
+      onDeleteItem?.(id);
+    };
+
+    /* ---------------------------------- JSX ---------------------------------- */
+
+    return (
+      <>
+        {/* ----------------------------- MODAL ----------------------------- */}
+        <Modal
+          isOpen={openModel}
+          onClose={() => setOpenModel(false)}
+          widthClass="w-[90%] h-[95%]"
+        >
+          <DynamicRenderer
+            componentName={component}
+            editingItem={editingItem}
+            onCloseForm={() => setOpenModel(false)}
+          />
+        </Modal>
+
+        {/* ----------------------------- INPUT ----------------------------- */}
+        <div
+          className="relative text-sm w-full"
+          id="pageSearch"
+          ref={containerRef}
+        >
+          {label && (
+            <label className="block text-xs font-bold text-gray-600 mb-1">
+              {required ? <RequiredLabel name={label || name} /> : label}
+            </label>
+          )}
+
+          <div className="flex gap-2">
+            <div className="relative flex-grow">
+              <FaSearch className="absolute left-3 top-3 text-slate-400 text-xs" />
+
+              {isListShow ? (
+                /* ---------------- SEARCH INPUT ---------------- */
+                <input
+                  ref={ref}
+                  className="w-full pl-8 pr-2 py-1.5 text-xs border rounded-md"
+                  placeholder={placeholder}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setIsDropdownOpen(true);
+                  }}
+                  onFocus={() => {
+                    setIsListShow(true);
+                    setIsDropdownOpen(true);
+                  }}
+                  disabled={disabled || readOnly}
+                  tabIndex={0}
+                />
+              ) : (
+                /* ---------------- SELECTED VALUE ---------------- */
+                <input
+                  ref={ref}
+                  className="w-full pl-8 pr-2 py-1.5 text-xs border rounded-md"
+                  placeholder={placeholder}
+                  value={findFromList(
+                    searchTerm,
+                    partyList?.data?.filter(i => i.isCustomer),
+                    "name"
+                  )}
+                  onFocus={() => {
+                    setIsListShow(true);
+                    setIsDropdownOpen(true);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && nextRef?.current) {
+                      nextRef.current.focus();
+                    }
+                  }}
+                  disabled={disabled || readOnly}
+                  tabIndex={0}
+                />
+              )}
+            </div>
+
+            {/* ---------------- ADD BUTTON ---------------- */}
+            <div className="relative">
+              <button
+                className="h-full px-3 py-1.5 border border-green-500 rounded-md
+                hover:bg-green-500 text-green-600 hover:text-white"
+                disabled={disabled || readOnly}
+                onClick={() => {
+                  setEditingItem("new");
+                  setOpenModel(true);
+                }}
+                onMouseEnter={() => setTooltipVisible(true)}
+                onMouseLeave={() => setTooltipVisible(false)}
+              >
+                <FaPlus />
+              </button>
+
+              {tooltipVisible && (
+                <div className="absolute z-10 top-full right-0 mt-1 w-48 bg-indigo-800 text-white text-xs rounded p-2">
+                  <FaInfoCircle className="inline mr-1" />
+                  Click to add new party
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ---------------- DROPDOWN LIST ---------------- */}
+          {isDropdownOpen && (
+            <div className="absolute w-full mt-1 max-h-40 overflow-y-auto border rounded bg-white z-20" ref={ref}>
+              {filteredPages.length > 0 ? (
+                filteredPages?.map((item) => (
+                  <div
+                    key={item.id}
+                    tabIndex={0}
+                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer flex justify-between group"
+                    onClick={() => {
+                      setSearchTerm(item.id);
+                      setSearch("");
+                      setIsDropdownOpen(false);
+                      setIsListShow(false);
+                      nextRef?.current?.focus();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchTerm(item.id);
+                        setSearch("");
+                        setIsDropdownOpen(false);
+                        setIsListShow(false);
+                        nextRef?.current?.focus();
+                      }
+                    }}
+                  >
+                    <span>{item.name}</span>
+
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100">
+                      <button onClick={(e) => handleEdit(item.id, e)}>
+                        <FaEdit />
+                      </button>
+                      <button onClick={(e) => handleDelete(item.id, e)}>
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="px-3 py-2 text-xs text-gray-500">
+                  No party found
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
+);
+
+
+export const ReusableSearchableInputNew = forwardRef(
+  (
+    {
+      label,
+      placeholder,
+      onDeleteItem,
+      component,
+      setSearchTerm,   // selected value (partyId)
+      searchTerm,
+      readOnly,
+      nextRef,
+      required,
+      name,
+      disabled,
+      show,
+      id
+    },
+    ref
+  ) => {
+    /* ---------------------------------- DATA ---------------------------------- */
+
+    const companyId = secureLocalStorage.getItem(
+      sessionStorage.getItem("sessionId") + "userCompanyId"
+    );
+    const userId = secureLocalStorage.getItem(
+      sessionStorage.getItem("sessionId") + "userId"
+    );
+
+    const { data: partyList } = useGetPartyQuery({
+      params: { companyId, userId },
+    });
+
+    /* ---------------------------------- STATE --------------------------------- */
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [tooltipVisible, setTooltipVisible] = useState(false);
+    const [editingItem, setEditingItem] = useState(null);
+    const [openModel, setOpenModel] = useState(false);
+
+    const [search, setSearch] = useState("");           // 🔹 search text
+    const [filteredPages, setFilteredPages] = useState([]);
+    const [isListShow, setIsListShow] = useState(false);
+
+    const containerRef = useRef(null);
+    const modal = useModal();
+    const { openAddModal } = modal || {};
+
+
+
+
 
     /* ---------------------------- OUTSIDE CLICK ---------------------------- */
     // useEffect(() => {
@@ -1182,8 +1463,8 @@ export const ReusableSearchableInputNew = forwardRef(
         return;
       }
 
-      const filtered = partyList.data.filter((item) =>
-        item?.name?.toLowerCase().includes(search.toLowerCase())
+      const filtered = partyList?.data?.filter((item) =>
+        item?.name?.toLowerCase().includes(search.toLowerCase()) 
       );
 
       setFilteredPages(filtered);
@@ -1337,7 +1618,7 @@ export const ReusableSearchableInputNew = forwardRef(
           {isDropdownOpen && (
             <div className="absolute w-full mt-1 max-h-40 overflow-y-auto border rounded bg-white z-20" ref={ref}>
               {filteredPages.length > 0 ? (
-                filteredPages.map((item) => (
+                filteredPages?.map((item) => (
                   <div
                     key={item.id}
                     tabIndex={0}

@@ -26,6 +26,7 @@ import { findFromList } from "../../../Utils/helper";
 import { Check, LayoutGrid, Paperclip, Plus, Power, Table } from "lucide-react";
 import { statusDropdown } from "../../../Utils/DropdownData";
 import ArtDesignReport from "./ArtDesignReport";
+import Swal from "sweetalert2";
 
 
 const MODEL = "Party Master";
@@ -80,6 +81,7 @@ export default function Form({ partyId }) {
     const [ifscCode, setIfscCode] = useState('')
     const [formReport, setFormReport] = useState(false);
     const [attachments, setAttachments] = useState([]);
+    const [reportName, setReportName] = useState("Customer/Supplier Name")
 
     const [searchValue, setSearchValue] = useState("");
 
@@ -149,6 +151,20 @@ export default function Form({ partyId }) {
         setActive(id ? (data?.active ? data.active : false) : true);
 
         setContactMobile((data?.contactMobile ? data.contactMobile : ''));
+        setlandMark(data?.landMark  ? data?.landMark : '')
+        setContact(data?.contact  ? data?.contact : '')
+        setDesignation(data?.designation ? data?.designation : "")
+        setDepartment(data?.department ? data?.department : "")
+        setContactPersonEmail(data?.contactPersonEmail  ? data?.contactPersonEmail : "")
+        setContactNumber(data?.contactNumber  ? data?.contactNumber : "")
+        setAlterContactNumber(data?.alterContactNumber ? data?.alterContactNumber : "")
+        setBankName(data?.bankname ? data?.bankname : "")
+        setBankBranchName(data?.bankBranchName ? data?.bankBranchName : "")
+        setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
+        setIfscCode(data?.ifscCode ? data?.ifscCode : '')
+
+
+
 
 
     }, [id]);
@@ -160,14 +176,18 @@ export default function Form({ partyId }) {
     const data = {
         name, isSupplier, isCustomer, code, aliasName, displayName, address, cityId: city, pincode, panNo, tinNo, cstNo, cstDate, cinNo,
         faxNo, email, website, contactPersonName, gstNo, costCode, contactMobile,
-        active, companyId, coa, soa,
-        id, userId
+        active, companyId, coa : coa ? coa : "", soa,
+        id, userId,
+        landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
+        bankBranchName, accountNumber, ifscCode
     }
 
     const validateData = (data) => {
-        return data.name
+        return data.name && data?.active && data?.address && data?.cityId && data?.pincode && (data?.isCustomer || data?.isSupplier)
 
     }
+
+    console.log(data, "data")
 
     const handleSubmitCustom = async (callback, data, text) => {
         try {
@@ -191,7 +211,12 @@ export default function Form({ partyId }) {
             });
             setId("")
             syncFormWithDb(undefined)
-            toast.success(text + "Successfully");
+            setForm(false)
+            Swal.fire({
+                title: text + "  " + "Successfully",
+                icon: "success",
+
+            });
         } catch (error) {
             console.log("handle");
         }
@@ -199,11 +224,18 @@ export default function Form({ partyId }) {
 
 
     const saveData = () => {
+
+
         if (!validateData(data)) {
-            toast.info("Please fill all required fields...!", { position: "top-center" })
+            Swal.fire({
+                title: 'Please fill all required fields...!',
+                icon: 'error',
+            });
             return
         }
-
+        if (!window.confirm("Are you sure save the details ...?")) {
+            return;
+        }
 
         if (id) {
             handleSubmitCustom(updateData, data, "Updated");
@@ -219,8 +251,16 @@ export default function Form({ partyId }) {
                 return;
             }
             try {
-                await removeData(id)
-                dispatch({
+                let deldata = await removeData(id).unwrap();
+                console.log(deldata, "deldata")
+                if (deldata?.statusCode == 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        // title: 'Submission error',
+                        text: deldata?.message || 'Something went wrong!',
+                    });
+                    return;
+                } dispatch({
                     type: `accessoryItemMaster/invalidateTags`,
                     payload: ['AccessoryItemMaster'],
                 });
@@ -234,7 +274,11 @@ export default function Form({ partyId }) {
                     payload: ['Currency'],
                 });
                 syncFormWithDb(undefined);
-                toast.success("Deleted Successfully");
+                Swal.fire({
+                    title: "Deleted Successfully",
+                    icon: "success",
+
+                });
             } catch (error) {
                 toast.error("something went wrong");
             }
@@ -317,7 +361,7 @@ export default function Form({ partyId }) {
 
 
         {
-            header: "Customer/Supplier Name",
+            header: reportName,
             accessor: (item) => item?.name,
             //   cellClass: () => "font-medium text-gray-900",
             className: "font-medium text-gray-900 text-left uppercase w-72",
@@ -336,7 +380,7 @@ export default function Form({ partyId }) {
     const handleChange = (type) => {
 
         setIsSupplier(type == 'supplier');
-        setClient(type == 'client');
+        setIsCustomer(type == "client")
     };
 
     if (!cityList || cityFetching || cityLoading) {
@@ -348,7 +392,7 @@ export default function Form({ partyId }) {
 
 
     if (view == "Customer") {
-        filterParty = allData?.data?.filter(item => item.isClient)
+        filterParty = allData?.data?.filter(item => item.isCustomer)
     }
     if (view === "Supplier") {
         filterParty = allData?.data?.filter(item => item.isSupplier)
@@ -456,7 +500,7 @@ export default function Form({ partyId }) {
         //     </div>
         // </div>
         <>
- 
+
 
             <div onKeyDown={handleKeyDown}>
 
@@ -469,6 +513,7 @@ export default function Form({ partyId }) {
                                 onClick={() => {
                                     setForm(true);
                                     onNew();
+                                    syncFormWithDb(undefined)
                                 }}
                                 className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
                             >
@@ -479,7 +524,7 @@ export default function Form({ partyId }) {
                             </button>
                             <div className="flex items-center gap-2">
                                 <button
-                                    onClick={() => setView("all")}
+                                    onClick={() => { setView("all"); setReportName("Customer/Supplier Name") }}
                                     className={`px-3 py-1 rounded-md text-xs flex items-center gap-1 ${view === "all"
                                         ? "bg-indigo-100 text-indigo-600"
                                         : "text-gray-600 hover:bg-gray-100"
@@ -489,7 +534,7 @@ export default function Form({ partyId }) {
                                     All
                                 </button>
                                 <button
-                                    onClick={() => setView("Customer")}
+                                    onClick={() => { setView("Customer"); setReportName("Customer Name") }}
                                     className={`px-3 py-1 rounded-md text-xs flex items-center gap-1 ${view === "Customer"
                                         ? "bg-indigo-100 text-indigo-600"
                                         : "text-gray-600 hover:bg-gray-100"
@@ -499,7 +544,7 @@ export default function Form({ partyId }) {
                                     Customer
                                 </button>
                                 <button
-                                    onClick={() => setView("Supplier")}
+                                    onClick={() => { setView("Supplier"); setReportName("Supplier Name") }}
                                     className={`px-3 py-1 rounded-md text-xs flex items-center gap-1 ${view === "Supplier"
                                         ? "bg-indigo-100 text-indigo-600"
                                         : "text-gray-600 hover:bg-gray-100"
@@ -656,7 +701,7 @@ export default function Form({ partyId }) {
                                                         <input
                                                             type="radio"
                                                             name="type"
-                                                            checked={isClient}
+                                                            checked={isCustomer}
                                                             onChange={() => handleChange('client')}
                                                             readOnly={readOnly}
                                                         />
@@ -1180,7 +1225,7 @@ export default function Form({ partyId }) {
                     </Modal>
                 )}
             </div>
-           <Modal isOpen={formReport}
+            <Modal isOpen={formReport}
                 onClose={() => setFormReport(false)} widthClass={"p-3 h-[70%] w-[70%]"}
             >
                 <ArtDesignReport

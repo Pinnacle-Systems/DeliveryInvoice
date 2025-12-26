@@ -5,13 +5,26 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { companyId, active } = req.query
-    const data = await prisma.department.findMany({
+    let data;
+     data = await prisma.department.findMany({
         where: {
             companyId: companyId ? parseInt(companyId) : undefined,
             active: active ? Boolean(active) : undefined,
+        },
+        include: {
+            _count: {
+                select: {
+                    doctor: true
+                }
+            }
         }
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(order => ({
+            ...order,
+            childRecord: order?._count.doctor > 0
+        })),
+    };
 }
 
 
@@ -23,12 +36,12 @@ async function getOne(id) {
         }
     })
     if (!data) return NoRecordFound("Department");
-    return { statusCode: 0, data: {...data, ...{childRecord}} };
+    return { statusCode: 0, data: { ...data, ...{ childRecord } } };
 }
 
 async function getSearch(req) {
     const { companyId, active } = req.query
-    const {searchKey} = req.params
+    const { searchKey } = req.params
     const data = await prisma.department.findMany({
         where: {
             companyId: companyId ? parseInt(companyId) : undefined,

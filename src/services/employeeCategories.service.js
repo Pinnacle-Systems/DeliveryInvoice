@@ -6,13 +6,24 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { branchId, active} = req.query
-    const data = await prisma.employeeCategory.findMany({
+    let data;
+     data = await prisma.employeeCategory.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
             branchId: branchId ? parseInt(branchId) : undefined,
+        },
+        include : {
+            _count : {
+                select : {
+                 Employee : true   
+                }
+            }
         }
     });
-    return { statusCode: 0, data };
+    return { statusCode: 0,  data: data = data.map(order => ({
+            ...order,
+            childRecord: order?._count.Employee > 0
+        })), };
 }
 
 

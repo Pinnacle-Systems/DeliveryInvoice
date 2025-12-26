@@ -189,7 +189,7 @@ export default function Form() {
 
     const validateData = (data) => {
 
-        if (data.name && data.gender && data.bloodGroup && data.dob && data.active && data.employeeCategoryId && data.department && data.joiningDate && data.mobile && data.localAddress && data?.permPincode && data.permCity
+        if (data.name && data.gender && data.bloodGroup && data.dob && data.active && data.employeeCategoryId && data.department && data.joiningDate && data.mobile && data.localAddress && data?.permPincode && data.permCity && data?.maritalStatus
 
         ) {
             return true;
@@ -215,6 +215,7 @@ export default function Form() {
             }
             setId("")
             syncFormWithDb(undefined)
+            setForm(false)
             Swal.fire({
                 title: text + "Successfully",
                 icon: "success",
@@ -326,6 +327,7 @@ export default function Form() {
         setReadOnly(false);
         setForm(true);
         setSearchValue("");
+        syncFormWithDb(undefined)
     };
 
     function onDataClick(id) {
@@ -739,7 +741,7 @@ export default function Form() {
                 <Modal
                     isOpen={form}
                     form={form}
-                    widthClass={"w-[95%] max-w-6xl h-[85vh]"}
+                    widthClass={"w-[85%] h-[85vh]"}
                     onClose={() => {
                         setForm(false);
                         // setErrors({});
@@ -835,7 +837,7 @@ export default function Form() {
                                                         options={bloodList}
                                                         value={bloodGroup}
                                                         setValue={setBloodGroup}
-
+                                                        required={true}
                                                         readOnly={readOnly}
                                                         disabled={childRecord.current > 0}
                                                     />
@@ -857,10 +859,10 @@ export default function Form() {
                                     </div>
 
                                     <div className="bg-white p-3 rounded-md border border-gray-200">
-                                        <h3 className="font-medium text-gray-800 mb-2 text-sm">Employment Status</h3>
+                                        {/* <h3 className="font-medium text-gray-800 mb-2 text-sm">Employment Status</h3> */}
                                         <div className="space-y-2">
                                             <ToggleButton
-                                                name="Status"
+                                                name="Employment Status"
                                                 options={statusDropdown}
                                                 value={active}
                                                 setActive={setActive}
@@ -897,7 +899,7 @@ export default function Form() {
                                                                 (item) => item.active
                                                             ),
                                                         "name",
-                                                        "id"
+                                                        "id" || []
                                                     )}
                                                     value={employeeCategory}
                                                     setValue={(value) => setEmployeeCategory(value)}

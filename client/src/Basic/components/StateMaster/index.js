@@ -94,6 +94,7 @@ export default function Form() {
         title: text + "Successfully",
         icon: "success",
       });
+      setForm(false);
 
       dispatch({
         type: `countryMaster/invalidateTags`,
@@ -142,29 +143,36 @@ export default function Form() {
       handleSubmitCustom(addData, data, "Added");
     }
   };
-
   const deleteData = async (id) => {
-
     if (id) {
       if (!window.confirm("Are you sure to delete...?")) {
         return;
       }
       try {
-        await removeData(id)
+        let deldata = await removeData(id).unwrap();
+        console.log(deldata, "deldata")
+        if (deldata?.statusCode == 1) {
+          Swal.fire({
+            icon: 'error',
+            // title: 'Submission error',
+            text: deldata?.message || 'Something went wrong!',
+          });
+          return;
+        }
         setId("");
-        dispatch({
-          type: `countryMaster/invalidateTags`,
-          payload: ['Countries'],
-        });
-        // toast.success("Deleted Successfully");
         Swal.fire({
           title: "Deleted Successfully",
           icon: "success",
 
         });
-        setForm(false)
+        setForm(false);
       } catch (error) {
-        toast.error("something went wrong");
+        Swal.fire({
+          icon: 'error',
+          title: 'Submission error',
+          text: error.data?.message || 'Something went wrong!',
+        });
+        setForm(false);
       }
     }
   };
@@ -372,7 +380,7 @@ export default function Form() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={deleteData}
-          itemsPerPage={10}
+          itemsPerPage={15}
         />
       </div>
 
@@ -476,7 +484,7 @@ export default function Form() {
                             </div>
 
                             <div className="mb-3 ">
-
+                              {/* 
                               <TextInputNew
                                 name="GST No"
                                 type="text"
@@ -485,7 +493,7 @@ export default function Form() {
                                 readOnly={readOnly}
                               // disabled={(childRecord.current > 0)}
 
-                              />
+                              /> */}
                             </div>
 
 

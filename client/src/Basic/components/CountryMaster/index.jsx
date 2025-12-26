@@ -126,11 +126,12 @@ export default function Form() {
       }
       try {
         let deldata = await removeData(id).unwrap();
+        console.log(deldata,"deldata")
         if (deldata?.statusCode == 1) {
           Swal.fire({
             icon: 'error',
-            title: 'Submission error',
-            text: deldata.data?.message || 'Something went wrong!',
+            // title: 'Submission error',
+            text: deldata?.message || 'Something went wrong!',
           });
           return;
         }
@@ -290,7 +291,7 @@ export default function Form() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={deleteData}
-          itemsPerPage={10}
+          itemsPerPage={15}
         />
       </div>
 
@@ -304,7 +305,7 @@ export default function Form() {
               setForm(false);
             }}
           >
-            <div className="h-full flex flex-col  bg-gray-200">
+            <div className=" flex flex-col  bg-gray-200">
               <div className="border-b py-2 px-4 mx-3 flex mt-4 justify-between items-center sticky top-0 z-10 bg-white">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg px-2 py-0.5 font-semibold  text-gray-800">

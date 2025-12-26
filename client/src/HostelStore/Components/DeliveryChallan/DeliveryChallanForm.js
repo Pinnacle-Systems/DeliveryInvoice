@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, TextArea, TextAreaNew, TextInput, TextInputNew } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextArea, TextAreaNew, TextInput, TextInputNew } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -16,6 +16,11 @@ import { useAddDeliveryChallanMutation, useGetDeliveryChallanByIdQuery, useUpdat
 import Swal from "sweetalert2";
 import { useGetPartyByIdQuery } from "../../../redux/services/PartyMasterService";
 import { useGetColorMasterQuery } from "../../../redux/services/ColorMasterService";
+import Modal from "../../../UiComponents/Modal";
+import { PDFViewer } from "@react-pdf/renderer";
+import tw from "../../../Utils/tailwind-react-pdf";
+import DeliveryChallanPrint from "./PrintFormat-PO";
+import { useGetBranchByIdQuery } from "../../../redux/services/BranchMasterService";
 
 const ChallanForm = ({
     onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, taxTypeList, supplierList, params, termsData, branchList, hsnData,
@@ -58,8 +63,8 @@ const ChallanForm = ({
     const { data: uomList } = useGetUomQuery({ params: { ...params } });
     const { data: colorList } = useGetColorMasterQuery({ params: { ...params } });
 
-    //   const { data: supplierDetails } =
-    //     useGetPartyByIdQuery(supplierId, { skip: !supplierId });
+      const { data: supplierDetails } =
+        useGetPartyByIdQuery(supplierId, { skip: !supplierId });
 
 
     const [addData] = useAddDeliveryChallanMutation();
@@ -74,6 +79,7 @@ const ChallanForm = ({
     } = useGetDeliveryChallanByIdQuery(id, { skip: !id });
 
 
+    const { data: branchdata } = useGetBranchByIdQuery(branchId, { skip: !branchId });
 
 
     const syncFormWithDb = useCallback((data) => {
@@ -242,14 +248,60 @@ const ChallanForm = ({
     }
 
 
-const inputRef = useRef(null);
+    const inputRef = useRef(null);
 
-useEffect(() => {
-  inputRef.current?.focus();
-}, []);
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
 
     return (
         <>
+            <Modal
+                isOpen={printModalOpen}
+                onClose={() => setPrintModalOpen(false)}
+                widthClass={"w-[90%] h-[90%]"}
+            >
+                <PDFViewer style={tw("w-full h-full")}>
+                    <DeliveryChallanPrint
+                        tax={findFromList(taxTemplateId, taxTypeList?.data, "name")}
+                        branchData={branchdata?.data}
+                        data={id ? singleData?.data : "Null"}
+                        singleData={id ? singleData?.data : "Null"}
+                        date={id ? singleData?.data?.createdAt : date}
+                        docId={docId ? docId : ""}
+                        remarks={remarks}
+                        discountType={discountType}
+                        poType={poType}
+                        discountValue={discountValue}
+                        // ref={componentRef}
+                        poNumber={docId} poDate={date} payTermId={payTermId}
+                        deliveryItems={deliveryItems}
+                        supplierDetails={supplierDetails ? supplierDetails?.data : null}
+                        deliveryType={deliveryType}
+                        deliveryToId={deliveryToId}
+                        taxTemplateId={taxTemplateId}
+                        // yarnList={yarnList}
+                        uomList={uomList} colorList={colorList}
+                        // taxDetails={taxDetails}
+                        // deliveryTo={deliveryTo}
+                        // taxGroupWise={taxGroupWise}
+                        // transportMode={transportMode}
+                        // transporter={transporter}
+                        // vehicleNo={vehicleNo}
+                        termsData={termsData}
+                        term={term}
+                        totalQty={
+                            deliveryItems?.reduce((sum, next) => {
+                                return sum + (Number(next?.qty) || 0);
+                            }, 0)
+                        }
+                        // invoiceItems={invoiceItems}
+                        // termsAndCondition={termsAndCondition}
+                    // payTermList={payTermList}
+
+                    />
+                </PDFViewer>
+            </Modal>
             <div className="w-full  mx-auto rounded-md shadow-lg px-2 mt-1 overflow-y-auto bg-white">
                 <div className="flex justify-between items-center mb-1 ">
                     <h1 className="text-2xl font-bold text-gray-800  ">Delivery Challan</h1>
@@ -296,18 +348,18 @@ useEffect(() => {
 
                             >
 
-                                <ReusableSearchableInputNew
+                                <ReusableSearchableInputNewCustomer
                                     label="Customer Name"
                                     component="PartyMaster"
                                     placeholder="Search Customer Name"
                                     optionList={allSuppliers}
                                     setSearchTerm={(value) => { setSupplierId(value) }}
                                     searchTerm={supplierId}
-                                    show={"isSupplier"}
+                                    show={"isCustomer"}
                                     required={true}
                                     disabled={readOnly}
                                     ref={inputRef}
-                                    id = {id}
+                                    id={id}
                                 />
 
 
@@ -399,7 +451,7 @@ useEffect(() => {
 
                     <div className="border border-slate-200 p-2  rounded-md shadow-sm ">
 
-                
+
                     </div>
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
@@ -446,7 +498,7 @@ useEffect(() => {
                             Save & New
                         </button>
 
-                
+
                     </div>
 
                     {/* Right Buttons */}
