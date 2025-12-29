@@ -643,7 +643,7 @@ export const ReusableSearchableInput = forwardRef(
   }
 );
 
-export const TextInputNew = ({
+export const TextInputNew = forwardRef(({
   name,
   label,
   type = "text",
@@ -657,8 +657,9 @@ export const TextInputNew = ({
   onBlur = null,
   width = "full",
   max
-}) => {
-  console.log(max, "max")
+}, ref) => {
+
+  console.log(ref, "countryNameRef")
   return (
     <div className={`mb-2 ${width}`}>
       {name && (
@@ -666,7 +667,9 @@ export const TextInputNew = ({
           {required ? <RequiredLabel name={label ? label : name} /> : name}
         </label>
       )}
+
       <input
+        ref={ref}
         type={type}
         value={value}
         onChange={(e) =>
@@ -688,17 +691,11 @@ export const TextInputNew = ({
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
           transition-all duration-150 shadow-sm
-         
-          ${className}`
-        }
+          ${className}`}
       />
-      {/* ${readOnly || disabled
-            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-            : "bg-white hover:border-gray-400"} */}
     </div>
   );
-};
-
+});
 
 export const DropdownInputNew = forwardRef(({
   name,
@@ -1051,7 +1048,8 @@ export const ToggleButton = ({
 };
 
 
-export const TextInputNew1 = ({
+
+export const TextInputNew1 = forwardRef(({
   name,
   label,
   type = "text",
@@ -1066,8 +1064,7 @@ export const TextInputNew1 = ({
   width = "full",
   max,
   handleChange
-}) => {
-  console.log(max, "max")
+}, ref) => {
   return (
     <div className={`mb-2 ${width}`}>
       {name && (
@@ -1076,13 +1073,14 @@ export const TextInputNew1 = ({
         </label>
       )}
       <input
+        ref={ref}  // ✅ ref attached here
         type={type}
         value={value}
-        onChange={(e) =>
-
-          setValue(e.target.value.toUpperCase())
-        }
-
+        onChange={(e) => {
+          const val = e.target.value.toUpperCase();
+          setValue(val);
+          if (handleChange) handleChange(val);
+        }}
         onBlur={onBlur}
         placeholder={name}
         readOnly={readOnly}
@@ -1092,16 +1090,11 @@ export const TextInputNew1 = ({
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
           transition-all duration-150 shadow-sm
-         
-          ${className}`
-        }
+          ${className}`}
       />
-      {/* ${readOnly || disabled
-            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-            : "bg-white hover:border-gray-400"} */}
     </div>
   );
-};
+});
 
 export const ReusableSearchableInputNewCustomer = forwardRef(
   (
@@ -1152,7 +1145,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
 
 
 
-  const filtered = partyList?.data?.filter(i => i.isCustomer)
+    const filtered = partyList?.data?.filter(i => i.isCustomer)
 
     /* ---------------------------- OUTSIDE CLICK ---------------------------- */
     // useEffect(() => {
@@ -1183,7 +1176,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
 
       const filtered = partyList?.data?.filter((item) =>
         item.isCustomer &&
-        item?.name?.toLowerCase().includes(search.toLowerCase())   
+        item?.name?.toLowerCase().includes(search.toLowerCase())
       );
 
       setFilteredPages(filtered);
@@ -1464,7 +1457,7 @@ export const ReusableSearchableInputNew = forwardRef(
       }
 
       const filtered = partyList?.data?.filter((item) =>
-        item?.name?.toLowerCase().includes(search.toLowerCase()) 
+        item?.name?.toLowerCase().includes(search.toLowerCase())
       );
 
       setFilteredPages(filtered);

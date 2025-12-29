@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import secureLocalStorage from 'react-secure-storage';
 import { Check, Plus, Power } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -50,10 +50,8 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
 
     const syncFormWithDb = useCallback(
         (data) => {
-            // if (id) setReadOnly(true);
             setName(data?.name ? data.name : "");
-
-            setSku(data?.sku ? data?.sku : "");
+            setSku(data?.aliasName ? data?.aliasName : "");
             setActive(id ? (data?.active ? data.active : false) : true);
         },
         [id]
@@ -79,14 +77,14 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     }
 
     const validateData = (data) => {
-        if (data.name && data.sku) {
+        if (data.name) {
             return true;
         }
         return false;
     }
 
 
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             let returnData;
             if (text === "Updated") {
@@ -101,14 +99,19 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                 icon: "success",
 
             });
-            setForm(false)
+            if (nextProcess == "new") {
+                syncFormWithDb(undefined)
+                onNew()
+            } else {
+                setForm(false)
+            }
         } catch (error) {
             console.log("handle");
         }
     };
 
 
-    const saveData = () => {
+    const saveData = (nextProcess) => {
         if (!validateData(data)) {
             Swal.fire({
                 title: "Please fill all required fields...!",
@@ -139,9 +142,9 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
             return;
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated");
+            handleSubmitCustom(updateData, data, "Updated", nextProcess);
         } else {
-            handleSubmitCustom(addData, data, "Added");
+            handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     };
 
@@ -246,11 +249,19 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
 
     ];
 
-    const openPartyModal = useSelector((state) => state?.party);
+    const countryNameRef = useRef(null);
 
-    console.log(openPartyModal, "openPartyModal")
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
 
-  const dispatch = useDispatch();
+    // const openPartyModal = useSelector((state) => state?.party);
+
+    // console.log(openPartyModal, "openPartyModal")
+
+    const dispatch = useDispatch();
 
     if (dynamicForm) {
         return (
@@ -305,35 +316,39 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                 </div>
                             </div>
                         </div>
+                        <div className="flex-1 overflow-auto p-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <TextInputNew
+                                    ref={countryNameRef}
+                                    name="Name"
+                                    type="text"
+                                    value={name}
+                                    setValue={setName}
+                                    required={true}
+                                    readOnly={readOnly}
+                                />
 
-                        <div className="flex-1 overflow-auto p-3 ">
-                            <div className="grid grid-cols-1  gap-3  h-full ">
-                                <div className="lg:col-span-2 space-y-3">
-                                    <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                                        <div className="space-y-4 ">
-                                            <div className="grid grid-cols-2  gap-3  h-full">
-                                                <fieldset className=' rounded mt-2'>
+                                <TextInputNew
+                                    name="Alias Name"
+                                    type="text"
+                                    value={sku}
+                                    setValue={setSku}
+                                    readOnly={readOnly}
+                                />
+                            </div>
 
-                                                    <div className="mb-3">
-                                                        <TextInputNew name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} />
-
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <TextInputNew name="Alias Name" type="text" value={sku} setValue={setSku} required={true} readOnly={readOnly} />
-                                                    </div>
-
-                                                    <div className="mb-5">
-                                                        <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
-
-                                                    </div>
-
-                                                </fieldset>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div className="mt-3">
+                                <ToggleButton
+                                    name="Status"
+                                    options={statusDropdown}
+                                    value={active}
+                                    setActive={setActive}
+                                    required={true}
+                                    readOnly={readOnly}
+                                />
                             </div>
                         </div>
+
                     </div>
                 </Modal>
             </>
@@ -410,12 +425,30 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                         {!readOnly && (
                                             <button
                                                 type="button"
-                                                onClick={saveData}
-                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                                border border-green-600 flex items-center gap-1 text-xs"
+                                                onClick={() => {
+                                                    saveData("close")
+                                                }} 
+                                                className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                                                border border-blue-600 flex items-center gap-1 text-xs"
                                             >
                                                 <Check size={14} />
-                                                {id ? "Update" : "Save"}
+                                                {id ? "Update" : "Save & close"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {(!readOnly && !id) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    saveData("new")
+                                                }}
+
+                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                                                      border border-green-600 flex items-center gap-1 text-xs"
+                                            >
+                                                <Check size={14} />
+                                                {"Save & New"}
                                             </button>
                                         )}
                                     </div>
@@ -426,26 +459,23 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                 <div className="grid grid-cols-1  gap-3  h-full ">
                                     <div className="lg:col-span-2 space-y-3">
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                                            <div className="space-y-4 ">
-                                                <div className="grid grid-cols-2  gap-3  h-full">
-                                                    <fieldset className=' rounded mt-2'>
+                                            <div className="grid grid-cols-2  gap-3  ">
 
-                                                        <div className="mb-3">
-                                                            <TextInputNew name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} />
+                                                <div className="">
+                                                    <TextInputNew name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
 
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <TextInputNew name="Alias Name" type="text" value={sku} setValue={setSku} required={true} readOnly={readOnly} />
-                                                        </div>
-
-                                                        <div className="mb-5">
-                                                            <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
-
-                                                        </div>
-
-                                                    </fieldset>
+                                                </div>
+                                                <div className="">
+                                                    <TextInputNew name="Alias Name" type="text" value={sku} setValue={setSku} readOnly={readOnly} />
                                                 </div>
                                             </div>
+                                            <div className="">
+                                                <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
+
+                                            </div>
+
+
+
                                         </div>
                                     </div>
                                 </div>

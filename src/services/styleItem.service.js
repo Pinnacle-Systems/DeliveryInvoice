@@ -16,7 +16,7 @@ async function get(req) {
 }
 
 async function getOne(id) {
-    const childRecord = await prisma.style.count({where:{styleItemId : parseInt(id)}});
+    const childRecord = await prisma.styleItem.count({where:{id : parseInt(id)}});
     const data = await prisma.styleItem.findUnique({
         where: {
             id: parseInt(id)
@@ -46,11 +46,11 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { name, aliasname, active } = await body
+    const { name, aliasName, active } = await body
     const data = await prisma.styleItem.create(
         {
             data: {
-                name, aliasname, active,
+                name, aliasName, active,
             }
         }
     )
@@ -58,7 +58,9 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, active ,aliasname } = await body
+    const { name, active ,aliasName } = await body
+    console.log(aliasName,"aliasname",name);
+    
     const dataFound = await prisma.styleItem.findUnique({
         where: {
             id: parseInt(id)
@@ -71,7 +73,7 @@ async function update(id, body) {
         },
         data:
         {
-                name, aliasname, active,
+                name, aliasName, active,
         },
     })
     return { statusCode: 0, data };

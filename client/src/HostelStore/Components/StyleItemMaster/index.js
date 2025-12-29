@@ -17,6 +17,7 @@ export default function Form() {
   const [name, setName] = useState("");
   const [accessory, setAccessory] = useState(false);
   const [active, setActive] = useState(false);
+  const [aliasName, setAliasName] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
   const childRecord = useRef(0);
@@ -41,8 +42,7 @@ export default function Form() {
     isLoading: isSingleLoading,
   } = useGetStyleItemMasterByIdQuery(id, { skip: !id });
 
-  const [trigger, { data: singleDataLazy, isFetchingLazy }] =
-    useLazyGetStyleItemMasterByIdQuery();
+
 
   const [addData] = useAddStyleItemMasterMutation();
   const [updateData] = useUpdateStyleItemMasterMutation();
@@ -54,9 +54,12 @@ export default function Form() {
         setReadOnly(false);
         setName("");
         setActive(id ? data?.active : true);
+        setAliasName(data?.aliasName ? data?.aliasName : "")
+
       } else {
         setName(data?.name || "");
         setActive(id ? data?.active ?? false : true);
+        setAliasName(data?.aliasName ? data?.aliasName : "")
       }
     },
     [id]
@@ -73,6 +76,7 @@ export default function Form() {
     companyId: secureLocalStorage.getItem(
       sessionStorage.getItem("sessionId") + "userCompanyId"
     ),
+    aliasName
   };
 
   const validateData = (data) => {
@@ -82,7 +86,7 @@ export default function Form() {
     return false;
   };
 
-  const handleSubmitCustom = async (callback, data, text) => {
+  const handleSubmitCustom = async (callback, data, text, nextProcess) => {
     try {
       let returnData;
       if (text === "Updated") {
@@ -101,13 +105,19 @@ export default function Form() {
           Swal.showLoading();
         },
       });
-      setForm(false);
+      console.log(nextProcess, 'nextProcess')
+      if (nextProcess == "new") {
+        syncFormWithDb(undefined)
+        onNew()
+      } else {
+        setForm(false)
+      }
     } catch (error) {
       console.log("handle");
     }
   };
 
-  const saveData = () => {
+  const saveData = (nextProcess) => {
     let foundItem;
     if (id) {
       foundItem = allData?.data
@@ -143,15 +153,14 @@ export default function Form() {
       return;
     }
     if (id) {
-      handleSubmitCustom(updateData, data, "Updated");
+      handleSubmitCustom(updateData, data, "Updated", nextProcess);
     } else {
-      handleSubmitCustom(addData, data, "Added");
+      handleSubmitCustom(addData, data, "Added", nextProcess);
     }
   };
 
   const handleDelete = async (id) => {
-    setId(id);
-    const { data } = await trigger(id);
+
     if (id) {
       if (!window.confirm("Are you sure to delete...?")) {
         return;
@@ -168,8 +177,7 @@ export default function Form() {
           if (deldata?.statusCode == 1) {
             Swal.fire({
               icon: "error",
-              title: "Child record Exists",
-              text: deldata.data?.message || "Data cannot be deleted!",
+              title: deldata?.message || "Data cannot be deleted!",
             });
             return;
           }
@@ -252,6 +260,14 @@ export default function Form() {
     setReadOnly(false);
   };
 
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
+
   return (
     <div onKeyDown={handleKeyDown} className="p-1">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
@@ -264,7 +280,7 @@ export default function Form() {
               setForm(true);
               onNew();
             }}
-            className="bg-white border font-segoe border-green-600 text-green-600 hover:bg-green-700 hover:text-white text-sm px-2  rounded-md shadow transition-colors duration-200 flex items-center gap-2"
+            className="bg-white border  border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white text-sm px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
           >
             + Add New Style Item
           </button>
@@ -284,12 +300,12 @@ export default function Form() {
         <Modal
           isOpen={form}
           form={form}
-          widthClass={"w-[500px] max-w-6xl h-[350px]"}
+          widthClass={"w-[600px] max-w-6xl h-[350px]"}
           onClose={() => {
             setForm(false);
           }}
         >
-          <div className="h-full flex flex-col bg-gray-100">
+          <div className="h-full flex flex-col bg-gray-200">
             <div className="border-b py-2 px-4 mt-4 mx-3 flex justify-between items-center sticky top-0 z-10 bg-white">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg px-2 py-0.5 font-semibold text-gray-800">
@@ -306,11 +322,13 @@ export default function Form() {
                     <button
                       type="button"
                       onClick={() => {
-                        setReadOnly(false);
+                        setForm(false);
+                        setSearchValue("");
+                        setId(false);
                       }}
                       className="px-3 py-1 text-red-600 hover:bg-red-600 hover:text-white border border-red-600 text-xs rounded"
                     >
-                      Edit
+                      Cancel
                     </button>
                   )}
                 </div>
@@ -318,12 +336,30 @@ export default function Form() {
                   {!readOnly && (
                     <button
                       type="button"
-                      onClick={saveData}
+                      onClick={() => {
+                        saveData("close")
+                      }}
+                      className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                  border border-blue-600 flex items-center gap-1 text-xs"
+                    >
+                      <Check size={14} />
+                      {id ? "Update" : "Save & close"}
+                    </button>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {(!readOnly && !id) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        saveData("new")
+                      }}
+
                       className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
                   border border-green-600 flex items-center gap-1 text-xs"
                     >
                       <Check size={14} />
-                      {id ? "Update" : "Save"}
+                      {"Save & New"}
                     </button>
                   )}
                 </div>
@@ -339,11 +375,22 @@ export default function Form() {
                         <div className="flex flex-wrap justify-between">
                           <div className="mb-3 w-[48%]">
                             <TextInputNew1
+                              ref={countryNameRef}
                               name="Style Item"
                               type="text"
                               value={name}
                               setValue={setName}
                               required={true}
+                              readOnly={readOnly}
+                              disabled={childRecord.current > 0}
+                            />
+                          </div>
+                          <div className="mb-3 w-[48%]">
+                            <TextInputNew1
+                              name="Alias Name"
+                              type="text"
+                              value={aliasName}
+                              setValue={setAliasName}
                               readOnly={readOnly}
                               disabled={childRecord.current > 0}
                             />

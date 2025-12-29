@@ -96,8 +96,8 @@ async function create(req) {
     const { name, fabricId, colorId, aliasName, active, styleCode, panelId, sku } = await req;
     const data = await prisma.style.create({
         data: {
-            name , aliasName , active
-          
+            name, aliasName: sku, active
+
         }
     });
 
@@ -167,7 +167,7 @@ async function update(id, body) {
         where: { id: parseInt(id) },
         data: {
             name,
-            aliasName ,
+            aliasName: sku,
             active: active !== undefined ? JSON.parse(active) : undefined,
         },
 

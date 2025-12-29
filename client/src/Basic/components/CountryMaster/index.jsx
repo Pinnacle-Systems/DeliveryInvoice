@@ -55,6 +55,15 @@ export default function Form() {
   }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData])
 
 
+
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
+
   const data = {
     name, code, companyId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + "userCompanyId"), active, id
   }
@@ -91,7 +100,7 @@ export default function Form() {
         title: 'Please fill all required fields...!',
         icon: 'error',
       });
-       return
+      return
     }
     let foundItem;
     if (id) {
@@ -126,7 +135,7 @@ export default function Form() {
       }
       try {
         let deldata = await removeData(id).unwrap();
-        console.log(deldata,"deldata")
+        console.log(deldata, "deldata")
         if (deldata?.statusCode == 1) {
           Swal.fire({
             icon: 'error',
@@ -219,6 +228,7 @@ export default function Form() {
 
   ];
 
+
   // if (!form)
   //   return  <ReportTemplate
   //   heading={MODEL}
@@ -236,6 +246,7 @@ export default function Form() {
   // />
 
   return (
+
     // <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-full bg-theme'>
     //   <div className='flex flex-col frame w-full h-full'>
     //     <FormHeader onNew={onNew} onClose={() => {setForm(false); setSearchValue("");}} model={MODEL} saveData={saveData} setReadOnly={setReadOnly} deleteData={deleteData} />
@@ -268,7 +279,7 @@ export default function Form() {
     //     </div>
     //   </div>
     // </div>
-    <div onKeyDown={handleKeyDown} className="p-1">
+    <div onKeyDown={handleKeyDown} className="p-1 h-[55vh]">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
         <h5 className="text-2xl font-bold text-gray-800">Country Master</h5>
         <div className="flex items-center">
@@ -357,6 +368,7 @@ export default function Form() {
                           <div className="flex">
                             <div className="mb-3 w-[60%]">
                               <TextInputNew
+                                ref={countryNameRef}
                                 name="Country Name"
                                 type="text"
                                 value={name}

@@ -251,9 +251,17 @@ export default function Form() {
         return state ? stateList.data.find(item => item.id === parseInt(state)).country?.name : ""
     }
 
+
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
     return (
 
-        <div onKeyDown={handleKeyDown} className="p-1">
+        <div onKeyDown={handleKeyDown} className="p-1 ">
             <div className="w-full flex bg-white p-1 justify-between  items-center">
                 <h5 className="text-2xl font-bold text-gray-800">City Master</h5>
                 <div className="flex items-center">
@@ -285,7 +293,7 @@ export default function Form() {
                     <Modal
                         isOpen={form}
                         form={form}
-                        widthClass={"w-[40%] h-[65%]"}
+                        widthClass={"w-[40%] h-[55%]"}
                         onClose={() => {
                             setForm(false);
                         }}
@@ -335,47 +343,41 @@ export default function Form() {
 
                             <div className="flex-1 overflow-auto p-3 ">
                                 <div className="grid grid-cols-1  gap-3  h-full ">
-                                    <div className="lg:col-span-2 space-y-3">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                                            <div className="space-y-4 ">
-                                                <div className="grid grid-cols-2  gap-3  h-full">
-                                                    <fieldset className=' rounded mt-2'>
+                                    <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
+                                        <div className="grid grid-cols-2  gap-3 ">
 
 
 
-                                                        <div className="mb-3">
-                                                            <TextInputNew name="City Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <TextInputNew name="Code" type="text" value={code} setValue={setCode} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                                                        </div>
-
-                                                        <div className="mb-3 ">
-                                                            <DropdownInputNew name="State"
-                                                                options={
-                                                                    Array.isArray(stateList?.data)
-                                                                        ? dropDownListObject(
-                                                                            id ? stateList?.data : stateList?.data?.filter(item => item?.active),
-                                                                            "name",
-                                                                            "id"
-                                                                        )
-                                                                        : []
-                                                                }
-                                                                value={state} setValue={setState} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <TextInputNew name="Country" type="text" value={countryFromState()} disabled={true} />
-                                                        </div>
-
-                                                        <div className="mb-3">
-                                                            <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
-                                                        </div>
-
-
-
-                                                    </fieldset>
-                                                </div>
+                                            <div className="">
+                                                <TextInputNew ref={countryNameRef} name="City Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
                                             </div>
+                                            <div className="">
+                                                <TextInputNew name="Code" type="text" value={code} setValue={setCode} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                            </div>
+
+                                            <div className=" ">
+                                                <DropdownInputNew name="State"
+                                                    options={
+                                                        Array.isArray(stateList?.data)
+                                                            ? dropDownListObject(
+                                                                id ? stateList?.data : stateList?.data?.filter(item => item?.active),
+                                                                "name",
+                                                                "id"
+                                                            )
+                                                            : []
+                                                    }
+                                                    value={state} setValue={setState} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                            </div>
+                                            <div className="">
+                                                <TextInputNew name="Country" type="text" value={countryFromState()} disabled={true} />
+                                            </div>
+
+                                            <div className="">
+                                                <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
+                                            </div>
+
+
+
                                         </div>
                                     </div>
                                 </div>

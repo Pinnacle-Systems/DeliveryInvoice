@@ -65,7 +65,7 @@ export default function Form() {
         }
         return false;
     }
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             let returnData = await callback(data).unwrap();
             if (returnData.statusCode === 0) {
@@ -76,7 +76,12 @@ export default function Form() {
                     icon: "success",
 
                 });
-                setForm(false)
+                if (nextProcess == "new") {
+                    syncFormWithDb(undefined)
+                    onNew()
+                } else {
+                    setForm(false)
+                }
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -89,7 +94,7 @@ export default function Form() {
         }
     }
 
-    const saveData = () => {
+    const saveData = (nextProcess) => {
         if (!validateData(data)) {
             Swal.fire({
                 title: 'Please fill all required fields...!',
@@ -117,9 +122,9 @@ export default function Form() {
             return
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated")
+            handleSubmitCustom(updateData, data, "Updated", nextProcess)
         } else {
-            handleSubmitCustom(addData, data, "Added")
+            handleSubmitCustom(addData, data, "Added", nextProcess)
         }
     }
 
@@ -141,8 +146,7 @@ export default function Form() {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Submission error',
-                        text: returnData.data?.message || 'Something went wrong!',
+                        title: returnData?.message || 'Something went wrong!',
                     });
                 }
             } catch (error) {
@@ -215,6 +219,14 @@ export default function Form() {
         },
 
     ];
+
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
     // if (!form)
     //     return <ReportTemplate
     //         heading={MODEL}
@@ -305,7 +317,7 @@ export default function Form() {
                     <Modal
                         isOpen={form}
                         form={form}
-                        widthClass={"w-[36%] h-[50%]"}
+                        widthClass={"w-[40%] h-[50%]"}
                         onClose={() => {
                             setForm(false);
                             // setErrors({});
@@ -342,12 +354,30 @@ export default function Form() {
                                         {!readOnly && (
                                             <button
                                                 type="button"
-                                                onClick={saveData}
-                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                                          border border-green-600 flex items-center gap-1 text-xs"
+                                                onClick={() => {
+                                                    saveData("close")
+                                                }}
+                                                className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                                                                                 border border-blue-600 flex items-center gap-1 text-xs"
                                             >
                                                 <Check size={14} />
-                                                {id ? "Update" : "Save"}
+                                                {id ? "Update" : "Save & close"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {(!readOnly && !id) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    saveData("new")
+                                                }}
+
+                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                                                                                       border border-green-600 flex items-center gap-1 text-xs"
+                                            >
+                                                <Check size={14} />
+                                                {"Save & New"}
                                             </button>
                                         )}
                                     </div>
@@ -362,7 +392,9 @@ export default function Form() {
                                                 <div className="grid grid-cols-2  gap-3  h-full">
                                                     <fieldset className=''>
                                                         <div className="mb-5">
-                                                            <TextInputNew name="Uom Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                                                            <TextInputNew name="Uom Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)}
+                                                                ref={countryNameRef}
+                                                            />
                                                         </div>
                                                         <div>
                                                             <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} disabled={childRecord.current > 0} />

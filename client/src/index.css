@@ -196,3 +196,7 @@ label {
 .swal2-styled.swal2-cancel:hover {
   filter: brightness(1.1);
 }
+.custom-swal-popup {
+  width: 1  00px !important;
+  min-height: 100px !important;
+}

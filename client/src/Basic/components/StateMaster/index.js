@@ -78,7 +78,7 @@ export default function Form() {
   };
 
   const validateData = (data) => {
-    if (data.name && data.code) {
+    if (data.name && data.code && data?.country) {
       return true;
     }
     return false;
@@ -190,6 +190,7 @@ export default function Form() {
     setReadOnly(false);
     setForm(true);
     setSearchValue("");
+    syncFormWithDb(undefined)
   };
 
   function onDataClick(id) {
@@ -269,6 +270,14 @@ export default function Form() {
   //       setSearchValue={setSearchValue}
   //     />
   //   );
+
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
 
   return (
     // <div
@@ -389,7 +398,7 @@ export default function Form() {
           <Modal
             isOpen={form}
             form={form}
-            widthClass={"w-[40%] h-[60%]"}
+            widthClass={"w-[40%] h-[50%]"}
             onClose={() => {
               setForm(false);
             }}
@@ -439,52 +448,51 @@ export default function Form() {
 
               <div className="flex-1 overflow-auto p-3 ">
                 <div className="grid grid-cols-1  gap-3  h-full ">
-                  <div className="lg:col-span-2 space-y-3">
-                    <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                      <div className="space-y-4 ">
-                        <div className="grid grid-cols-2  gap-3  h-full">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
 
 
-                          <fieldset className=' rounded mt-2'>
-                            <div className=' mb-3'>
-                              <DropdownInputNew
-                                name="Country"
-                                options={dropDownListObject(id ? countriesList?.data : countriesList?.data?.filter(item => item?.active), "name", "id")}
-                                value={country}
-                                setValue={setCountry}
-                                required={true}
-                                readOnly={readOnly}
-                                className={`w-[150px]`}
-                              />
-                            </div>
+                    <fieldset className='grid grid-cols-2 gap-2 rounded mt-2'>
+                      <div className=" ">
+                        <TextInputNew
+                          name="State Name"
+                          type="text"
+                          value={name}
+                          setValue={setName}
+                          required={true}
+                          readOnly={readOnly}
+                          ref={countryNameRef}
 
-                            <div className="mb-3 ">
-                              <TextInputNew
-                                name="State Name"
-                                type="text"
-                                value={name}
-                                setValue={setName}
-                                required={true}
-                                readOnly={readOnly}
+                        // disabled={(childRecord.current > 0)}
+                        />
+                      </div>
+                      <div className=''>
+                        <DropdownInputNew
+                          name="Country"
+                          options={dropDownListObject(id ? countriesList?.data : countriesList?.data?.filter(item => item?.active), "name", "id")}
+                          value={country}
+                          setValue={setCountry}
+                          required={true}
+                          readOnly={readOnly}
+                          className={`w-[150px]`}
+                        />
+                      </div>
 
-                              // disabled={(childRecord.current > 0)}
-                              />
-                            </div>
-                            <div className="mb-3 ">
-                              <TextInputNew
-                                name="Code"
-                                type="text"
-                                value={code}
-                                setValue={setCode}
-                                required={true}
-                                readOnly={readOnly}
-                              // disabled={(childRecord.current > 0)}
 
-                              />
-                            </div>
+                      <div className="">
+                        <TextInputNew
+                          name="Code"
+                          type="text"
+                          value={code}
+                          setValue={setCode}
+                          required={true}
+                          readOnly={readOnly}
+                        // disabled={(childRecord.current > 0)}
 
-                            <div className="mb-3 ">
-                              {/* 
+                        />
+                      </div>
+
+                      {/* <div className="">
+                              
                               <TextInputNew
                                 name="GST No"
                                 type="text"
@@ -493,21 +501,18 @@ export default function Form() {
                                 readOnly={readOnly}
                               // disabled={(childRecord.current > 0)}
 
-                              /> */}
-                            </div>
+                              />
+                            </div> */}
 
 
 
 
-                            <div>
-                              <ToggleButton name="Status" value={active} setActive={setActive} required={true} readOnly={readOnly} />
-                            </div>
-
-                          </fieldset>
-
-                        </div>
+                      <div>
+                        <ToggleButton name="Status" value={active} setActive={setActive} required={true} readOnly={readOnly} />
                       </div>
-                    </div>
+
+                    </fieldset>
+
                   </div>
                 </div>
               </div>
