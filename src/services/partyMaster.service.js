@@ -182,7 +182,7 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments ,msmeNo
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo
     } = await body
     console.log(body, 'body')
 
@@ -239,7 +239,7 @@ async function update(id, body) {
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode ,msmeNo
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo
     } = await body
 
     const dataFound = await prisma.party.findUnique({
@@ -275,7 +275,7 @@ async function update(id, body) {
             bankBranchName: bankBranchName ? bankBranchName : undefined,
             accountNumber: accountNumber ? accountNumber : undefined,
             ifscCode: ifscCode ? ifscCode : undefined,
-            msmeNo: msmeNo ? msmeNo : undefined
+            msmeNo: msmeNo ? msmeNo : undefined,
 
 
         }

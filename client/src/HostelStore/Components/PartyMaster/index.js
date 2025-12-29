@@ -175,7 +175,7 @@ export default function Form({ partyId }) {
         active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments
+        bankBranchName, accountNumber, ifscCode, attachments ,msmeNo
     }
 
     const validateData = (data) => {

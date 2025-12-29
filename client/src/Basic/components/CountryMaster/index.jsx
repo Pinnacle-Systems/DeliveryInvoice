@@ -284,7 +284,7 @@ export default function Form() {
     //     </div>
     //   </div>
     // </div>
-    <div onKeyDown={handleKeyDown} className="p-1 ">
+    <div onKeyDown={handleKeyDown} className="p-1 h-full">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
         <h5 className="text-2xl font-bold text-gray-800">Country Master</h5>
         <div className="flex items-center">
@@ -300,7 +300,7 @@ export default function Form() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm  mt-3">
+      <div className="bg-white rounded-xl shadow-sm ">
         <ReusableTable
           columns={columns}
           data={allData?.data}
