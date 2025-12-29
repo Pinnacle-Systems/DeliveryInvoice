@@ -351,7 +351,7 @@ model Party {
   isSupplier           Boolean?          @default(false)
   isCustomer           Boolean?          @default(false)
   landMark             String?
-  contact              Int?
+  contact              String?
   designation          String?
   department           String?
   contactPersonEmail   String?
@@ -367,11 +367,23 @@ model Party {
   SalesReturn          SalesReturn[]     @relation(name: "supplier")
   coa                  BigInt?
   soa                  BigInt?
+  msmeNo               String?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
   DeliveryInvoice      DeliveryInvoice[]
   ledgers              Ledger[]
+  attachments          attachments[]
+}
+
+model attachments {
+  id       Int       @id @default(autoincrement())
+  Party    Party?    @relation(fields: [partyId], references: [id])
+  partyId  Int?
+  date     DateTime?
+  name     String?
+  fileName String?
+  filePath String?
 }
 
 model ProductBrand {

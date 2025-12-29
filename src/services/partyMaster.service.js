@@ -69,6 +69,7 @@ async function getOne(id) {
             id: parseInt(id)
         },
         include: {
+            attachments: true,
             City: {
                 select: {
                     name: true,
@@ -96,7 +97,8 @@ async function getOne(id) {
                     discount: true
                 }
             },
-            ledgers: true
+            ledgers: true,
+
         }
     });
 
@@ -180,21 +182,27 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode
+        bankBranchName, accountNumber, ifscCode, attachments ,msmeNo
     } = await body
+    console.log(body, 'body')
+
     const data = await prisma.party.create(
         {
             data: {
-                name, code, aliasName, displayName, address, isSupplier, isCustomer,
+                name, code, aliasName, displayName, address,
+                isSupplier: isSupplier ? JSON.parse(isSupplier) : false,
+                isCustomer: isCustomer ? JSON.parse(isCustomer) : false,
                 cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
                 panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
                 cinNo, faxNo, email, website, contactPersonName,
                 gstNo, currencyId: currencyId ? parseInt(currencyId) : undefined, costCode,
                 createdById: userId ? parseInt(userId) : undefined,
-                companyId: parseInt(companyId), active, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
+                companyId: parseInt(companyId),
+                active: active ? JSON.parse(active) : false,
+                coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
                 landMark: landMark ? landMark : undefined,
-                contact: contact ? parseInt(contact) : undefined,
+                contact: contact ? contact : undefined,
                 designation: designation ? designation : undefined,
                 department: department ? department : undefined,
                 contactPersonEmail: contactPersonEmail ? contactPersonEmail : undefined,
@@ -203,7 +211,22 @@ async function create(body) {
                 bankname: bankname ? bankname : "",
                 bankBranchName: bankBranchName ? bankBranchName : undefined,
                 accountNumber: accountNumber ? accountNumber : undefined,
-                ifscCode: ifscCode ? ifscCode : undefined
+                ifscCode: ifscCode ? ifscCode : undefined,
+                msmeNo: msmeNo ? msmeNo : undefined,
+
+                attachments: JSON.parse(attachments)?.length > 0
+                    ? {
+                        createMany: {
+                            data: JSON.parse(attachments).map((sub) => ({
+                                date: sub?.date ? new Date(sub?.date) : undefined,
+                                filePath: sub?.filePath ? sub?.filePath : undefined,
+                                name: sub?.name ? sub?.name : undefined
+
+                            })),
+                        },
+                    }
+                    : undefined,
+
             }
         }
     )
@@ -215,8 +238,8 @@ async function update(id, body) {
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
-        companyId, active, userId , landMark  , contact , designation , department , contactPersonEmail , contactNumber ,
-        alterContactNumber, bankname , bankBranchName , accountNumber ,ifscCode
+        companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode ,msmeNo
     } = await body
 
     const dataFound = await prisma.party.findUnique({
@@ -230,16 +253,19 @@ async function update(id, body) {
             id: parseInt(id),
         },
         data: {
-            name, code, aliasName, displayName, address, isSupplier, isCustomer,
+            name, code, aliasName, displayName, address,
+            isSupplier: isSupplier ? JSON.parse(isSupplier) : false,
+            isCustomer: isCustomer ? JSON.parse(isCustomer) : false,
             cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
             panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
             cinNo, faxNo, email, website, contactPersonName,
             gstNo,
             createdById: userId ? parseInt(userId) : undefined,
-            companyId: parseInt(companyId), active,
+            companyId: parseInt(companyId),
+            active: active ? JSON.parse(active) : false,
             contactMobile: contactMobile ? parseInt(contactMobile) : undefined, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
             landMark: landMark ? landMark : "",
-            contact: contact ? parseInt(contact) : undefined,
+            contact: contact ? contact : undefined,
             designation: designation ? designation : undefined,
             department: department ? department : undefined,
             contactPersonEmail: contactPersonEmail ? contactPersonEmail : undefined,
@@ -248,7 +274,9 @@ async function update(id, body) {
             bankname: bankname ? bankname : undefined,
             bankBranchName: bankBranchName ? bankBranchName : undefined,
             accountNumber: accountNumber ? accountNumber : undefined,
-            ifscCode: ifscCode ? ifscCode : undefined
+            ifscCode: ifscCode ? ifscCode : undefined,
+            msmeNo: msmeNo ? msmeNo : undefined
+
 
         }
     })

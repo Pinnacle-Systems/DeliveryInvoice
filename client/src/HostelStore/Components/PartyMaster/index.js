@@ -14,7 +14,7 @@ import { useGetCityQuery } from "../../../redux/services/CityMasterService";
 import FormHeader from "../../../Basic/components/FormHeader";
 import FormReport from "../../../Basic/components/FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, DropdownInput, CheckBox, RadioButton, TextArea, DateInput, MultiSelectDropdown, ReusableTable, TextInputNew, DropdownInputNew, ToggleButton } from "../../../Inputs";
+import { TextInput, DropdownInput, CheckBox, RadioButton, TextArea, DateInput, MultiSelectDropdown, ReusableTable, TextInputNew, DropdownInputNew, ToggleButton, TextAreaNew } from "../../../Inputs";
 import ReportTemplate from "../../../Basic/components/ReportTemplate";
 import { dropDownListObject, dropDownListMergedObject, multiSelectOption } from '../../../Utils/contructObject';
 import moment from "moment";
@@ -82,8 +82,9 @@ export default function Form({ partyId }) {
     const [formReport, setFormReport] = useState(false);
     const [attachments, setAttachments] = useState([]);
     const [reportName, setReportName] = useState("Customer/Supplier Name")
-
     const [searchValue, setSearchValue] = useState("");
+    const [msmeNo, setMsmeNo] = useState("")
+
 
     const childRecord = useRef(0);
     const dispatch = useDispatch()
@@ -117,11 +118,7 @@ export default function Form({ partyId }) {
     const [removeData] = useDeletePartyMutation();
 
     const syncFormWithDb = useCallback((data) => {
-        // if (id) {
-        //     setReadOnly(true);
-        // } else {
-        //     setReadOnly(false);
-        // }
+     
         setPanNo(data?.panNo ? data?.panNo : "");
         setName(data?.name ? data?.name : "");
 
@@ -149,20 +146,19 @@ export default function Form({ partyId }) {
         setIsCustomer((data?.isCustomer ? data.isCustomer : false));
         setIsSupplier((data?.isSupplier ? data.isSupplier : false));
         setActive(id ? (data?.active ? data.active : false) : true);
-
         setContactMobile((data?.contactMobile ? data.contactMobile : ''));
-        setlandMark(data?.landMark  ? data?.landMark : '')
-        setContact(data?.contact  ? data?.contact : '')
+        setlandMark(data?.landMark ? data?.landMark : '')
+        setContact(data?.contact ? data?.contact : '')
         setDesignation(data?.designation ? data?.designation : "")
         setDepartment(data?.department ? data?.department : "")
-        setContactPersonEmail(data?.contactPersonEmail  ? data?.contactPersonEmail : "")
-        setContactNumber(data?.contactNumber  ? data?.contactNumber : "")
+        setContactPersonEmail(data?.contactPersonEmail ? data?.contactPersonEmail : "")
+        setContactNumber(data?.contactNumber ? data?.contactNumber : "")
         setAlterContactNumber(data?.alterContactNumber ? data?.alterContactNumber : "")
         setBankName(data?.bankname ? data?.bankname : "")
         setBankBranchName(data?.bankBranchName ? data?.bankBranchName : "")
         setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
         setIfscCode(data?.ifscCode ? data?.ifscCode : '')
-
+        setAttachments(data?.attachments ? data?.attachments : [])
 
 
 
@@ -176,10 +172,10 @@ export default function Form({ partyId }) {
     const data = {
         name, isSupplier, isCustomer, code, aliasName, displayName, address, cityId: city, pincode, panNo, tinNo, cstNo, cstDate, cinNo,
         faxNo, email, website, contactPersonName, gstNo, costCode, contactMobile,
-        active, companyId, coa : coa ? coa : "", soa,
+        active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode
+        bankBranchName, accountNumber, ifscCode, attachments
     }
 
     const validateData = (data) => {
@@ -191,11 +187,28 @@ export default function Form({ partyId }) {
 
     const handleSubmitCustom = async (callback, data, text) => {
         try {
+            const formData = new FormData();
+            for (let key in data) {
+
+                console.log(key,"key")
+                if (key == 'attachments') {
+                    formData.append(key, JSON.stringify(data[key].map(i => ({ ...i, filePath: (i.filePath instanceof File) ? i.filePath.name : i.filePath }))));
+                    data[key].forEach(option => {
+                        if (option?.filePath instanceof File) {
+                            formData.append('images', option.filePath);
+                        }
+                    });
+                } else {
+                    formData.append(key, data[key]);
+                }
+            }
+            console.log(formData, "formData")
+
             let returnData;
             if (text === "Updated") {
-                returnData = await callback({ id, body: data }).unwrap();
+                returnData = await callback({ id, body: formData }).unwrap();
             } else {
-                returnData = await callback(data).unwrap();
+                returnData = await callback(formData).unwrap();
             }
             dispatch({
                 type: `accessoryItemMaster/invalidateTags`,
@@ -212,6 +225,7 @@ export default function Form({ partyId }) {
             setId("")
             syncFormWithDb(undefined)
             setForm(false)
+            // if(returnData?.data)
             Swal.fire({
                 title: text + "  " + "Successfully",
                 icon: "success",
@@ -400,6 +414,7 @@ export default function Form({ partyId }) {
     if (view == "all") {
         filterParty = allData?.data
     }
+    //   const { data: currencyList } = useGetCurrencyMasterQuery({ params });
 
 
 
@@ -695,8 +710,8 @@ export default function Form({ partyId }) {
                                     <div className="lg:col-span-4 space-y-3 ">
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="flex flex-row items-center gap-2 mt-2 mb-2">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="flex flex-row items-center gap-2 ">
                                                     <div className="flex items-center gap-2 ">
                                                         <input
                                                             type="radio"
@@ -721,18 +736,7 @@ export default function Form({ partyId }) {
                                                     </div>
                                                     <div className="col-span-4 flex flex-row ">
 
-                                                        {/* {isSupplier && (
-                                                        <div className="w-48">
 
-                                                            <MultiSelectDropdown
-                                                                // name={"Material List"}
-                                                                options={multiSelectOption(materialList ? materialList?.data : [], "name", "id")}
-                                                                labelName="name"
-                                                                setSelected={setPartyMaterials}
-                                                                selected={partyMaterials}
-                                                            />
-                                                        </div>
-                                                    )} */}
 
 
 
@@ -743,7 +747,7 @@ export default function Form({ partyId }) {
 
 
                                                 <div className="col-span-2">
-                                                    <TextArea
+                                                    <TextInputNew
                                                         name={isSupplier ? "Supplier Name" : "Customer Name"}
                                                         type="text"
                                                         value={name}
@@ -762,13 +766,12 @@ export default function Form({ partyId }) {
                                                     />
                                                 </div>
                                                 <div className="col-span-2">
-                                                    <TextArea
+                                                    <TextInputNew
                                                         name="Alias Name"
                                                         type="text"
                                                         inputClass="h-8"
                                                         value={aliasName}
                                                         setValue={setAliasName}
-                                                        required={true}
                                                         readOnly={readOnly}
                                                         disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
@@ -776,7 +779,7 @@ export default function Form({ partyId }) {
                                                 </div>
                                                 <div className="col-span-1">
                                                     <TextInputNew
-                                                        name="Party Code"
+                                                        name="Code"
                                                         type="text"
                                                         value={partyCode}
 
@@ -794,7 +797,7 @@ export default function Form({ partyId }) {
 
                                                 </div>
 
-                                                <div className=" ml-3">
+                                                <div className=" ">
                                                     <ToggleButton
                                                         name="Status"
                                                         options={statusDropdown}
@@ -808,9 +811,6 @@ export default function Form({ partyId }) {
                                                     />
                                                 </div>
 
-                                                <div className="mt-5 ml-3">
-
-                                                </div>
 
 
 
@@ -831,7 +831,7 @@ export default function Form({ partyId }) {
 
                                                     <div className="col-span-2">
 
-                                                        <TextArea name="Address"
+                                                        <TextAreaNew name="Address"
                                                             inputClass="h-10" value={address}
                                                             setValue={setAddress} required={true}
                                                             readOnly={readOnly} d
@@ -1051,16 +1051,16 @@ export default function Form({ partyId }) {
                                     </div>
 
 
-                                    {/* 
-                              <div className="lg:col-span-4 space-y-3">
-                                    <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
-                                        <h3 className="font-medium text-gray-800 mb-2 text-sm">Business Details</h3>
-                                        <div className="space-y-2">
 
-                                            <div className="grid grid-cols-2 gap-2">
+                                    <div className="lg:col-span-4 space-y-3">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
+                                            <h3 className="font-medium text-gray-800 mb-2 text-sm">Business Details</h3>
+                                            <div className="space-y-2">
+
+                                                <div className="grid grid-cols-2 gap-2">
 
 
-                                                <DropdownInput
+                                                    {/* <DropdownInput
                                                     name="Currency"
                                                     options={dropDownListObject(
                                                         id
@@ -1078,9 +1078,9 @@ export default function Form({ partyId }) {
                                                     readOnly={readOnly}
                                                     disabled={childRecord.current > 0}
                                                     className="focus:ring-2 focus:ring-blue-100"
-                                                />
+                                                /> */}
 
-                                                <DropdownInput
+                                                    {/* <DropdownInput
                                                     name="PayTerm"
                                                     options={dropDownListObject(
                                                         id
@@ -1095,49 +1095,49 @@ export default function Form({ partyId }) {
                                                     readOnly={readOnly}
                                                     disabled={childRecord.current > 0}
                                                     className="focus:ring-2 focus:ring-blue-100"
-                                                />
-                                                <TextInput
-                                                    name="Pan No"
-                                                    type="pan_no"
-                                                    value={panNo}
-                                                    setValue={setPanNo}
-                                                    readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
-                                                    className="focus:ring-2 focus:ring-blue-100"
-                                                />
-                                                <TextInput
-                                                    name="GST No"
-                                                    type="text"
-                                                    value={gstNo}
-                                                    setValue={setGstNo}
-                                                    readOnly={readOnly}
-                                                    className="focus:ring-2 focus:ring-blue-100"
-                                                />
-                                                <TextInput
-                                                    name="MSME CERTFICATE  No"
-                                                    type="text"
-                                                    value={msmeNo}
-                                                    setValue={setMsmeNo}
-                                                    readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
-                                                    className="focus:ring-2 focus:ring-blue-100"
-                                                />
-                                                <TextInput
-                                                    name="CIN No"
-                                                    type="text"
-                                                    value={cinNo}
-                                                    setValue={setCinNo}
-                                                    readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
-                                                    className="focus:ring-2 focus:ring-blue-100"
-                                                />
+                                                /> */}
+                                                    <TextInputNew
+                                                        name="Pan No"
+                                                        type="pan_no"
+                                                        value={panNo}
+                                                        setValue={setPanNo}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+                                                        className="focus:ring-2 focus:ring-blue-100"
+                                                    />
+                                                    <TextInputNew
+                                                        name="GST No"
+                                                        type="text"
+                                                        value={gstNo}
+                                                        setValue={setGstNo}
+                                                        readOnly={readOnly}
+                                                        className="focus:ring-2 focus:ring-blue-100"
+                                                    />
+                                                    <TextInputNew
+                                                        name="MSME CERTFICATE  No"
+                                                        type="text"
+                                                        value={msmeNo}
+                                                        setValue={setMsmeNo}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+                                                        className="focus:ring-2 focus:ring-blue-100"
+                                                    />
+                                                    <TextInputNew
+                                                        name="CIN No"
+                                                        type="text"
+                                                        value={cinNo}
+                                                        setValue={setCinNo}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+                                                        className="focus:ring-2 focus:ring-blue-100"
+                                                    />
 
+                                                </div>
                                             </div>
                                         </div>
+
+
                                     </div>
-
-
-                                </div> */}
                                     <div className="lg:col-span-4 space-y-3">
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Bank  Details</h3>

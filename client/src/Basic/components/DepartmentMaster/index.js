@@ -75,7 +75,7 @@ export default function Form() {
         return false;
     }
 
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             let returnData = await callback(data).unwrap();
             setId("")
@@ -85,13 +85,18 @@ export default function Form() {
                 icon: "success",
 
             });
-            setForm(false)
+            if (nextProcess == "new") {
+                syncFormWithDb(undefined)
+                onNew()
+            } else {
+                setForm(false)
+            }
         } catch (error) {
             console.log("handle");
         }
     };
 
-    const saveData = () => {
+    const saveData = (nextProcess) => {
         if (!validateData(data)) {
             Swal.fire({
                 title: 'Please fill all required fields...!',
@@ -99,13 +104,28 @@ export default function Form() {
             });
             return;
         }
+
+        let foundItem;
+        if (id) {
+            foundItem = allData?.data?.filter(i => i.id != id)?.some(item => item.name === name);
+        } else {
+            foundItem = allData?.data?.some(item => item.name == name);
+
+        }
+        if (foundItem) {
+            Swal.fire({
+                text: "The Department Name already exists.",
+                icon: "warning",
+            });
+            return false;
+        }
         if (!window.confirm("Are you sure save the details ...?")) {
             return;
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated");
+            handleSubmitCustom(updateData, data, "Updated", nextProcess);
         } else {
-            handleSubmitCustom(addData, data, "Added");
+            handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     };
 
@@ -224,6 +244,14 @@ export default function Form() {
         },
 
     ];
+
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
     return (
         // <div
         //     onKeyDown={handleKeyDown}
@@ -341,12 +369,30 @@ export default function Form() {
                                         {!readOnly && (
                                             <button
                                                 type="button"
-                                                onClick={saveData}
-                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                                border border-green-600 flex items-center gap-1 text-xs"
+                                                onClick={() => {
+                                                    saveData("close")
+                                                }}
+                                                className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                  border border-blue-600 flex items-center gap-1 text-xs"
                                             >
                                                 <Check size={14} />
-                                                {id ? "Update" : "Save"}
+                                                {id ? "Update" : "Save & close"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {(!readOnly && !id) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    saveData("new")
+                                                }}
+
+                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                  border border-green-600 flex items-center gap-1 text-xs"
+                                            >
+                                                <Check size={14} />
+                                                {"Save & New"}
                                             </button>
                                         )}
                                     </div>
@@ -357,30 +403,27 @@ export default function Form() {
                                 <div className="grid grid-cols-1  gap-3  h-full ">
                                     <div className="lg:col-span-2 space-y-3">
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                                            <div className="space-y-4 ">
-                                                <div className="grid grid-cols-2  gap-3  h-full">
-                                                    <div className="space-y-2 ">
+                                            <div className="grid grid-cols-2  gap-3  ">
 
-                                                        <TextInputNew
-                                                            name="Department Name"
-                                                            type="text"
-                                                            value={name}
-                                                            setValue={setName}
-                                                            required={true}
-                                                            readOnly={readOnly}
-                                                            disabled={childRecord?.current > 0}
-                                                        />
+                                                <TextInputNew
+                                                    name="Department Name"
+                                                    type="text"
+                                                    value={name}
+                                                    setValue={setName}
+                                                    required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord?.current > 0}
+                                                    ref={countryNameRef}
+                                                />
 
 
-                                                        <div className="">
-                                                            <TextInputNew name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} disabled={childRecord.current > 0} />
-                                                        </div>
-                                                        <div>
-                                                            <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} readOnly={readOnly} disabled={childRecord.current > 0} />
-                                                        </div>
-
-                                                    </div>
+                                                <div className="">
+                                                    <TextInputNew name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} disabled={childRecord.current > 0} />
                                                 </div>
+                                                <div>
+                                                    <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} readOnly={readOnly} disabled={childRecord.current > 0} />
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>

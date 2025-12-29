@@ -10,7 +10,7 @@ import {
 import FormHeader from "../FormHeader";
 import FormReport from "../FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, CheckBox, ReusableTable, TextInputNew, ToggleButton } from "../../../Inputs";
+import { TextInput, CheckBox, ReusableTable, TextInputNew, ToggleButton, TextInputNew1 } from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
 import { Check, Power } from "lucide-react";
 import Modal from "../../../UiComponents/Modal";
@@ -75,7 +75,7 @@ export default function Form() {
         return false;
     }
 
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             let returnData = await callback(data).unwrap();
             setId("")
@@ -85,13 +85,18 @@ export default function Form() {
                 icon: "success",
 
             });
-            setForm(false)
+            if (nextProcess == "new") {
+                syncFormWithDb(undefined)
+                onNew()
+            } else {
+                setForm(false)
+            }
         } catch (error) {
             console.log("handle");
         }
     };
 
-    const saveData = () => {
+    const saveData = (nextProcess) => {
         if (!validateData(data)) {
             Swal.fire({
                 text: "Please fill all required fields...!",
@@ -117,13 +122,13 @@ export default function Form() {
             return;
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated");
+            handleSubmitCustom(updateData, data, "Updated", nextProcess);
         } else {
-            handleSubmitCustom(addData, data, "Added");
+            handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     };
 
-    const deleteData = async (id,childRecord) => {
+    const deleteData = async (id, childRecord) => {
         if (id) {
             if (childRecord) {
                 Swal.fire({
@@ -238,6 +243,14 @@ export default function Form() {
         },
 
     ];
+
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
     return (
         // <div
         //     onKeyDown={handleKeyDown}
@@ -320,7 +333,7 @@ export default function Form() {
                     <Modal
                         isOpen={form}
                         form={form}
-                        widthClass={"w-[40%] h-[60%]"}
+                        widthClass={"w-[40%] h-[50%]"}
                         onClose={() => {
                             setForm(false);
                         }}
@@ -356,12 +369,30 @@ export default function Form() {
                                         {!readOnly && (
                                             <button
                                                 type="button"
-                                                onClick={saveData}
-                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                        border border-green-600 flex items-center gap-1 text-xs"
+                                                onClick={() => {
+                                                    saveData("close")
+                                                }}
+                                                className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                  border border-blue-600 flex items-center gap-1 text-xs"
                                             >
                                                 <Check size={14} />
-                                                {id ? "Update" : "Save"}
+                                                {id ? "Update" : "Save & close"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {(!readOnly && !id) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    saveData("new")
+                                                }}
+
+                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                  border border-green-600 flex items-center gap-1 text-xs"
+                                            >
+                                                <Check size={14} />
+                                                {"Save & New"}
                                             </button>
                                         )}
                                     </div>
@@ -372,44 +403,39 @@ export default function Form() {
                                 <div className="grid grid-cols-1  gap-3  h-full ">
                                     <div className="lg:col-span-2 space-y-3">
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-                                            <div className="space-y-4 ">
-                                                <div className="grid grid-cols-2  gap-3  h-full">
+                                            <div className="grid grid-cols-2  gap-3 ">
 
 
 
-                                                    <div className="">
-                                                        <TextInputNew
-                                                            name="Category Name"
-                                                            type="text"
-                                                            value={name}
-                                                            setValue={setName}
-                                                            required={true}
-                                                            readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
-                                                        />
+                                                <TextInputNew1
+                                                    name="Category Name"
+                                                    type="text"
+                                                    value={name}
+                                                    setValue={setName}
+                                                    required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    ref={countryNameRef}
+                                                />
 
-                                                        <TextInputNew
-                                                            name="Code"
-                                                            type="text"
-                                                            value={code}
-                                                            setValue={setCode}
-                                                            readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
-                                                        />
-                                                        <div className="mt-4">
-                                                            <ToggleButton
-                                                                name="Status"
-                                                                options={statusDropdown}
-                                                                value={active}
-                                                                setActive={setActive}
-                                                                required={true}
-                                                                readOnly={readOnly}
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                <TextInputNew
+                                                    name="Code"
+                                                    type="text"
+                                                    value={code}
+                                                    setValue={setCode}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
+                                                <ToggleButton
+                                                    name="Status"
+                                                    options={statusDropdown}
+                                                    value={active}
+                                                    setActive={setActive}
+                                                    required={true}
+                                                    readOnly={readOnly}
+                                                />
 
 
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

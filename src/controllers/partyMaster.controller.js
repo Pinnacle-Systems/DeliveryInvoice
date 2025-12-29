@@ -32,6 +32,7 @@ async function getSearch(req, res, next) {
 
 async function create(req, res, next) {
     try {
+        console.log(req,"rqe")
         res.json(await _create(req.body));
         console.log(res.statusCode);
     } catch (error) {
@@ -51,6 +52,7 @@ async function create(req, res, next) {
 async function update(req, res, next) {
     try {
         res.json(await _update(req.params.id, req.body));
+        console.log(req.body,"req.body")
         console.log(res.statusCode);
     } catch (error) {
         console.error(`Error`, error.message);
