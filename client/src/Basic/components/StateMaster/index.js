@@ -12,9 +12,17 @@ import { useGetCountriesQuery } from "../../../redux/services/CountryMasterServi
 import FormHeader from "../FormHeader";
 import FormReport from "../FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, CheckBox, DropdownInput, ReusableTable, ToggleButton, TextInputNew, DropdownInputNew } from "../../../Inputs";
+import {
+  TextInput,
+  CheckBox,
+  DropdownInput,
+  ReusableTable,
+  ToggleButton,
+  TextInputNew,
+  DropdownInputNew,
+} from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
-import { dropDownListObject } from '../../../Utils/contructObject';
+import { dropDownListObject } from "../../../Utils/contructObject";
 import { useDispatch } from "react-redux";
 import { Check, Power } from "lucide-react";
 import Modal from "../../../UiComponents/Modal";
@@ -43,11 +51,17 @@ export default function Form() {
       sessionStorage.getItem("sessionId") + "userCompanyId"
     ),
   };
-  const { data: countriesList, isLoading: isCountryLoading, isFetching: isCountryFetching } =
-    useGetCountriesQuery({ params });
+  const {
+    data: countriesList,
+    isLoading: isCountryLoading,
+    isFetching: isCountryFetching,
+  } = useGetCountriesQuery({ params });
 
-  const { data: allData, isLoading, isFetching } = useGetStateQuery({ params, searchParams: searchValue });
-
+  const {
+    data: allData,
+    isLoading,
+    isFetching,
+  } = useGetStateQuery({ params, searchParams: searchValue });
 
   const {
     data: singleData,
@@ -59,22 +73,32 @@ export default function Form() {
   const [updateData] = useUpdateStateMutation();
   const [removeData] = useDeleteStateMutation();
 
-  const syncFormWithDb = useCallback((data) => {
-    if (id) { setActive(true) }
-    setName(data?.name ? data.name : "");
-    setCode(data?.code ? data.code : "");
-    setActive(id ? (data?.active ? data.active : false) : true);
-    setCountry(data?.countryId ? data.countryId : "");
-    setGstNo(data?.gstNo ? data.gstNo : "");
-    childRecord.current = data?.childRecord ? data?.childRecord : 0;
-  }, [id]);
+  const syncFormWithDb = useCallback(
+    (data) => {
+      if (id) {
+        setActive(true);
+      }
+      setName(data?.name ? data.name : "");
+      setCode(data?.code ? data.code : "");
+      setActive(id ? (data?.active ? data.active : false) : true);
+      setCountry(data?.countryId ? data.countryId : "");
+      setGstNo(data?.gstNo ? data.gstNo : "");
+      childRecord.current = data?.childRecord ? data?.childRecord : 0;
+    },
+    [id]
+  );
 
   useEffect(() => {
     syncFormWithDb(singleData?.data);
   }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
 
   const data = {
-    name, code, active, country, gstNo, id
+    name,
+    code,
+    active,
+    country,
+    gstNo,
+    id,
   };
 
   const validateData = (data) => {
@@ -84,46 +108,48 @@ export default function Form() {
     return false;
   };
 
-
-  const handleSubmitCustom = async (callback, data, text) => {
+  const handleSubmitCustom = async (callback, data, text, nextProcess) => {
     try {
       let returnData = await callback(data).unwrap();
-      setId(returnData.data.id)
+      setId(returnData.data.id);
       // toast.success(text + "Successfully");
       Swal.fire({
         title: text + "Successfully",
         icon: "success",
       });
-      setForm(false);
+      if (nextProcess == "new") {
+        syncFormWithDb(undefined);
+        onNew();
+      } else {
+        setForm(false);
+      }
 
       dispatch({
         type: `countryMaster/invalidateTags`,
-        payload: ['Countries'],
+        payload: ["Countries"],
       });
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
       console.log("handle");
     }
   };
 
-
-  const saveData = () => {
+  const saveData = (nextProcess) => {
     if (!validateData(data)) {
       Swal.fire({
         title: "Please fill all required fields...!",
         icon: "success",
-
       });
       return;
     }
 
     let foundItem;
     if (id) {
-      foundItem = allData?.data?.filter(i => i.id != id)?.some(item => item.name === name);
+      foundItem = allData?.data
+        ?.filter((i) => i.id != id)
+        ?.some((item) => item.name === name);
     } else {
-      foundItem = allData?.data?.some(item => item.name === name);
-
+      foundItem = allData?.data?.some((item) => item.name === name);
     }
     if (foundItem) {
       Swal.fire({
@@ -133,14 +159,13 @@ export default function Form() {
       return false;
     }
 
-
     if (!window.confirm("Are you sure save the details ...?")) {
       return;
     }
     if (id) {
-      handleSubmitCustom(updateData, data, "Updated");
+      handleSubmitCustom(updateData, data, "Updated", nextProcess);
     } else {
-      handleSubmitCustom(addData, data, "Added");
+      handleSubmitCustom(addData, data, "Added", nextProcess);
     }
   };
   const deleteData = async (id) => {
@@ -150,12 +175,12 @@ export default function Form() {
       }
       try {
         let deldata = await removeData(id).unwrap();
-        console.log(deldata, "deldata")
+        console.log(deldata, "deldata");
         if (deldata?.statusCode == 1) {
           Swal.fire({
-            icon: 'error',
+            icon: "error",
             // title: 'Submission error',
-            text: deldata?.message || 'Something went wrong!',
+            text: deldata?.message || "Something went wrong!",
           });
           return;
         }
@@ -163,14 +188,13 @@ export default function Form() {
         Swal.fire({
           title: "Deleted Successfully",
           icon: "success",
-
         });
         setForm(false);
       } catch (error) {
         Swal.fire({
-          icon: 'error',
-          title: 'Submission error',
-          text: error.data?.message || 'Something went wrong!',
+          icon: "error",
+          title: "Submission error",
+          text: error.data?.message || "Something went wrong!",
         });
         setForm(false);
       }
@@ -190,17 +214,20 @@ export default function Form() {
     setReadOnly(false);
     setForm(true);
     setSearchValue("");
-    syncFormWithDb(undefined)
+    syncFormWithDb(undefined);
   };
 
   function onDataClick(id) {
     setId(id);
     setForm(true);
   }
-  const tableHeaders = [
-    "Code", "Name", "Country", "Status"
-  ]
-  const tableDataNames = ["dataObj.code", "dataObj.name", "dataObj.country.name", 'dataObj.active ? ACTIVE : INACTIVE']
+  const tableHeaders = ["Code", "Name", "Country", "Status"];
+  const tableDataNames = [
+    "dataObj.code",
+    "dataObj.name",
+    "dataObj.country.name",
+    "dataObj.active ? ACTIVE : INACTIVE",
+  ];
 
   const handleView = (id) => {
     setId(id);
@@ -250,7 +277,6 @@ export default function Form() {
       //   cellClass: () => "font-medium text-gray-900",
       className: "font-medium text-gray-900 text-center uppercase w-16",
     },
-
   ];
 
   // if (!form)
@@ -368,7 +394,7 @@ export default function Form() {
 
     <div onKeyDown={handleKeyDown} className="p-1">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
-        <h5 className="text-2xl font-bold text-gray-800">State  Master</h5>
+        <h5 className="text-2xl font-bold text-gray-800">State Master</h5>
         <div className="flex items-center">
           <button
             onClick={() => {
@@ -398,7 +424,7 @@ export default function Form() {
           <Modal
             isOpen={form}
             form={form}
-            widthClass={"w-[40%] h-[50%]"}
+            widthClass={"w-[40%] h-[320px]"}
             onClose={() => {
               setForm(false);
             }}
@@ -434,12 +460,29 @@ export default function Form() {
                     {!readOnly && (
                       <button
                         type="button"
-                        onClick={saveData}
-                        className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                    border border-green-600 flex items-center gap-1 text-xs"
+                        onClick={() => {
+                          saveData("close");
+                        }}
+                        className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                  border border-blue-600 flex items-center gap-1 text-xs"
                       >
                         <Check size={14} />
-                        {id ? "Update" : "Save"}
+                        {id ? "Update" : "Save & close"}
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {!readOnly && !id && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          saveData("new");
+                        }}
+                        className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                  border border-green-600 flex items-center gap-1 text-xs"
+                      >
+                        <Check size={14} />
+                        {"Save & New"}
                       </button>
                     )}
                   </div>
@@ -449,9 +492,7 @@ export default function Form() {
               <div className="flex-1 overflow-auto p-3 ">
                 <div className="grid grid-cols-1  gap-3  h-full ">
                   <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
-
-
-                    <fieldset className='grid grid-cols-2 gap-2 rounded mt-2'>
+                    <fieldset className="grid grid-cols-2 gap-2 rounded mt-2">
                       <div className=" ">
                         <TextInputNew
                           name="State Name"
@@ -462,13 +503,21 @@ export default function Form() {
                           readOnly={readOnly}
                           ref={countryNameRef}
 
-                        // disabled={(childRecord.current > 0)}
+                          // disabled={(childRecord.current > 0)}
                         />
                       </div>
-                      <div className=''>
+                      <div className="">
                         <DropdownInputNew
                           name="Country"
-                          options={dropDownListObject(id ? countriesList?.data : countriesList?.data?.filter(item => item?.active), "name", "id")}
+                          options={dropDownListObject(
+                            id
+                              ? countriesList?.data
+                              : countriesList?.data?.filter(
+                                  (item) => item?.active
+                                ),
+                            "name",
+                            "id"
+                          )}
                           value={country}
                           setValue={setCountry}
                           required={true}
@@ -476,7 +525,6 @@ export default function Form() {
                           className={`w-[150px]`}
                         />
                       </div>
-
 
                       <div className="">
                         <TextInputNew
@@ -486,8 +534,7 @@ export default function Form() {
                           setValue={setCode}
                           required={true}
                           readOnly={readOnly}
-                        // disabled={(childRecord.current > 0)}
-
+                          // disabled={(childRecord.current > 0)}
                         />
                       </div>
 
@@ -504,22 +551,23 @@ export default function Form() {
                               />
                             </div> */}
 
-
-
-
                       <div>
-                        <ToggleButton name="Status" value={active} setActive={setActive} required={true} readOnly={readOnly} />
+                        <ToggleButton
+                          name="Status"
+                          value={active}
+                          setActive={setActive}
+                          required={true}
+                          readOnly={readOnly}
+                        />
                       </div>
-
                     </fieldset>
-
                   </div>
                 </div>
               </div>
             </div>
           </Modal>
         )}
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }

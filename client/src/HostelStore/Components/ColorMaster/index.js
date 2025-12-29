@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import { useAddColorMasterMutation, useDeleteColorMasterMutation, useGetColorMasterByIdQuery, useGetColorMasterQuery, useUpdateColorMasterMutation } from "../../../redux/services/ColorMasterService";
+import {
+  useAddColorMasterMutation,
+  useDeleteColorMasterMutation,
+  useGetColorMasterByIdQuery,
+  useGetColorMasterQuery,
+  useUpdateColorMasterMutation,
+} from "../../../redux/services/ColorMasterService";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { Check, Power } from "lucide-react";
 import { ReusableTable, TextInputNew, ToggleButton } from "../../../Inputs";
 import Modal from "../../../UiComponents/Modal";
-
-
 
 const MODEL = "Color Master";
 
@@ -22,10 +26,8 @@ export default function Form() {
   const [isGrey, setIsGrey] = useState(false);
   const [errors, setErrors] = useState({});
 
-
   const [searchValue, setSearchValue] = useState("");
   const childRecord = useRef(0);
-
 
   const params = {
     companyId: secureLocalStorage.getItem(
@@ -33,15 +35,18 @@ export default function Form() {
     ),
   };
 
-  console.log(id, "id")
+  console.log(id, "id");
 
-  const { data: allData, isLoading, isFetching } = useGetColorMasterQuery({ params, searchParams: searchValue });
+  const {
+    data: allData,
+    isLoading,
+    isFetching,
+  } = useGetColorMasterQuery({ params, searchParams: searchValue });
   const {
     data: singleData,
     isFetching: isSingleFetching,
     isLoading: isSingleLoading,
   } = useGetColorMasterByIdQuery(id, { skip: !id });
-
 
   const [addData] = useAddColorMasterMutation();
   const [updateData] = useUpdateColorMasterMutation();
@@ -54,15 +59,14 @@ export default function Form() {
         setName("");
         setPantone("");
         setIsGrey(false);
-        setActive(id ? (data?.active) : true);
-
+        setActive(id ? data?.active : true);
       } else {
         // setReadOnly(true);
 
         setName(data?.name || "");
         setPantone(data?.pantone || "");
         setIsGrey(data?.isGrey || false);
-        setActive(id ? (data?.active ?? false) : true);
+        setActive(id ? data?.active ?? false : true);
       }
     },
     [id]
@@ -73,48 +77,55 @@ export default function Form() {
   }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
 
   const data = {
-    name, active, id
-  }
+    name,
+    active,
+    id,
+  };
 
   const validateData = (data) => {
     if (data.name) {
       return true;
     }
     return false;
-  }
+  };
 
-  const handleSubmitCustom = async (callback, data, text) => {
+  const handleSubmitCustom = async (callback, data, text, nextProcess) => {
     try {
       let returnData = await callback(data).unwrap();
-      setId(returnData?.data?.id)
+      setId(returnData?.data?.id);
       // toast.success(text + "Successfully");
       setForm(false);
       Swal.fire({
         title: text + "  " + "Successfully",
         icon: "success",
-
       });
+      if (nextProcess == "new") {
+        syncFormWithDb(undefined);
+        onNew();
+      } else {
+        setForm(false);
+      }
     } catch (error) {
       console.log("handle");
     }
   };
 
-  const saveData = () => {
+  const saveData = (nextProcess) => {
     if (!validateData(data)) {
       Swal.fire({
         title: "Please fill all required fields...!",
         icon: "success",
-
       });
       return;
     }
 
     let foundItem;
     if (id) {
-      foundItem = allData?.data?.filter(i => i.id != id)?.some(item => item.name === name);
+      foundItem = allData?.data
+        ?.filter((i) => i.id != id)
+        ?.some((item) => item.name === name);
     } else {
-      foundItem = allData?.data?.some(item => item.name === name);
-
+      foundItem = allData?.data?.some((item) => item.name === name);
     }
     if (foundItem) {
       Swal.fire({
@@ -127,9 +138,9 @@ export default function Form() {
       return;
     }
     if (id) {
-      handleSubmitCustom(updateData, data, "Updated");
+      handleSubmitCustom(updateData, data, "Updated", nextProcess);
     } else {
-      handleSubmitCustom(addData, data, "Added");
+      handleSubmitCustom(addData, data, "Added", nextProcess);
     }
   };
 
@@ -140,21 +151,21 @@ export default function Form() {
       }
       try {
         let deldata = await removeData(id).unwrap();
-        console.log(deldata, "deldata")
+        console.log(deldata, "deldata");
         if (deldata?.statusCode == 1) {
           Swal.fire({
-            icon: 'error',
+            icon: "error",
             // title: 'Submission error',
-            text: deldata?.message || 'Something went wrong!',
+            text: deldata?.message || "Something went wrong!",
           });
           return;
-        } setId("");
+        }
+        setId("");
         // toast.success("Deleted Successfully");
         setForm(false);
         Swal.fire({
           title: "Deleted" + "  " + "Successfully",
           icon: "success",
-
         });
       } catch (error) {
         toast.error("something went wrong");
@@ -174,7 +185,7 @@ export default function Form() {
     setId("");
     setForm(true);
     setSearchValue("");
-    syncFormWithDb(undefined)
+    syncFormWithDb(undefined);
     setReadOnly(false);
   };
 
@@ -226,7 +237,6 @@ export default function Form() {
       //   cellClass: () => "font-medium text-gray-900",
       className: "font-medium text-gray-900 text-center uppercase w-16",
     },
-
   ];
 
   return (
@@ -262,7 +272,7 @@ export default function Form() {
           <Modal
             isOpen={form}
             form={form}
-            widthClass={"w-[40%] h-[40%]"}
+            widthClass={"w-[40%] h-[300px]"}
             onClose={() => {
               setForm(false);
               // setErrors({});
@@ -299,12 +309,29 @@ export default function Form() {
                     {!readOnly && (
                       <button
                         type="button"
-                        onClick={saveData}
-                        className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                               border border-green-600 flex items-center gap-1 text-xs"
+                        onClick={() => {
+                          saveData("close");
+                        }}
+                        className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                  border border-blue-600 flex items-center gap-1 text-xs"
                       >
                         <Check size={14} />
-                        {id ? "Update" : "Save"}
+                        {id ? "Update" : "Save & close"}
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {!readOnly && !id && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          saveData("new");
+                        }}
+                        className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                  border border-green-600 flex items-center gap-1 text-xs"
+                      >
+                        <Check size={14} />
+                        {"Save & New"}
                       </button>
                     )}
                   </div>
@@ -317,19 +344,29 @@ export default function Form() {
                     <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
                       <div className="space-y-4 ">
                         <div className="grid grid-cols-2  gap-3  h-full">
-
-                          <fieldset className='my-1'>
-                            <TextInputNew name="Color" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
+                          <fieldset className="my-1">
+                            <TextInputNew
+                              name="Color"
+                              type="text"
+                              value={name}
+                              setValue={setName}
+                              required={true}
+                              readOnly={readOnly}
+                              disabled={childRecord.current > 0}
+                            />
                             {/* <div className="grid grid-cols-2">
                                                    <TextInput name="Pantone" type="text" value={pantone} setValue={setPantone} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
                                                    <div className={`h-20 w-32`} style={{ backgroundColor: pantone }}></div>
                                                </div> */}
                             {/* <CheckBox name="Grey" readOnly={readOnly} value={isGrey} setValue={setIsGrey} /> */}
-                            <ToggleButton name="Active" readOnly={readOnly} value={active} setValue={setActive} />
+                            <ToggleButton
+                              name="Active"
+                              readOnly={readOnly}
+                              value={active}
+                              setValue={setActive}
+                            />
                           </fieldset>
-                          <div>
-
-                          </div>
+                          <div></div>
                         </div>
                       </div>
                     </div>
@@ -339,9 +376,7 @@ export default function Form() {
             </div>
           </Modal>
         )}
-      </div >
-    </div >
-  )
+      </div>
+    </div>
+  );
 }
-
-
