@@ -242,7 +242,16 @@ async function update(id, body) {
         alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments
     } = await body
 
-    const incomingIds = JSON.parse(attachments)?.filter(i => i.id).map(i => parseInt(i.id));
+
+    // const incomingIds = JSON.parse(attachments)?.filter(i => i.id).map(i => parseInt(i.id));
+
+    typeof(attachments,"attachments")
+
+    // const incomingIds = attachments
+    //     .filter(i => i?.id !== undefined && i?.id !== null)
+    //     .map(i => Number(i.id))
+    //     .filter(Number.isInteger);
+
 
     const dataFound = await prisma.party.findUnique({
         where: {
@@ -279,39 +288,39 @@ async function update(id, body) {
             ifscCode: ifscCode ? ifscCode : undefined,
             msmeNo: msmeNo ? msmeNo : undefined,
 
-            attachments: {
-                deleteMany: {
-                    ...(incomingIds.length > 0 && {
-                        id: { notIn: incomingIds }
-                    })
-                },
+            // attachments: {
+            //     deleteMany: {
+            //         ...(incomingIds.length > 0 && {
+            //             id: { notIn: incomingIds }
+            //         })
+            //     },
 
-                update: attachments
-                    .filter(item => item.id)
-                    .map((sub) => ({
-                        where: { id: parseInt(sub.id) },
-                        data: {
-                            date: sub?.date ? new Date(sub?.date) : undefined,
-                            filePath: sub?.filePath ? sub?.filePath : undefined,
-                            name: sub?.name ? sub?.name : undefined
-
-
-
-
-                        },
-                    })),
-
-                create: parsedOrderDetails
-                    .filter(item => !item.id)
-                    .map((sub) => ({
-                        date: sub?.date ? new Date(sub?.date) : undefined,
-                        filePath: sub?.filePath ? sub?.filePath : undefined,
-                        name: sub?.name ? sub?.name : undefined
+            //     update: attachments
+            //         .filter(item => item.id)
+            //         .map((sub) => ({
+            //             where: { id: parseInt(sub.id) },
+            //             data: {
+            //                 date: sub?.date ? new Date(sub?.date) : undefined,
+            //                 filePath: sub?.filePath ? sub?.filePath : undefined,
+            //                 name: sub?.name ? sub?.name : undefined
 
 
 
-                    })),
-            },
+
+            //             },
+            //         })),
+
+            //     create: parsedOrderDetails
+            //         .filter(item => !item.id)
+            //         .map((sub) => ({
+            //             date: sub?.date ? new Date(sub?.date) : undefined,
+            //             filePath: sub?.filePath ? sub?.filePath : undefined,
+            //             name: sub?.name ? sub?.name : undefined
+
+
+
+            //         })),
+            // },
 
         }
     })
