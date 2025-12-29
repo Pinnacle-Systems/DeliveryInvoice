@@ -153,7 +153,7 @@ export default function Form() {
         setImage(data?.imageBase64 ? viewBase64String(data?.imageBase64) : null);
         setEmployeeCategory(data?.employeeCategoryId ? data?.employeeCategoryId : "");
         setPermanent(data?.permanent ? data?.permanent : "");
-        setActive(data ? data.active : "");
+        setActive(data ? data.active : true);
 
         // Employee Leaving Form states
         setLeavingDate(data?.leavingDate ? data?.leavingDate : "");

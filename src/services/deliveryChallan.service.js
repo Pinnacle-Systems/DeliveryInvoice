@@ -181,37 +181,37 @@ async function getOne(id) {
         },
         include: {
             DeliveryChallanItems: {
-                select : {
-                    id : true,
-                    deliveryChallanId : true ,
-                    styleId : true,
-                    Style : {
-                        select : {
-                            name : true
+                select: {
+                    id: true,
+                    deliveryChallanId: true,
+                    styleId: true,
+                    Style: {
+                        select: {
+                            name: true
                         }
                     },
-                    styleItemId : true ,
-                    StyleItem : {
-                        select : {
-                            name : true
+                    styleItemId: true,
+                    StyleItem: {
+                        select: {
+                            name: true
                         }
                     },
-                    noOfBox : true ,
-                    uomId : true ,
-                    Uom : {
-                        select : {
-                            name : true
+                    noOfBox: true,
+                    uomId: true,
+                    Uom: {
+                        select: {
+                            name: true
                         }
                     },
-                    colorId : true ,
-                    Color : {
-                        select : {
-                            name : true
+                    colorId: true,
+                    Color: {
+                        select: {
+                            name: true
                         }
                     },
-                    qty : true ,
-                    isInvoice : true,
-                    active : true
+                    qty: true,
+                    isInvoice: true,
+                    active: true
                 }
             }
         }
@@ -240,7 +240,7 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { finYearId, branchId, supplierId, deliveryType, dcNo, dcDate, deliveryItems } = await body
+    const { finYearId, branchId, supplierId, deliveryType, dcNo, dcDate, deliveryItems, remarks } = await body
 
 
 
@@ -252,8 +252,7 @@ async function create(body) {
     const data = await prisma.deliveryChallan.create(
         {
             data: {
-                // supplierId : supplierId ? parseInt(supplierId) : "" ,
-                // deliveryPartyId: deliveryToId ? parseInt(deliveryToId) : "",
+                remarks: remarks ? remarks : "",
                 docId,
                 Party: {
                     connect: { id: parseInt(supplierId) }   // supplierId goes here
@@ -291,7 +290,7 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { supplierId, dcNo, dcDate, deliveryItems } = await body
+    const { supplierId, dcNo, dcDate, deliveryItems ,remarks    } = await body
 
 
     const incomingIds = deliveryItems?.filter(i => i.id).map(i => parseInt(i.id));
@@ -313,6 +312,7 @@ async function update(id, body) {
             },
             dcNo: dcNo ? dcNo : "",
             dcDate: dcDate ? new Date(dcDate) : undefined,
+            remarks: remarks ? remarks : "",
 
             DeliveryChallanItems: {
                 deleteMany: {

@@ -656,7 +656,8 @@ export const TextInputNew = forwardRef(({
   tabIndex = null,
   onBlur = null,
   width = "full",
-  max
+  max,
+  nextRef
 }, ref) => {
 
   console.log(ref, "countryNameRef")
@@ -680,6 +681,9 @@ export const TextInputNew = forwardRef(({
         onKeyDown={(e) => {
           if (e.key === " ") {
             e.preventDefault();
+          }
+          if (e.key === "Enter" && nextRef?.current) {
+            nextRef.current?.showPicker()
           }
         }}
         onBlur={onBlur}
@@ -1111,9 +1115,11 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
       name,
       disabled,
       show,
-      id
+      id,
     },
+
     ref
+
   ) => {
     /* ---------------------------------- DATA ---------------------------------- */
 
@@ -1328,13 +1334,13 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
 
           {/* ---------------- DROPDOWN LIST ---------------- */}
           {isDropdownOpen && (
-            <div className="absolute w-full mt-1 max-h-40 overflow-y-auto border rounded bg-white z-20" ref={ref}>
+            <div className="absolute w-full mt-1 max-h-40 overflow-y-auto  rounded bg-white z-20 border border-gray-200" ref={ref}>
               {filteredPages.length > 0 ? (
                 filteredPages?.map((item) => (
                   <div
                     key={item.id}
                     tabIndex={0}
-                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer flex justify-between group"
+                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer flex justify-between group border rounded-sm border-gray-400"
                     onClick={() => {
                       setSearchTerm(item.id);
                       setSearch("");
@@ -1352,16 +1358,16 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
                       }
                     }}
                   >
-                    <span>{item.name}</span>
+                    <span className='0'>{item.name}</span>
 
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100">
+                    {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100">
                       <button onClick={(e) => handleEdit(item.id, e)}>
                         <FaEdit />
                       </button>
                       <button onClick={(e) => handleDelete(item.id, e)}>
                         <FaTrash />
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 ))
               ) : (

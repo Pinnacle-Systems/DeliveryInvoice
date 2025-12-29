@@ -158,8 +158,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                 if (deldata?.statusCode == 1) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Submission error',
-                        text: deldata.data?.message || 'Something went wrong!',
+                        title: deldata?.message || 'Something went wrong!',
                     });
                     return;
                 }

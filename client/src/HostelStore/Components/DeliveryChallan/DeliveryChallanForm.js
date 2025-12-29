@@ -249,8 +249,11 @@ const ChallanForm = ({
 
 
     const inputRef = useRef(null);
+    const customerRef =  useRef(null)
+    const customerDate  =  useRef(null)
 
     useEffect(() => {
+        if(id) return;
         inputRef.current?.focus();
     }, []);
 
@@ -359,6 +362,7 @@ const ChallanForm = ({
                                     required={true}
                                     disabled={readOnly}
                                     ref={inputRef}
+                                    nextRef={customerRef}
                                     id={id}
                                 />
 
@@ -400,7 +404,9 @@ const ChallanForm = ({
 
                             <div className="col-span-1">
                                 <TextInputNew name="Customer Dc No"
-                                    value={dcNo} setValue={setDcNo} readOnly={readOnly} />
+                                    value={dcNo} setValue={setDcNo} readOnly={readOnly} 
+                                    ref={customerRef} nextRef={customerDate}
+                                    />
 
                             </div>
 

@@ -193,7 +193,9 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { finYearId, branchId, supplierId, netBillValue, transportMode, transporter, vehicleNo, taxTemplateId, remarks, invoiceItems } = await body
+    const { finYearId, branchId, supplierId, netBillValue, transportMode, transporter, vehicleNo, taxTemplateId, remarks, invoiceItems,
+        termsandcondtions
+    } = await body
 
 
 
@@ -221,6 +223,7 @@ async function create(body) {
                     vehicleNo: vehicleNo ? vehicleNo : "",
                     remarks: remarks ? remarks : '',
                     taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
+                    termsandcondtions: termsandcondtions ? termsandcondtions : "",
                     DeliveryInvoiceItems: invoiceItems?.length > 0
                         ? {
                             createMany: {
@@ -275,7 +278,7 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { taxTemplateId, docId, supplierId, netBillValue, transportMode, transporter, vehicleNo, invoiceItems, remarks } = await body
+    const { taxTemplateId, docId, supplierId, netBillValue, transportMode, transporter, vehicleNo, invoiceItems, remarks ,termsandcondtions } = await body
 
     const incomingIds = invoiceItems?.filter(i => i.id).map(i => parseInt(i.id));
 
@@ -297,6 +300,7 @@ async function update(id, body) {
             vehicleNo: vehicleNo ? vehicleNo : "",
             remarks: remarks ? remarks : '',
             taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
+            termsandcondtions: termsandcondtions ? termsandcondtions : "",
 
             DeliveryInvoiceItems: {
                 deleteMany: {

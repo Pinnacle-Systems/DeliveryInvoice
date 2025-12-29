@@ -8,9 +8,9 @@ const PartyDropdownSearchCus = ({ readOnly, name, selected, setSelected, id }) =
     const { data: partyList } = useGetPartyQuery({ params: { ...params } });
 
     return (
-        <div className='grid grid-cols-5 text-xs items-center h-10'>
-            <label className='border-r pl-1 text-center'>{name}</label>
-            <div className='col-span-4 z-40'>
+        <div className='flex flex-col text-xs  h-10'>
+            <label className=' border-r pl-1 block text-xs font-bold text-gray-600 mb-1'>{name}</label>
+            <div className='col-span-4 z-40 w-full'>
                 <DropdownWithSearch 
                     key={selected} 
                     value={selected} 

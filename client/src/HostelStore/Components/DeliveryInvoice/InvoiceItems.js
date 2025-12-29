@@ -127,6 +127,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
                             }
                         }}
+                        disabled={id}
                         onClick={() => {
                             if (!supplierId) {
                                 Swal.fire({

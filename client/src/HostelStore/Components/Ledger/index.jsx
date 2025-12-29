@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TextInput } from '../../../Inputs';
+import { TextInput, TextInputNew } from '../../../Inputs';
 import { GenerateButton } from '../../../Buttons';
 import Modal from '../../../UiComponents/Modal';
 import tw from '../../../Utils/tailwind-react-pdf';
@@ -13,6 +13,7 @@ import { push } from '../../../redux/features/opentabs';
 import { PartyDropdownSearchCus } from '../PurchaseLedger/PartyDropdowncustomer';
 import { getCommonParams } from '../../../Utils/helper';
 import { useGetBranchByIdQuery } from '../../../redux/services/BranchMasterService';
+import { FaPlus } from 'react-icons/fa';
 
 
 const Ledger = () => {
@@ -24,30 +25,32 @@ const Ledger = () => {
     const [endDate, setEndDate] = useState(currentDate);
     const [printModalOpen, setPrintModalOpen] = useState(false);
     const { data } = useGetPartyQuery({ params: { isPartyLedgerReport: true, partyId, startDate, endDate } }, { skip: !partyId || !startDate || !endDate })
-      const { token, ...params } = getCommonParams();
+    const { token, ...params } = getCommonParams();
 
 
-      const {branchId } = getCommonParams()
-        const { data: partyList } = useGetPartyQuery({ params: { ...params } });
+    const { branchId } = getCommonParams()
+    const { data: partyList } = useGetPartyQuery({ params: { ...params } });
 
-  const { data: branchData } = useGetBranchByIdQuery(branchId, { skip: !branchId });
+    const { data: branchData } = useGetBranchByIdQuery(branchId, { skip: !branchId });
 
-        console.log(branchId,"branchdata")
+    console.log(branchId, "branchdata")
 
     const ledgerData = data?.data;
     const dispatch = useDispatch();
- 
+
     useEffect(() => {
         const currentTabPreviewId = openTabs.tabs.find(i => i.name === "CUSTOMER LEDGER")?.previewId
-        console.log(currentTabPreviewId,"currentTabPreviewId")
+        console.log(currentTabPreviewId, "currentTabPreviewId")
         if (!currentTabPreviewId) return
         setPartyId(currentTabPreviewId);
+        setStartDate(moment(new Date()).format("YYYY-MM-DD"))
+        setEndDate(moment(new Date()).format("YYYY-MM-DD"))
         dispatch(push({
             name: "CUSTOMER LEDGER",
             previewId: null
         }))
     }, [openTabs, dispatch])
-    console.log(ledgerData,"ledgerData")
+    console.log(ledgerData, "ledgerData")
     return (
         <>
             <Modal isOpen={printModalOpen} onClose={() => setPrintModalOpen(false)} widthClass={"w-[90%] h-[90%]"} >
@@ -55,28 +58,77 @@ const Ledger = () => {
                     <LedgerReportPrintFormat ledgerData={ledgerData} startDate={startDate} endDate={endDate} partyId={partyId} partyData={partyList?.data} branchData={branchData?.data} />
                 </PDFViewer>
             </Modal>
-            <div id='registrationFormReport' className="flex flex-col w-full h-[95%]">
-                <div className="md:flex md:items-center md:justify-between page-heading p-1">
-                <div className="heading text-center md:mx-10">Customer Ledger</div>
+            <div
+                id="registrationFormReport"
+                className="flex flex-col w-full h-[95%] text-sm"
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between bg-white px-3 py-2 mb-2 rounded-lg shadow border border-gray-200">
+                    <h1 className="text-xl font-semibold text-gray-800">
+                        Customer Ledger
+                    </h1>
+                    <button
+                        className="hover:bg-green-700 bg-white border border-green-700 hover:text-white text-green-800 px-4 py-1 rounded-md flex items-center gap-2 text-sm"
+                            onClick={() => {
+                                setStartDate("")
+                                setEndDate("")
+                                setPartyId('')
+                            }}
+                    >
+                        <FaPlus />  New
+                    </button>
                 </div>
-                <fieldset className='frame my-1'>
-                    <legend className='sub-heading'>Parameters</legend>
-                    <div className='grid grid-cols-5 my-2 '> 
-                        <div className='col-span-2'>
-                        <PartyDropdownSearchCus
-                                name={"Customer"} selected={partyId} setSelected={setPartyId} />
+
+                {/* Parameters */}
+                <fieldset className="border border-gray-300 rounded-md bg-white px-3 py-2">
+                    <legend className="px-2 text-xs font-semibold text-gray-600">
+                        Parameters
+                    </legend>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 bg-gray-200 p-2 rounded">
+                        {/* Customer */}
+                        <div className="sm:col-span-2">
+                            <PartyDropdownSearchCus
+                                name="Customer"
+                                selected={partyId}
+                                setSelected={setPartyId}
+                            />
                         </div>
-                        <TextInput name="Start.Date" value={startDate} setValue={setStartDate} type={"Date"} required={true} />
-                        <TextInput name="End.Date" value={endDate} setValue={setEndDate} type={"Date"} required={true} />
-                        <GenerateButton color='text-green-500' onClick={() => {
-                            if (!partyId) return toast.info("Select Party...!!!");
-                            if (!startDate) return toast.info("Select Start Date...!!!");
-                            if (!endDate) return toast.info("Select End Date...!!!");
-                            setPrintModalOpen(true)
-                        }} />
+
+                        {/* Start Date */}
+                        <TextInputNew
+                            name="Start Date"
+                            value={startDate}
+                            setValue={setStartDate}
+                            type="date"
+                            required
+                        />
+
+                        {/* End Date */}
+                        <TextInputNew
+                            name="End Date"
+                            value={endDate}
+                            setValue={setEndDate}
+                            type="date"
+                            required
+                        />
+
+                        {/* Generate Button */}
+                        <div className="flex items-end">
+                            <GenerateButton
+                                color="text-green-600"
+                                onClick={() => {
+                                    if (!partyId) return toast.info("Select Customer");
+                                    if (!startDate) return toast.info("Select Start Date");
+                                    if (!endDate) return toast.info("Select End Date");
+                                    setPrintModalOpen(true);
+                                }}
+                            />
+                        </div>
                     </div>
                 </fieldset>
             </div>
+
         </>
     )
 }

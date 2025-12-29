@@ -792,6 +792,7 @@ model DeliveryInvoice {
   transporter          String?
   vehicleNo            String?
   remarks              String?
+  termsandcondtions    String?
   DeliveryInvoiceItems DeliveryInvoiceItems[]
   Ledger               Ledger?
   taxPercent           Float?

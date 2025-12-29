@@ -42,7 +42,7 @@ const PartyOverAllLedger = () => {
 
                 <table className=" border border-gray-500 text-sm table-auto w-[80%] mx-auto">
                     <thead className='top-0'>
-                        <tr className='page-heading text-white'>
+                        <tr className='bg-gray-700 text-white'>
                             <th className="table-data w-2 text-center p-0.5">S.no</th>
                             <th className="table-data w-44">
                                 <div className='grid'>

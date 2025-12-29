@@ -24,7 +24,7 @@ export const New = ({ name, setFormHidden }) => {
 
 export const GenerateButton = ({ onClick, hidden }) => {
     return (
-        <button className='text-yellow-300 py-2 px-4 rounded focus:outline-none focus:shadow-outline' onClick={() => { onClick(); }} hidden={hidden}>
+        <button className='text-yellow-500 py-2 px-4 rounded focus:outline-none focus:shadow-outline' onClick={() => { onClick(); }} hidden={hidden}>
             {<FontAwesomeIcon icon={faRefresh} />} Generate
         </button>
     )

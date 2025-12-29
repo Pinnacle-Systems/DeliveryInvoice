@@ -1,6 +1,6 @@
 import { FaFileAlt } from "react-icons/fa"
 import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextInput, TextInputNew } from "../../../Inputs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
 import { deliveryTypes } from "../../../Utils/DropdownData";
@@ -66,7 +66,7 @@ const InvoiceForm = ({
     const [vehicleNo, setVechileNo] = useState("");
     const [transportMode, setTransportMode] = useState("")
     const allSuppliers = supplierList ? supplierList.data : []
-    const [termsAndCondition, setTermsAndCondition] = useState("")
+    const [termsandcondtions, setTermsAndConditions] = useState("")
 
 
     const { branchId, finYearId, companyId } = params;
@@ -178,6 +178,7 @@ const InvoiceForm = ({
                 : data?.deliveryPartyId || ""
         );
         setRemarks(data?.remarks || "");
+        setTermsAndConditions(data?.termsandcondtions? data?.termsandcondtions : "")
     }, [id]);
 
 
@@ -288,7 +289,8 @@ const InvoiceForm = ({
         supplierId, deliveryType, deliveryToId, branchId, finYearId, companyId,
         id,
         remarks, dcDate, dcNo,
-        invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: netAmount, transportMode, transporter, vehicleNo, taxTemplateId
+        invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: netAmount, transportMode, transporter, vehicleNo, taxTemplateId,
+         termsandcondtions
 
 
     }
@@ -301,7 +303,7 @@ const InvoiceForm = ({
 
 
 
-        return data.supplierId  && data?.taxTemplateId
+        return data.supplierId && data?.taxTemplateId
 
             && isGridDatasValid(data?.invoiceItems, false, mandatoryFields)
             && data?.invoiceItems?.length !== 0
@@ -340,7 +342,14 @@ const InvoiceForm = ({
         }
     }
 
+    const inputRef = useRef(null);
+    const customerRef = useRef(null)
+    const customerDate = useRef(null)
 
+    useEffect(() => {
+        if (id) return;
+        inputRef.current?.focus();
+    }, []);
 
 
 
@@ -387,7 +396,7 @@ const InvoiceForm = ({
                             }, 0)
                         }
                         invoiceItems={invoiceItems}
-                        termsAndCondition={termsAndCondition}
+                        termsAndCondition={termsandcondtions}
                     // payTermList={payTermList}
 
                     />
@@ -478,6 +487,8 @@ const InvoiceForm = ({
                                     show={"isSupplier"}
                                     required={true}
                                     disabled={id}
+                                    ref={inputRef}
+                                    nextRef={customerRef}
                                 />
 
 
@@ -505,7 +516,9 @@ const InvoiceForm = ({
 
 
                             />
-                            <DropdownInputNew name="Tax Percentage" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly} />
+                            <DropdownInputNew name="Tax Percentage" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly} 
+                            ref={customerRef}
+                            />
 
 
 
@@ -602,7 +615,6 @@ const InvoiceForm = ({
 
                     <InvoiceItems invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} styleList={styleList}
                         styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList}
-
                     />
 
                 </fieldset>
@@ -632,9 +644,9 @@ const InvoiceForm = ({
                                 >
                                     <option value="">Select</option>
                                     <option value="Road">By Road</option>
-                                    {/* <option value="Rail">Rail</option>
-                                    <option value="Air">Air</option>
-                                    <option value="Ship">Ship</option> */}
+                                    <option value="Rail">By Rail</option>
+                                    <option value="Air">By Air</option>
+                                    <option value="Ship">By Ship</option>
                                 </select>
                             </div>
 
@@ -668,9 +680,9 @@ const InvoiceForm = ({
                         <h2 className="font-medium text-slate-700 mb-2 text-base">Terms & Conditions </h2>
                         <textarea
                             readOnly={readOnly}
-                            value={termsAndCondition}
+                            value={termsandcondtions}
                             onChange={(e) => {
-                                setTermsAndCondition(e.target.value)
+                                setTermsAndConditions(e.target.value)
                             }}
                             className="w-full h-36 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
                             placeholder="Additional notes..."
