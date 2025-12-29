@@ -239,8 +239,10 @@ async function update(id, body) {
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments
     } = await body
+
+    const incomingIds = JSON.parse(attachments)?.filter(i => i.id).map(i => parseInt(i.id));
 
     const dataFound = await prisma.party.findUnique({
         where: {
@@ -277,6 +279,39 @@ async function update(id, body) {
             ifscCode: ifscCode ? ifscCode : undefined,
             msmeNo: msmeNo ? msmeNo : undefined,
 
+            attachments: {
+                deleteMany: {
+                    ...(incomingIds.length > 0 && {
+                        id: { notIn: incomingIds }
+                    })
+                },
+
+                update: attachments
+                    .filter(item => item.id)
+                    .map((sub) => ({
+                        where: { id: parseInt(sub.id) },
+                        data: {
+                            date: sub?.date ? new Date(sub?.date) : undefined,
+                            filePath: sub?.filePath ? sub?.filePath : undefined,
+                            name: sub?.name ? sub?.name : undefined
+
+
+
+
+                        },
+                    })),
+
+                create: parsedOrderDetails
+                    .filter(item => !item.id)
+                    .map((sub) => ({
+                        date: sub?.date ? new Date(sub?.date) : undefined,
+                        filePath: sub?.filePath ? sub?.filePath : undefined,
+                        name: sub?.name ? sub?.name : undefined
+
+
+
+                    })),
+            },
 
         }
     })

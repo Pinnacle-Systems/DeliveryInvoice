@@ -145,10 +145,10 @@ const ArtDesignReport = ({ id,  readOnly, userRole, setFormReport, formReport, s
                             <input
                               type="text"
                               className="text-left rounded py-1 px-2 w-full  focus:outline-none focus:ring focus:border-blue-300"
-                              value={item?.log}
+                              value={item?.name}
                               disabled={userRole == ""}
                               onChange={(e) =>
-                                handleInputChange(e.target.value, index, "log")
+                                handleInputChange(e.target.value, index, "name")
                               }
 
                             />

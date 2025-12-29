@@ -159,7 +159,7 @@ export default function Form({ partyId }) {
         setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
         setIfscCode(data?.ifscCode ? data?.ifscCode : '')
         setAttachments(data?.attachments ? data?.attachments : [])
-
+        setMsmeNo(data?.msmeNo  ? data?.msmeNo : "")
 
 
 
