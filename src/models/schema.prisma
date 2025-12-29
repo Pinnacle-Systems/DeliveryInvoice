@@ -368,6 +368,7 @@ model Party {
   coa                  BigInt?
   soa                  BigInt?
   msmeNo               String?
+  companyAlterNumber   String?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
@@ -378,7 +379,7 @@ model Party {
 
 model attachments {
   id       Int       @id @default(autoincrement())
-  Party    Party?    @relation(fields: [partyId], references: [id])
+  Party    Party?    @relation(fields: [partyId], references: [id], onDelete: Cascade)
   partyId  Int?
   date     DateTime?
   name     String?

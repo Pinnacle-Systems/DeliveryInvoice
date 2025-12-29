@@ -84,6 +84,7 @@ export default function Form({ partyId }) {
     const [reportName, setReportName] = useState("Customer/Supplier Name")
     const [searchValue, setSearchValue] = useState("");
     const [msmeNo, setMsmeNo] = useState("")
+    const [companyAlterNumber, setCompanyAlterNumber] = useState('')
 
 
     const childRecord = useRef(0);
@@ -159,8 +160,8 @@ export default function Form({ partyId }) {
         setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
         setIfscCode(data?.ifscCode ? data?.ifscCode : '')
         setAttachments(data?.attachments ? data?.attachments : [])
-        setMsmeNo(data?.msmeNo  ? data?.msmeNo : "")
-
+        setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
+        setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
 
 
     }, [id]);
@@ -175,7 +176,7 @@ export default function Form({ partyId }) {
         active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments ,msmeNo
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo ,companyAlterNumber
     }
 
     const validateData = (data) => {
@@ -185,7 +186,7 @@ export default function Form({ partyId }) {
 
     console.log(data, "data")
 
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             const formData = new FormData();
             for (let key in data) {
@@ -222,9 +223,12 @@ export default function Form({ partyId }) {
                 type: `CurrencyMaster/invalidateTags`,
                 payload: ['Currency'],
             });
-            setId("")
-            syncFormWithDb(undefined)
-            setForm(false)
+            if (nextProcess == "new") {
+                syncFormWithDb(undefined);
+                onNew();
+            } else {
+                setForm(false);
+            }
             // if(returnData?.data)
             Swal.fire({
                 title: text + "  " + "Successfully",
@@ -244,7 +248,7 @@ export default function Form({ partyId }) {
             countryNameRef.current.focus();
         }
     }, [form]);
-    const saveData = () => {
+    const saveData = (nextProcess) => {
 
 
         if (!validateData(data)) {
@@ -259,9 +263,9 @@ export default function Form({ partyId }) {
         }
 
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated");
+            handleSubmitCustom(updateData, data, "Updated", nextProcess);
         } else {
-            handleSubmitCustom(addData, data, "Added");
+            handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     }
 
@@ -641,69 +645,53 @@ export default function Form({ partyId }) {
 
 
                                 <div className="flex gap-2">
-                                    {/* <div className="  ">
-                  <button
-                    onClick={() => {
-                      if (name) {
 
-                        // setBranchModelOpen(true)
-                        // setBranchForm(false)
-                      }
-                      else {
-                        Swal.fire({
-                          icon: 'warning',
-                          title: `Enter ${isSupplier ? "Supplier Details" : "Customer Details"} `,
-                          showConfirmButton: false,
-                          timer: 2000
-                        });
-                      }
-
-                    }}
-                    readOnly={readOnly}
-                    className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Add Branch
-                  </button>
-                </div> */}
-                                    <div>
-                                        {!readOnly && (
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setForm(false);
-                                                    setSearchValue("");
-                                                    setId(false);
-                                                }}
-                                                className="px-2 py-1 text-red-600 hover:bg-red-600 hover:text-white border border-red-600 text-xs rounded"
-                                            >
-                                                Cancel
-                                            </button>
-                                        )}
-                                    </div>
                                     <div className="flex gap-2">
-                                        {!readOnly && (
-                                            <button
-                                                type="button"
-                                                onClick={saveData}
-                                                className="px-2 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                  border border-green-600 flex items-center gap-1 text-xs"
-                                            >
-                                                <Check size={14} />
-                                                {id ? "Update" : "Save"}
-                                            </button>
-                                        )}
+                                        <div>
+                                            {readOnly && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setForm(false);
+                                                        setSearchValue("");
+                                                        setId(false);
+                                                    }}
+                                                    className="px-3 py-1 text-red-600 hover:bg-red-600 hover:text-white border border-red-600 text-xs rounded"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {!readOnly && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        saveData("close");
+                                                    }}
+                                                    className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                                                    border border-blue-600 flex items-center gap-1 text-xs"
+                                                >
+                                                    <Check size={14} />
+                                                    {id ? "Update" : "Save & close"}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {!readOnly && !id && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        saveData("new");
+                                                    }}
+                                                    className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                                                    border border-green-600 flex items-center gap-1 text-xs"
+                                                >
+                                                    <Check size={14} />
+                                                    {"Save & New"}
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -796,15 +784,9 @@ export default function Form({ partyId }) {
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
                                                 </div>
-                                                <div className="col-span-1" >
-                                                    <TextInputNew
-                                                        name="Opening Amount" type="text"
-                                                        value={coa} setValue={setCoa} readOnly={readOnly}
-                                                        disabled={(childRecord.current > 0)} />
 
-                                                </div>
 
-                                                <div className=" ">
+                                                <div className=" ml-2">
                                                     <ToggleButton
                                                         name="Status"
                                                         options={statusDropdown}
@@ -829,7 +811,7 @@ export default function Form({ partyId }) {
 
                                     </div>
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                                             <div className="space-y-2">
 
@@ -889,7 +871,7 @@ export default function Form({ partyId }) {
                                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                                             />
                                                         </div>
-                                                        <div className="w-64">
+                                                        <div className="w-80">
                                                             <TextInputNew
                                                                 name={"Email"}
                                                                 type="text"
@@ -919,7 +901,18 @@ export default function Form({ partyId }) {
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
+                                                    <div className='col-span-1'>
+                                                        <TextInputNew
+                                                            name="Alternative Contact Number"
+                                                            type="number"
+                                                            value={companyAlterNumber}
+                                                            setValue={setCompanyAlterNumber}
 
+                                                            // readOnly={readOnly}
+                                                            // disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+                                                    </div>
 
 
 

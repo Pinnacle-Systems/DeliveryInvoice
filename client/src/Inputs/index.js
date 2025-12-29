@@ -1771,7 +1771,7 @@ export const TextAreaNew = ({
         name={name}
         rows={rows}
         cols={cols}
-        tabIndex={tabIndex ?? undefined}
+        // tabIndex={tabIndex ?? undefined}
         disabled={disabled}
         required={required}
         readOnly={readOnly}
@@ -1781,7 +1781,8 @@ export const TextAreaNew = ({
         placeholder={name}
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-          transition-all duration-150 shadow-sm resize-none
+          transition-all duration-150 shadow-sm  resize-y
+
           ${readOnly || disabled
             ? "bg-gray-100 text-gray-500 cursor-not-allowed"
             : "bg-white hover:border-gray-400"}
