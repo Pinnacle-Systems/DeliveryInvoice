@@ -465,6 +465,16 @@ export default function Form() {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
+    
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
+
     return (
         // <div
         //     onKeyDown={handleKeyDown}
@@ -805,7 +815,7 @@ export default function Form() {
 
                                         <div className="space-y-2">
                                             <TextInputNew
-                                                ref={input1Ref}
+                                                ref={countryNameRef}
                                                 name="Full Name"
                                                 value={name}
                                                 setValue={setName}

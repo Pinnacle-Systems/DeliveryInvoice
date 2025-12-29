@@ -284,7 +284,7 @@ export default function Form() {
     //     </div>
     //   </div>
     // </div>
-    <div onKeyDown={handleKeyDown} className="p-1 h-[55vh]">
+    <div onKeyDown={handleKeyDown} className="p-1 ">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
         <h5 className="text-2xl font-bold text-gray-800">Country Master</h5>
         <div className="flex items-center">

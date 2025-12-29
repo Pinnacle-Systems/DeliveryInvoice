@@ -239,6 +239,15 @@ export default function Form() {
     },
   ];
 
+  
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
+
   return (
     <div onKeyDown={handleKeyDown} className="p-1">
       <div className="w-full flex bg-white p-1 justify-between  items-center">
@@ -353,6 +362,7 @@ export default function Form() {
                               required={true}
                               readOnly={readOnly}
                               disabled={childRecord.current > 0}
+                              ref={countryNameRef}
                             />
                             {/* <div className="grid grid-cols-2">
                                                    <TextInput name="Pantone" type="text" value={pantone} setValue={setPantone} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />

@@ -216,6 +216,14 @@ export default function Form() {
     console.log("Edit");
   };
 
+  
+  const countryNameRef = useRef(null);
+
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
   return (
     // <div
     //     onKeyDown={handleKeyDown}
@@ -379,6 +387,7 @@ export default function Form() {
                                 required={true}
                                 readOnly={readOnly}
                                 disabled={childRecord.current > 0}
+                                ref={countryNameRef}
                               />
                             </div>
                             {/* <CheckBox name="Po wise" readOnly={readOnly} value={isPoWise} setValue={setIsPowise} /> */}

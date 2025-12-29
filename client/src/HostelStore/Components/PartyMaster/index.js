@@ -61,7 +61,7 @@ export default function Form({ partyId }) {
     const [contactMobile, setContactMobile] = useState('');
     const [cstDate, setCstDate] = useState("");
     const [email, setEmail] = useState("");
-    const [isSupplier, setIsSupplier] = useState(true);
+    const [isSupplier, setIsSupplier] = useState(false);
     const [isCustomer, setIsCustomer] = useState(true);
     const [active, setActive] = useState(true);
     const [view, setView] = useState("all");
@@ -118,7 +118,7 @@ export default function Form({ partyId }) {
     const [removeData] = useDeletePartyMutation();
 
     const syncFormWithDb = useCallback((data) => {
-     
+
         setPanNo(data?.panNo ? data?.panNo : "");
         setName(data?.name ? data?.name : "");
 
@@ -143,8 +143,8 @@ export default function Form({ partyId }) {
         setWebsite(data?.website ? data?.website : "");
         setEmail(data?.email ? data?.email : "");
         setCity(data?.cityId ? data?.cityId : "");
-        setIsCustomer((data?.isCustomer ? data.isCustomer : false));
         setIsSupplier((data?.isSupplier ? data.isSupplier : false));
+        setIsCustomer((data?.isCustomer ? data.isCustomer : true));
         setActive(id ? (data?.active ? data.active : false) : true);
         setContactMobile((data?.contactMobile ? data.contactMobile : ''));
         setlandMark(data?.landMark ? data?.landMark : '')
@@ -190,7 +190,7 @@ export default function Form({ partyId }) {
             const formData = new FormData();
             for (let key in data) {
 
-                console.log(key,"key")
+                console.log(key, "key")
                 if (key == 'attachments') {
                     formData.append(key, JSON.stringify(data[key].map(i => ({ ...i, filePath: (i.filePath instanceof File) ? i.filePath.name : i.filePath }))));
                     data[key].forEach(option => {
@@ -237,6 +237,13 @@ export default function Form({ partyId }) {
     };
 
 
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
     const saveData = () => {
 
 
@@ -752,7 +759,7 @@ export default function Form({ partyId }) {
                                                         type="text"
                                                         value={name}
                                                         inputClass="h-8"
-
+                                                        ref={countryNameRef}
                                                         setValue={setName}
                                                         required={true}
                                                         readOnly={readOnly}
