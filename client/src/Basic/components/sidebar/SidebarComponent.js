@@ -92,118 +92,14 @@ const SidebarComponent = ({ logo, groups, pages, isMainDropdownOpen, setIsMainDr
   );
   console.log(filteredData, "filteredData")
 
-  // const iconMapping = {
-  //   "COUNTRY MASTER":
-  //     <img src={country} alt="country" className="w-[23px]  justify-center items-center bg-white rounded border-2 border-white shadow" />
-  //   ,
-  //   "EMPLOYEE MASTER":
-  //     <img src={employee} alt="country" className="w-[23px]  justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "STATE MASTER":
-  //     <img src={state} alt="country" className="w-[23px]  justify-center items-center  bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "CITY MASTER":
-  //     <img src={city} alt="country" className="w-[23px]  justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "DEPARTMENT MASTER":
-  //     <img src={department} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "FIN YEAR MASTER":
-  //     <img src={calender} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "EMPLOYEE CATEGORY MASTER":
-  //     <img src={empcategory} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "PARTY MASTER":
-  //     <img src={party} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "PARTY CATEGORY MASTER":
-  //     <img src={partycategory} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "CURRENCY MASTER":
-  //     <img src={currency} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "COLOR MASTER":
-  //     <img src={color} alt="country" className="w-[23px] flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "UNIT OF MEASUREMENT MASTER": <img />,
-  //   "PAY TERM MASTER":
-  //     <img src={payterm} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "TAX TERM MASTER":
-  //     <img src={taxterm} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   //  <HiOutlineReceiptTax size={20} />
-  //   ,
-  //   "TAX TEMPLATE":
-  //     <img src={taxtemplate} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   //  <HiReceiptTax size={20} />
-  //   ,
-  //   "SIZE MASTER":
-  //     <img src={size} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <PiSock size={20} />
-  //   ,
-  //   "SIZE TEMPLATE MASTER":
-  //     <img src={sizetemplate} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <TbRulerMeasure2 size={20} />
-  //   ,
-  //   "LOCATION MASTER":
-  //     <img src={location} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <IoLocationOutline size={20} />
-  //   ,
-  //   "STYLE MASTER":
-  //     <img src={style} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <PiSockFill size={20} />
-  //   ,
-  //   "PROCESS MASTER":
-  //     <span className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow">
-  //       <img />
-  //     </span>
-  //   //  <MdWifiProtectedSetup size={20} /> 
-  //   ,
-  //   "PORTION MASTER": <img />,
-  //   "LOSS REASON MASTER":
-  //     <img src={lossreason} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <BsQuestionOctagon size={20} />
-  //   ,
-  //   "CONTENT MASTER":
-  //     <img src={yarncontent} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <FaCottonBureau size={20} />
-  //   ,
-  //   "YARN TYPE MASTER":
-  //     <img src={yarntype} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <GiYarn size={20} />
-  //   ,
-  //   "YARN MASTER":
-  //     <img src={yarn} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <Volleyball size={20} />
-  //   ,
-  //   "YARN BLEND MASTER":
-  //     <img src={yarnblend} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   // <PiYarnLight size={20} />
-  //   ,
-  //   "FABRIC TYPE MASTER": <img />,
-  //   "GSM MASTER": <img />,
-  //   "GAUGE MASTER": <img />,
-  //   "LOOP LENGTH MASTER": <img />,
-  //   "DESIGN MASTER": <img />,
-  //   "ACCESSORY ITEM MASTER":
-  //     <img src={accessoryitem} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "ACCESSORY MASTER":
-  //     <img src={accessory} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "COUNTS MASTER":
-  //     <img src={yarncount} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "ACCESSORY GROUP MASTER":
-  //     <img src={accessorygroup} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "SHOCKS MATERIAL MASTER":
-  //     <img src={material} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  //   ,
-  //   "MACHINE MASTER":
-  //     <img src={Machine} alt="country" className="w-[23px]  flex justify-center items-center bg-white border-2 border-white rounded shadow" />
-  // }
+  const iconMapping = {
+
+ 
+  
+
+    
+  
+    }
   return (
     <div className="fixed top-[3.5%] left-[87px] z-50">
       {isMainDropdownOpen && (
@@ -259,7 +155,7 @@ const SidebarComponent = ({ logo, groups, pages, isMainDropdownOpen, setIsMainDr
                       >
                         <div className="flex flex-col items-center justify-center">
                           <div className="mb-1">
-                            {/* {iconMapping[page?.name] || <span className="text-gray-400">🔘</span>} */}
+                            {iconMapping[page?.name] || <span className="text-gray-400">🔘</span>}
                           </div>
                           <div className="text-[10px] leading-tight">
                             {page?.name

@@ -293,6 +293,7 @@ export default function Form() {
                         onClick={() => {
                             setForm(true);
                             onNew();
+                            syncFormWithDb(undefined)
                         }}
                         className="bg-white border  border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white text-sm px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
                     >

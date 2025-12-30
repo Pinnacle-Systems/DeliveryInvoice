@@ -10,7 +10,7 @@ import {
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { Check, Power } from "lucide-react";
-import { ReusableTable, TextInputNew, ToggleButton } from "../../../Inputs";
+import { ReusableTable, TextInputNew, TextInputNew1, ToggleButton } from "../../../Inputs";
 import Modal from "../../../UiComponents/Modal";
 
 const MODEL = "Color Master";
@@ -354,7 +354,7 @@ export default function Form() {
                       <div className="space-y-4 ">
                         <div className="grid grid-cols-2  gap-3  h-full">
                           <fieldset className="my-1">
-                            <TextInputNew
+                            <TextInputNew1
                               name="Color"
                               type="text"
                               value={name}

@@ -21,6 +21,7 @@ import {
   ToggleButton,
   TextInputNew,
   DropdownInputNew,
+  TextInputNew1,
 } from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
 import { dropDownListObject } from "../../../Utils/contructObject";
@@ -206,6 +207,7 @@ export default function Form() {
     setReadOnly(false);
     setForm(true);
     setSearchValue("");
+    syncFormWithDb(undefined)
   };
 
   function onDataClick(id) {
@@ -407,7 +409,7 @@ export default function Form() {
                   <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
                     <div className="grid grid-cols-2  gap-3 ">
                       <div className="">
-                        <TextInputNew
+                        <TextInputNew1
                           ref={countryNameRef}
                           name="City Name"
                           type="text"
@@ -419,7 +421,7 @@ export default function Form() {
                         />
                       </div>
                       <div className="">
-                        <TextInputNew
+                        <TextInputNew1
                           name="Code"
                           type="text"
                           value={code}
@@ -454,7 +456,7 @@ export default function Form() {
                         />
                       </div>
                       <div className="">
-                        <TextInputNew
+                        <TextInputNew1
                           name="Country"
                           type="text"
                           value={countryFromState()}

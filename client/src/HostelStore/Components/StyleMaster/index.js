@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import secureLocalStorage from 'react-secure-storage';
 import { Check, Plus, Power } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { ReusableTable, TextInputNew, ToggleButton } from '../../../Inputs';
+import { ReusableTable, TextInputNew, TextInputNew1, ToggleButton } from '../../../Inputs';
 import { useAddStyleMasterMutation, useDeleteStyleMasterMutation, useGetStyleMasterByIdQuery, useGetStyleMasterQuery, useUpdateStyleMasterMutation } from '../../../redux/services/StyleMasterService';
 import Modal from '../../../UiComponents/Modal';
 import { statusDropdown } from '../../../Utils/DropdownData';
@@ -461,11 +461,11 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                             <div className="grid grid-cols-2  gap-3  ">
 
                                                 <div className="">
-                                                    <TextInputNew name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
+                                                    <TextInputNew1 name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
 
                                                 </div>
                                                 <div className="">
-                                                    <TextInputNew name="Alias Name" type="text" value={sku} setValue={setSku} readOnly={readOnly} />
+                                                    <TextInputNew1 name="Alias Name" type="text" value={sku} setValue={setSku} readOnly={readOnly} />
                                                 </div>
                                             </div>
                                             <div className="">

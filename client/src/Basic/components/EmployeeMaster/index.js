@@ -13,7 +13,7 @@ import LiveWebCam from "../LiveWebCam";
 import FormHeader from "../FormHeader";
 import FormReport from "../FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, DropdownInput, TextArea, CurrencyInput, DateInput, DisabledInput, ReusableTable, ToggleButton, TextInputNew, DropdownInputNew, DateInputNew, TextAreaNew } from "../../../Inputs";
+import { TextInput, DropdownInput, TextArea, CurrencyInput, DateInput, DisabledInput, ReusableTable, ToggleButton, TextInputNew, DropdownInputNew, DateInputNew, TextAreaNew, TextInputNew1 } from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
 import { dropDownListObject, dropDownListMergedObject } from '../../../Utils/contructObject';
 import Modal from "../../../UiComponents/Modal";
@@ -384,7 +384,7 @@ export default function Form() {
             header: "Employee Id",
             accessor: (item) => item?.regNo,
             //   cellClass: () => "font-medium  text-gray-900",
-            className: "font-medium text-gray-900 text-center uppercase w-24",
+            className: "font-medium text-gray-900 text-center uppercase w-28",
         },
 
         {
@@ -466,14 +466,14 @@ export default function Form() {
         return Object.keys(newErrors).length === 0;
     };
 
-    
-  const countryNameRef = useRef(null);
 
-  useEffect(() => {
-    if (form && countryNameRef.current) {
-      countryNameRef.current.focus();
-    }
-  }, [form]);
+    const countryNameRef = useRef(null);
+
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
 
     return (
         // <div
@@ -814,7 +814,7 @@ export default function Form() {
                                         />
 
                                         <div className="space-y-2">
-                                            <TextInputNew
+                                            <TextInputNew1
                                                 ref={countryNameRef}
                                                 name="Full Name"
                                                 value={name}
@@ -868,9 +868,9 @@ export default function Form() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-3 rounded-md border border-gray-200">
+                                    <div className="bg-white p-3  rounded-md border border-gray-200 mt-2 h-[90px]" >
                                         {/* <h3 className="font-medium text-gray-800 mb-2 text-sm">Employment Status</h3> */}
-                                        <div className="space-y-2">
+                                        <div className="space-y-3 mt-2 ">
                                             <ToggleButton
                                                 name="Employment Status"
                                                 options={statusDropdown}
@@ -894,8 +894,8 @@ export default function Form() {
                                     </div>
                                 </div>
 
-                                <div className="lg:col-span-5 space-y-3">
-                                    <div className="bg-white p-3 rounded-md border border-gray-200">
+                                <div className="lg:col-span-5 space-y-3 ">
+                                    <div className="bg-white p-3 rounded-md border border-gray-200 h-[230px]">
                                         <h3 className="font-medium text-gray-800 mb-2 text-sm">Official Details</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                             <div>
@@ -943,7 +943,7 @@ export default function Form() {
                                             </div>
 
                                             <div>
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Chamber no"
                                                     value={chamberNo}
                                                     setValue={setChamberNo}
@@ -969,11 +969,11 @@ export default function Form() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-3 rounded-md border border-gray-200">
+                                    <div className="bg-white p-3 rounded-md border border-gray-200 h-[250px]">
                                         <h3 className="font-medium text-gray-800 mb-2 text-sm">Additional Information</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                             <div>
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Father Name"
                                                     value={fatherName}
                                                     setValue={setFatherName}
@@ -1010,7 +1010,7 @@ export default function Form() {
                                             </div>
 
                                             <div>
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Degree"
                                                     value={degree}
                                                     setValue={setDegree}
@@ -1021,7 +1021,7 @@ export default function Form() {
                                             </div>
 
                                             <div className="md:col-span-2">
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Specialization"
                                                     value={specialization}
                                                     setValue={setSpecialization}
@@ -1046,7 +1046,15 @@ export default function Form() {
                                                 readOnly={readOnly}
                                                 disabled={childRecord.current > 0}
                                             />
-
+                                            <div className="col-span-1">
+                                                <TextInputNew1
+                                                    name="Branch Name"
+                                                    value={branchName}
+                                                    setValue={setbranchName}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
+                                            </div>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <TextInputNew
                                                     name="IFSC No"
@@ -1056,18 +1064,13 @@ export default function Form() {
                                                     disabled={childRecord.current > 0}
                                                 />
 
-                                                <TextInputNew
-                                                    name="Branch Name"
-                                                    value={branchName}
-                                                    setValue={setbranchName}
-                                                    readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
-                                                />
+
+
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-3 rounded-md border border-gray-200 sticky top-[200px]">
+                                    <div className="bg-white p-3 rounded-md border border-gray-200 sticky h-[250px]">
                                         <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact Information</h3>
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap">

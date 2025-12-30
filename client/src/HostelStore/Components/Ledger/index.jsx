@@ -14,6 +14,7 @@ import { PartyDropdownSearchCus } from '../PurchaseLedger/PartyDropdowncustomer'
 import { getCommonParams } from '../../../Utils/helper';
 import { useGetBranchByIdQuery } from '../../../redux/services/BranchMasterService';
 import { FaPlus } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 
 const Ledger = () => {
@@ -69,11 +70,11 @@ const Ledger = () => {
                     </h1>
                     <button
                         className="hover:bg-green-700 bg-white border border-green-700 hover:text-white text-green-800 px-4 py-1 rounded-md flex items-center gap-2 text-sm"
-                            onClick={() => {
-                                setStartDate("")
-                                setEndDate("")
-                                setPartyId('')
-                            }}
+                        onClick={() => {
+                            setStartDate("")
+                            setEndDate("")
+                            setPartyId('')
+                        }}
                     >
                         <FaPlus />  New
                     </button>
@@ -118,9 +119,23 @@ const Ledger = () => {
                             <GenerateButton
                                 color="text-green-600"
                                 onClick={() => {
-                                    if (!partyId) return toast.info("Select Customer");
-                                    if (!startDate) return toast.info("Select Start Date");
-                                    if (!endDate) return toast.info("Select End Date");
+                                    if (!partyId) return Swal.fire({
+                                        icon: 'success',
+                                        title: "Select Customer",
+                                        showConfirmButton: false,
+                                    });
+
+                                    if (!startDate) return Swal.fire({
+                                        icon: 'success',
+                                        title: "Select Start Date",
+                                        showConfirmButton: false,
+                                    });
+                                    if (!endDate) return
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: "Select End Date",
+                                        showConfirmButton: false,
+                                    });
                                     setPrintModalOpen(true);
                                 }}
                             />

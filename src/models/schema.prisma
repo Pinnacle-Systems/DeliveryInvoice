@@ -369,6 +369,7 @@ model Party {
   soa                  BigInt?
   msmeNo               String?
   companyAlterNumber   String?
+  partyCode            String?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")

@@ -10,7 +10,7 @@ import {
 import FormHeader from '../FormHeader';
 import FormReport from "../FormReportTemplate";
 import { toast } from "react-toastify"
-import { TextInput, CheckBox, ReusableTable, ToggleButton, TextInputNew } from "../../../Inputs"
+import { TextInput, CheckBox, ReusableTable, ToggleButton, TextInputNew, TextInputNew1 } from "../../../Inputs"
 import ReportTemplate from '../ReportTemplate';
 import { Check, Power } from 'lucide-react';
 import Modal from '../../../UiComponents/Modal';
@@ -175,7 +175,7 @@ export default function Form() {
     }
   }
 
-  const onNew = () => { setId(""); setReadOnly(false); setForm(true); setSearchValue("") }
+  const onNew = () => { setId(""); setReadOnly(false); setForm(true); setSearchValue("") ; syncFormWithDb(undefined)}
 
   function onDataClick(id) {
     setId(id);
@@ -390,7 +390,7 @@ export default function Form() {
                         <div className="p-2">
                           <div className="flex">
                             <div className="mb-3 w-[60%]">
-                              <TextInputNew
+                              <TextInputNew1
                                 ref={countryNameRef}
                                 name="Country Name"
                                 type="text"
@@ -401,7 +401,7 @@ export default function Form() {
                               />
                             </div>
                             <div className="mb-3 ml-5 ">
-                              <TextInputNew
+                              <TextInputNew1
                                 name="Code"
                                 type="text"
                                 value={code}

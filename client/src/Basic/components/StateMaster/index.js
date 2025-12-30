@@ -20,6 +20,7 @@ import {
   ToggleButton,
   TextInputNew,
   DropdownInputNew,
+  TextInputNew1,
 } from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
 import { dropDownListObject } from "../../../Utils/contructObject";
@@ -494,7 +495,7 @@ export default function Form() {
                   <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
                     <fieldset className="grid grid-cols-2 gap-2 rounded mt-2">
                       <div className=" ">
-                        <TextInputNew
+                        <TextInputNew1
                           name="State Name"
                           type="text"
                           value={name}
@@ -527,7 +528,7 @@ export default function Form() {
                       </div>
 
                       <div className="">
-                        <TextInputNew
+                        <TextInputNew1
                           name="Code"
                           type="text"
                           value={code}

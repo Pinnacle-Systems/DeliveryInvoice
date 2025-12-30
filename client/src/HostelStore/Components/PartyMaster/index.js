@@ -14,7 +14,7 @@ import { useGetCityQuery } from "../../../redux/services/CityMasterService";
 import FormHeader from "../../../Basic/components/FormHeader";
 import FormReport from "../../../Basic/components/FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, DropdownInput, CheckBox, RadioButton, TextArea, DateInput, MultiSelectDropdown, ReusableTable, TextInputNew, DropdownInputNew, ToggleButton, TextAreaNew } from "../../../Inputs";
+import { TextInput, DropdownInput, CheckBox, RadioButton, TextArea, DateInput, MultiSelectDropdown, ReusableTable, TextInputNew, DropdownInputNew, ToggleButton, TextAreaNew, TextInputNew1 } from "../../../Inputs";
 import ReportTemplate from "../../../Basic/components/ReportTemplate";
 import { dropDownListObject, dropDownListMergedObject, multiSelectOption } from '../../../Utils/contructObject';
 import moment from "moment";
@@ -162,7 +162,7 @@ export default function Form({ partyId }) {
         setAttachments(data?.attachments ? data?.attachments : [])
         setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
         setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
-
+        setPartyCode(data?.partyCode ? data?.partyCode : "")
 
     }, [id]);
 
@@ -176,7 +176,7 @@ export default function Form({ partyId }) {
         active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo ,companyAlterNumber
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber ,partyCode
     }
 
     const validateData = (data) => {
@@ -742,7 +742,7 @@ export default function Form({ partyId }) {
 
 
                                                 <div className="col-span-2">
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name={isSupplier ? "Supplier Name" : "Customer Name"}
                                                         type="text"
                                                         value={name}
@@ -761,7 +761,7 @@ export default function Form({ partyId }) {
                                                     />
                                                 </div>
                                                 <div className="col-span-2">
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name="Alias Name"
                                                         type="text"
                                                         inputClass="h-8"
@@ -773,7 +773,7 @@ export default function Form({ partyId }) {
                                                     />
                                                 </div>
                                                 <div className="col-span-1">
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name="Code"
                                                         type="text"
                                                         value={partyCode}
@@ -826,7 +826,7 @@ export default function Form({ partyId }) {
                                                             readOnly={readOnly} d
                                                             isabled={(childRecord.current > 0)} />
                                                     </div>
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name="Land Mark"
                                                         type="text"
                                                         value={landMark}
@@ -859,7 +859,7 @@ export default function Form({ partyId }) {
                                                     <div className="col-span-2 flex flex-row gap-3">
                                                         <div className="w-24">
 
-                                                            <TextInputNew
+                                                            <TextInputNew1
                                                                 name="Pincode"
                                                                 type="number"
                                                                 value={pincode}
@@ -872,7 +872,7 @@ export default function Form({ partyId }) {
                                                             />
                                                         </div>
                                                         <div className="w-80">
-                                                            <TextInputNew
+                                                            <TextInputNew1
                                                                 name={"Email"}
                                                                 type="text"
                                                                 value={email}
@@ -934,7 +934,7 @@ export default function Form({ partyId }) {
                                                     <div className="col-span-2 flex flex-row gap-4 mt-2">
                                                         <div className="w-96">
 
-                                                            <TextInputNew
+                                                            <TextInputNew1
                                                                 name="Contact Person Name"
                                                                 type="text"
                                                                 value={contactPersonName}
@@ -978,7 +978,7 @@ export default function Form({ partyId }) {
                                                     </div> */}
 
                                                     </div>
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name="Designation"
                                                         type="text"
                                                         value={designation}
@@ -988,7 +988,7 @@ export default function Form({ partyId }) {
                                                         disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
-                                                    <TextInputNew
+                                                    <TextInputNew1
                                                         name="Department"
                                                         type="text"
                                                         value={department}
@@ -1144,7 +1144,7 @@ export default function Form({ partyId }) {
                                             <div className="space-y-2">
 
 
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Bank Name"
                                                     type="text"
                                                     value={bankname}
@@ -1155,16 +1155,19 @@ export default function Form({ partyId }) {
                                                     className="focus:ring-2 focus:ring-blue-100 w-10"
                                                 />
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <TextInputNew
-                                                        name="Branch Name"
-                                                        type="text"
-                                                        value={bankBranchName}
+                                                    <div className="col-span-2">
+                                                        <TextInputNew1
+                                                            name="Branch Name"
+                                                            type="text"
+                                                            value={bankBranchName}
 
-                                                        setValue={setBankBranchName}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                        className="focus:ring-2 focus:ring-blue-100 w-10"
-                                                    />
+                                                            setValue={setBankBranchName}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+                                                    </div>
+
                                                     <TextInputNew
                                                         name="Account Number"
                                                         type="text"

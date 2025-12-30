@@ -10,7 +10,7 @@ import {
 import FormHeader from "../FormHeader";
 import FormReport from "../FormReportTemplate";
 import { toast } from "react-toastify";
-import { TextInput, CheckBox, ReusableTable, ToggleButton, TextInputNew } from "../../../Inputs";
+import { TextInput, CheckBox, ReusableTable, ToggleButton, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import ReportTemplate from "../ReportTemplate";
 import { Check, Power } from "lucide-react";
 import Modal from "../../../UiComponents/Modal";
@@ -168,6 +168,7 @@ export default function Form() {
         setReadOnly(false);
         setForm(true);
         setSearchValue("");
+        syncFormWithDb(undefined)
     };
 
     function onDataClick(id) {
@@ -405,7 +406,7 @@ export default function Form() {
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-full">
                                             <div className="grid grid-cols-2  gap-3  ">
 
-                                                <TextInputNew
+                                                <TextInputNew1
                                                     name="Department Name"
                                                     type="text"
                                                     value={name}
@@ -418,7 +419,7 @@ export default function Form() {
 
 
                                                 <div className="">
-                                                    <TextInputNew name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} disabled={childRecord.current > 0} />
+                                                    <TextInputNew1 name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} disabled={childRecord.current > 0} />
                                                 </div>
                                                 <div>
                                                     <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} readOnly={readOnly} disabled={childRecord.current > 0} />

@@ -182,7 +182,7 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode
     } = await body
     console.log(body, 'body')
 
@@ -214,6 +214,7 @@ async function create(body) {
                 ifscCode: ifscCode ? ifscCode : undefined,
                 msmeNo: msmeNo ? msmeNo : undefined,
                 companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
+                partyCode: partyCode ? partyCode : "",
 
                 attachments: JSON.parse(attachments)?.length > 0
                     ? {
@@ -240,7 +241,7 @@ async function update(id, body) {
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments , companyAlterNumber
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode
     } = await body
 
 
@@ -250,7 +251,7 @@ async function update(id, body) {
     // console.log(parseAttachments,'parseAttachments')
     const incomingIds = parseAttachments?.filter(i => i.id).map(i => parseInt(i.id));
 
-    console.log(parseAttachments,"parseAttachments")
+    console.log(parseAttachments, "parseAttachments")
 
     console.log(incomingIds, 'incomingIds')
 
@@ -291,6 +292,8 @@ async function update(id, body) {
             ifscCode: ifscCode ? ifscCode : undefined,
             msmeNo: msmeNo ? msmeNo : undefined,
             companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
+            partyCode: partyCode ? partyCode : "",
+
 
 
             attachments: {
