@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     textAlign: "center",
-    marginBottom: 7,
-    // justifyContent: "space-between",
+    // marginBottom: 7,
+    justifyContent: "flex-end",
     flexDirection: "row",
-    padding: 7,
-    height: 130
+    padding: 1,
+    height: 100
 
 
   },
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
   },
   companyText: {
-    fontSize: 9,
+    fontSize: 8,
     marginBottom: 1,
     textAlign: "left",
     marginRight: 4,
@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
   greenTitle: {
     textAlign: "center",
     fontSize: 15,
-    color: "#FFFF",
-    backgroundColor: "#946657",
+    color: "",
+    backgroundColor: "#946A52",
     paddingVertical: 4,
     // borderBottom: "18 solid #1D3A76",
 
@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 10,
     fontWeight: "bold",
-    color: "#FFFF",
+    // color: "#FFFF",
     // backgroundColor: "#e6ffe6",
-    backgroundColor: "#946657",
+    backgroundColor: "#946A52",
     padding: 6,
     marginBottom: 2
   },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     borderTop: "1 solid #000",
     borderBottom: "1 solid #000",
     marginTop: 6,
-    backgroundColor: "#946657",
+    backgroundColor: "#946A52",
     padding: 3,
     color: "#FFFF"
   },
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontWeight: "bold",
     textAlign: "center",
-    borderRight: "1 solid #000",
     padding: 3,
   },
   td: {
@@ -302,7 +301,7 @@ const DeliveryChallanPrint = ({
 
   const filledPoItems = [
     ...deliveryItems,
-    ...Array(Math.max(0, 10 - deliveryItems.length)).fill({}), // empty rows
+    ...Array(Math.max(0, 15 - deliveryItems.length)).fill({}), // empty rows
   ];
 
 
@@ -377,10 +376,10 @@ const DeliveryChallanPrint = ({
               fontSize: 10,
               // color: "#1D3A76",
               fontWeight: "bold",
-              marginBottom: 4,
-              marginTop: 10,
+              marginBottom: 2,
+              marginTop: 1,
               flexDirection: 'row',
-              width: '52%',
+              width: '42%',
             }}>
               <Image source={MsExports} style={styles.logo} />
               <View style={{ width: 125, flexWrap: 'wrap' }}>
@@ -388,9 +387,9 @@ const DeliveryChallanPrint = ({
                 <Text
                   style={{
                     fontSize: 16,
-                    fontWeight: "extrabold",
-                    paddingVertical: 3,
-                    paddingHorizontal: 6,
+                    // fontWeight: "extrabold",
+                    // paddingVertical: 3,
+                    // paddingHorizontal: 6,
                     marginBottom: 4,
                     marginTop: 10,
                     textAlign: "left",
@@ -404,11 +403,11 @@ const DeliveryChallanPrint = ({
 
 
                 <Text style={{
-                  fontSize: 9,
+                  fontSize: 8,
                   marginBottom: 1,
                   textAlign: "left",
-                  marginRight: 4,
-                  width: 170
+                  marginRight: 1,
+                  width: 160
                 }}>{branchData?.address}</Text>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -444,7 +443,7 @@ const DeliveryChallanPrint = ({
               </Text>
             </View> */}
 
-            <View >
+            {/* <View >
               <View style={{ alignItems: "flex-end", marginTop: 15, marginBottom: 3 }}>
                 <View style={{}}>
                   <View style={{ flexDirection: "row", marginBottom: 3 }}>
@@ -462,10 +461,10 @@ const DeliveryChallanPrint = ({
                       <Text style={styles.ValueText}>{docId}</Text>
                     </View>                  </View>
 
-              
-              
-                
-            
+
+
+
+
 
                 </View>
               </View>
@@ -473,14 +472,14 @@ const DeliveryChallanPrint = ({
 
 
 
-            </View>
+            </View> */}
 
           </View>
+          <Text style={styles.sectionTitle}>Billing To :</Text>
 
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
-            {/* SUPPLIER DETAILS */}
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8, marginBottom: 6 }}>
+
             <View style={{ flex: 1 }}>
-              <Text style={styles.sectionTitle}>To :</Text>
               <View style={styles.boxContent}>
 
                 <View style={{
@@ -495,7 +494,6 @@ const DeliveryChallanPrint = ({
                     fontWeight: "bold",
                     paddingHorizontal: 2,
                     marginBottom: 4,
-                    color: "#0F766E",
                     fontSize: 10
                   }}>
                     {supplierDetails?.name}
@@ -509,7 +507,7 @@ const DeliveryChallanPrint = ({
                   width: 200,
                 }}>
                   <Text style={{
-                    fontSize: 9,
+                    fontSize: 8,
                     textTransform: 'uppercase',
                     lineHeight: 1.2,
                     textAlign: 'left',
@@ -519,92 +517,79 @@ const DeliveryChallanPrint = ({
                 </View>
 
 
-                <View style={{ flexDirection: "row", marginTop: 4, paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>Mobile No</Text>
+                <View style={{ flexDirection: "row", marginTop: 1, paddingLeft: 7, }}>
+                  <Text style={[styles.companyText, { width: 40 }]}>Mobile No</Text>
                   <Text style={styles.companyText}>: {supplierDetails?.contactMobile ? supplierDetails?.contactMobile : "NA"}</Text>
                 </View>
 
-                {/* <View style={{ flexDirection: "row" }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>PAN No</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.panNo}</Text>
-                </View> */}
 
                 <View style={{ flexDirection: "row", paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>GST No</Text>
+                  <Text style={[styles.companyText, { width: 40 }]}>GST No</Text>
                   <Text style={styles.companyText}>: {supplierDetails?.gstNo}</Text>
                 </View>
 
                 <View style={{ flexDirection: "row", paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>Email</Text>
+                  <Text style={[styles.companyText, { width: 40 }]}>Email</Text>
                   <Text style={styles.companyText}>: {supplierDetails?.email}</Text>
                 </View>
               </View>
             </View>
 
-            {/* DELIVERY TO */}
-            {/* <View style={{ flex: 1 }}>
-              <Text style={styles.sectionTitle}>Ship To :</Text>
+
+            <View style={{ flex: 1 }}>
               <View style={styles.boxContent}>
+                <View >
+                  <View style={{ alignItems: "flex-end", marginTop: 15, marginBottom: 3 }}>
+                    <View style={{}}>
+                      <View style={{ flexDirection: "row", marginBottom: 3, marginRight: 5 }}>
+                        <Text style={[styles.companyText, { width: 100, textAlign: "left" }]}>DATE</Text>
+                        <View style={styles.valueContainer}>
+                          <Text style={styles.colon}>:</Text>
+                          <Text style={styles.ValueText}>{getDateFromDateTimeToDisplay(poDate)}</Text>
+                        </View>
+                      </View>
 
-                <View style={{
-                  flexDirection: "row",
+                      <View style={{ flexDirection: "row", marginBottom: 3 }}>
+                        <Text style={[styles.companyText, { width: 100, textAlign: "left" }]}>DC NO</Text>
+                        <View style={styles.valueContainer}>
+                          <Text style={styles.colon}>:</Text>
+                          <Text style={styles.ValueText}>{docId}</Text>
+                        </View>                  </View>
 
-                }}>
-                  <Text style={{
-                    marginTop: 1
-                  }} >M/s</Text>
 
-                  <Text style={{
-                    fontWeight: "bold",
-                    paddingHorizontal: 2,
-                    marginBottom: 4,
-                    color: "#0F766E",
-                    fontSize: 10
-                  }}>
-                    {supplierDetails?.name}
-                  </Text>
+
+
+
+
+                    </View>
+                  </View>
+
+
+
+
                 </View>
 
 
 
-                <View style={{
-                  paddingLeft: 7,
-                  width: 200,
-                }}>
-                  <Text style={{
-                    fontSize: 9,
-                    textTransform: 'uppercase',
-                    lineHeight: 1.2,
-                    textAlign: 'left',
-                  }}>
-                    {supplierDetails?.address}
-                  </Text>
-                </View>
 
 
-                <View style={{ flexDirection: "row", marginTop: 4, paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>Mobile No</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.contactMobile}</Text>
-                </View>
 
-           
 
-                <View style={{ flexDirection: "row", paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>GST No</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.gstNo}</Text>
-                </View>
-
-                <View style={{ flexDirection: "row", paddingLeft: 7, }}>
-                  <Text style={[styles.companyText, { width: 70 }]}>Email</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.email}</Text>
-                </View>
               </View>
-            </View> */}
+            </View>
+
           </View>
 
 
 
-          <View style={styles.tableHeader}>
+          <View style={{
+            flexDirection: "row",
+            borderTop: "1 solid #000",
+            borderBottom: "2 solid #000",
+            backgroundColor: "#946A52",
+            marginTop: 6,
+            padding: 3,
+          }}>
             <Text style={[styles.th, { flex: 1 }]}>S.No</Text>
             <Text style={[styles.th, { flex: 5 }]}>Style No</Text>
             <Text style={[styles.th, { flex: 3 }]}>Item</Text>
@@ -617,15 +602,15 @@ const DeliveryChallanPrint = ({
           </View>
 
           {filledPoItems?.map((row, index) => (
-            <View key={index} style={{ flexDirection: "row", borderBottom: "1 solid #d1d5db" }}>
+            <View key={index} style={{ flexDirection: "row", borderBottom: "2 solid #d1d5db" }}>
               <Text style={[styles.td, { flex: 1 }]}>{index + 1}</Text>
               <Text style={[styles.td, { flex: 5, textAlign: "left" }]}>
                 {row?.Style?.name}
               </Text>
-              <Text style={[styles.td, { flex: 3 }]}>
+              <Text style={[styles.td, { flex: 3, textAlign: "left" }]}>
                 {row?.StyleItem?.name}
               </Text>
-              <Text style={[styles.td, { flex: 2 }]}>
+              <Text style={[styles.td, { flex: 2, textAlign: "left" }]}>
                 {row?.Color?.name}
               </Text>
               <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
@@ -633,7 +618,7 @@ const DeliveryChallanPrint = ({
               </Text>
 
 
-              <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
+              <Text style={[styles.td, { flex: 1, textAlign: "left" }]}>
                 {row?.Uom?.name}
               </Text>
               <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
@@ -650,7 +635,9 @@ const DeliveryChallanPrint = ({
             </View>
           ))}
 
-          <View style={{ flexDirection: "row", borderBottom: "1 solid #d1d5db" }}>
+          <View style={{
+            flexDirection: "row", borderBottom: "2 solid #000",
+          }}>
             <Text style={[{
               flex: 1, padding: 3,
             }]}></Text>
@@ -662,7 +649,7 @@ const DeliveryChallanPrint = ({
 
             <Text style={[{
               flex: 3, padding: 3,
-              fontSize: 8
+              fontSize: 11
             }]}>
               Total
 
@@ -672,7 +659,7 @@ const DeliveryChallanPrint = ({
             }]}>
             </Text>
             <Text style={[{
-              flex: 1, padding: 3,
+              flex: 2, padding: 3,
             }]}>
             </Text>
 
@@ -847,7 +834,7 @@ const DeliveryChallanPrint = ({
 
 
 
-          <View style={{ marginTop: 30, justifyContent: "space-between", flexDirection: "row", padding: 5 }}>
+          <View style={{ marginTop: 100, justifyContent: "space-between", flexDirection: "row", padding: 5 }}>
             <Text
               style={{ fontSize: 8, textAlign: "right", fontWeight: "bold" }}
             >

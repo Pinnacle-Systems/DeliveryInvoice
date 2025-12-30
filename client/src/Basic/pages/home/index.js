@@ -60,12 +60,12 @@ const Home = () => {
               //     </div>
               <>
 
-                <div className="mb-[40px]" >
+                <div className="" >
                   <Header profile={profile} setProfile={setProfile} />
 
                 </div>
 
-                <div className="p-1 bg-gray-100 " >
+                <div className="mt-[30px]  p-3 bg-gray-100  :tab" >
 
                   <ActiveTabList />
 
