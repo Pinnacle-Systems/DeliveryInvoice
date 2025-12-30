@@ -119,27 +119,35 @@ const Ledger = () => {
                             <GenerateButton
                                 color="text-green-600"
                                 onClick={() => {
-                                    if (!partyId) return Swal.fire({
-                                        icon: 'success',
-                                        title: "Select Customer",
-                                        showConfirmButton: false,
-                                    });
+                                    if (!partyId) {
+                                        return Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Select Customer',
+                                            showConfirmButton: false,
+                                        });
+                                    }
 
-                                    if (!startDate) return Swal.fire({
-                                        icon: 'success',
-                                        title: "Select Start Date",
-                                        showConfirmButton: false,
-                                    });
-                                    if (!endDate) return
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: "Select End Date",
-                                        showConfirmButton: false,
-                                    });
+                                    if (!startDate) {
+                                        return Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Select Start Date',
+                                            showConfirmButton: false,
+                                        });
+                                    }
+
+                                    if (!endDate) {
+                                        return Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Select End Date',
+                                            showConfirmButton: false,
+                                        });
+                                    }
+
                                     setPrintModalOpen(true);
                                 }}
                             />
                         </div>
+
                     </div>
                 </fieldset>
             </div>
