@@ -1333,7 +1333,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
           </div>
 
           {/* ---------------- DROPDOWN LIST ---------------- */}
-          {isDropdownOpen && (
+          {/* {isDropdownOpen && (
             <div className="absolute w-full mt-1 max-h-40 overflow-y-auto  rounded bg-white z-20 border border-gray-200" ref={ref}>
               {filteredPages.length > 0 ? (
                 filteredPages?.map((item) => (
@@ -1360,20 +1360,79 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
                   >
                     <span className='0'>{item.name}</span>
 
-                    {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100">
-                      <button onClick={(e) => handleEdit(item.id, e)}>
-                        <FaEdit />
-                      </button>
-                      <button onClick={(e) => handleDelete(item.id, e)}>
-                        <FaTrash />
-                      </button>
-                    </div> */}
+                  
                   </div>
                 ))
               ) : (
                 <div className="px-3 py-2 text-xs text-gray-500">
                   No party found
                 </div>
+              )}
+            </div>
+          )} */}
+          {isDropdownOpen && (
+            <div className="border border-slate-200 rounded-md shadow-md bg-white mt-1 max-h-40 overflow-y-auto z-20 absolute w-full">
+              {filteredPages?.length > 0 ? (
+                filteredPages?.map((item) => (
+                  <div
+                    key={item.id}
+                    tabIndex={0}
+                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer transition-colors flex justify-between items-center group"
+                    onClick={() => {
+                      setSearchTerm(item.id);
+                      setIsDropdownOpen(false);
+                      setSearch("");
+                      setIsListShow(false);
+                      if (nextRef?.current) {
+                        nextRef?.current?.focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchTerm(item.id);
+                        setSearch("");
+                        setIsListShow(false);
+                        setIsDropdownOpen(false);
+                        if (nextRef?.current) {
+                          e.preventDefault();
+                          nextRef?.current?.focus();
+                        }
+
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                    </div>
+                    {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        className="text-indigo-600 hover:text-indigo-800 p-1"
+                        onClick={(e) => handleEdit(item?.id, e)}
+                        title="Edit supplier"
+                      >
+                        <FaEdit className="text-sm" />
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-800 p-1"
+                        onClick={(e) => handleDelete(item?.id)}
+                        title="Delete supplier"
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div> */}
+                  </div>
+                ))
+              ) : (
+                <button
+                  type="button"
+                  className="w-full px-3 py-2 text-left text-indigo-600 hover:bg-slate-50 flex items-center gap-2"
+                  onClick={() => {
+                    setEditingItem(null);
+                    setIsDropdownOpen(false);
+                    openAddModal();
+                  }}
+                >
+                </button>
               )}
             </div>
           )}
