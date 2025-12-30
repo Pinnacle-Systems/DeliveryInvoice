@@ -28,7 +28,8 @@ import {
   deliveryInvoice,
   color,
   taxTerm,
-  taxTemplate
+  taxTemplate,
+  hsn
 } from './src/routes/index.js';
 
 import { socketMain } from './src/sockets/socket.js';
@@ -105,6 +106,8 @@ app.use('/deliveryChallan', deliveryChallan)
 app.use('/deliveryInvoice', deliveryInvoice)
 app.use("/taxTerm", taxTerm);
 app.use("/taxTemplate", taxTemplate);
+app.use("/hsn", hsn);
+
 
 
 

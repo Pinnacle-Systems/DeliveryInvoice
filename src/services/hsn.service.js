@@ -8,7 +8,6 @@ async function get(req) {
     const { companyId, active } = req.query
     const data = await prisma.hsn.findMany({
         where: {
-            companyId: companyId ? parseInt(companyId) : undefined,
             active: active ? Boolean(active) : undefined,
         }
     });
@@ -56,7 +55,7 @@ async function create(body) {
     const data = await prisma.hsn.create(
         {
             data: {
-                name, code, companyId: parseInt(companyId), active
+                name, code,  active
             }
         }
     )

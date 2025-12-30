@@ -32,6 +32,7 @@ export { default as DeliveryInvoice } from './DeliveryInvoice'
 export { default as ColorMaster } from './ColorMaster'
 export { default as TaxTermMaster } from './TaxTermMaster'
 export { default as TaxTemplate } from './TaxTemplate'
+export { default as HsnMaster } from './HsnMaster'
 
 
 

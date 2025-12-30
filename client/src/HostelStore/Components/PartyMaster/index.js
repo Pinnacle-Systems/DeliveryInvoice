@@ -22,11 +22,12 @@ import Modal from "../../../UiComponents/Modal";
 
 import { Loader } from '../../../Basic/components';
 import { useDispatch } from "react-redux";
-import { findFromList } from "../../../Utils/helper";
+import { findFromList, renameFile } from "../../../Utils/helper";
 import { Check, LayoutGrid, Paperclip, Plus, Power, Table } from "lucide-react";
 import { statusDropdown } from "../../../Utils/DropdownData";
 import ArtDesignReport from "./ArtDesignReport";
 import Swal from "sweetalert2";
+import { getImageUrlPath } from "../../../Constants";
 
 
 const MODEL = "Party Master";
@@ -176,7 +177,7 @@ export default function Form({ partyId }) {
         active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber ,partyCode
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode
     }
 
     const validateData = (data) => {
@@ -239,8 +240,48 @@ export default function Form({ partyId }) {
             console.log("handle");
         }
     };
+    const today = new Date();
+    const Model = "Attachments"
 
 
+    function addNewComments() {
+        setAttachments((prev) => [...prev, { log: "", date: today, filePath: "" }]);
+        // setDueDate(moment.utc(today).format("YYYY-MM-DD"));
+    }
+
+    console.log(attachments, "attachments")
+
+
+    function handleInputChange(value, index, field) {
+        console.log(value, 'value', index, "index", field, "field")
+
+        const newBlend = structuredClone(attachments);
+        newBlend[index][field] = value;
+        setAttachments(newBlend);
+        // setDueDate(moment.utc(today).format("YYYY-MM-DD"));
+    };
+
+    function deleteRow(index) {
+        console.log(index, "index");
+
+        setAttachments(prev => prev.filter((_, i) => i !== index))
+    }
+
+    function openPreview(filePath) {
+        window.open(filePath instanceof File ? URL.createObjectURL(filePath) : getImageUrlPath(filePath))
+
+    }
+
+    useEffect(() => {
+        if (attachments?.length >= 1) return
+        setAttachments(prev => {
+            let newArray = Array.from({ length: 1 - prev?.length }, () => {
+                return { date: today, filePath: "", log: "" }
+            })
+            return [...prev, ...newArray]
+        }
+        )
+    }, [setAttachments, attachments])
     const countryNameRef = useRef(null);
 
     useEffect(() => {
@@ -426,6 +467,12 @@ export default function Form({ partyId }) {
         filterParty = allData?.data
     }
     //   const { data: currencyList } = useGetCurrencyMasterQuery({ params });
+
+
+
+
+
+
 
 
 
@@ -623,7 +670,7 @@ export default function Form({ partyId }) {
                     <Modal
                         isOpen={form}
                         form={form}
-                        widthClass={"w-[90%] h-[95%]"}
+                        widthClass={"w-[90%] h-[89%]"}
                         onClose={() => {
                             setForm(false);
                         }}
@@ -703,7 +750,7 @@ export default function Form({ partyId }) {
 
 
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <div className="flex flex-row items-center gap-2 ">
@@ -811,7 +858,7 @@ export default function Form({ partyId }) {
 
                                     </div>
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px] overflow-y-auto">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                                             <div className="space-y-2">
 
@@ -826,39 +873,49 @@ export default function Form({ partyId }) {
                                                             readOnly={readOnly} d
                                                             isabled={(childRecord.current > 0)} />
                                                     </div>
-                                                    <TextInputNew1
-                                                        name="Land Mark"
-                                                        type="text"
-                                                        value={landMark}
+                                                    <div className="col-span-2">
+                                                        <div className="grid grid-cols-5 gap-2">
+                                                            <div className="col-span-5">
+                                                                <TextInputNew1
+                                                                    name="Land Mark"
+                                                                    type="text"
+                                                                    value={landMark}
 
-                                                        setValue={setlandMark}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                        className="focus:ring-2 focus:ring-blue-100 w-10"
-                                                    />
-                                                    <DropdownInputNew
-                                                        name="City/State Name"
-                                                        options={dropDownListMergedObject(
-                                                            id
-                                                                ? cityList?.data
-                                                                : cityList?.data?.filter((item) => item.active),
-                                                            "name",
-                                                            "id"
-                                                        )}
-                                                        country={country}
-                                                        masterName="CITY MASTER"
-                                                        // lastTab={activeTab}
-                                                        value={city}
-                                                        setValue={setCity}
-                                                        required={true}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                        className="focus:ring-2 focus:ring-blue-100"
-                                                    />
+                                                                    setValue={setlandMark}
+                                                                    readOnly={readOnly}
+                                                                    disabled={childRecord.current > 0}
+                                                                    className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                                />
+                                                            </div>
 
-                                                    <div className="col-span-2 flex flex-row gap-3">
-                                                        <div className="w-24">
 
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="col-span-2">
+
+                                                        <div className=" grid grid-cols-5 gap-3">
+                                                            <div className="col-span-4">
+                                                                <DropdownInputNew
+                                                                    name="City/State Name"
+                                                                    options={dropDownListMergedObject(
+                                                                        id
+                                                                            ? cityList?.data
+                                                                            : cityList?.data?.filter((item) => item.active),
+                                                                        "name",
+                                                                        "id"
+                                                                    )}
+                                                                    country={country}
+                                                                    masterName="CITY MASTER"
+                                                                    // lastTab={activeTab}
+                                                                    value={city}
+                                                                    setValue={setCity}
+                                                                    required={true}
+                                                                    readOnly={readOnly}
+                                                                    disabled={childRecord.current > 0}
+                                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                                />
+                                                            </div>
                                                             <TextInputNew1
                                                                 name="Pincode"
                                                                 type="number"
@@ -870,29 +927,15 @@ export default function Form({ partyId }) {
                                                                 disabled={childRecord.current > 0}
                                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                                             />
-                                                        </div>
-                                                        <div className="w-80">
-                                                            <TextInputNew1
-                                                                name={"Email"}
-                                                                type="text"
-                                                                value={email}
 
-                                                                setValue={setEmail}
-                                                                readOnly={readOnly}
-                                                                disabled={childRecord.current > 0}
-                                                                className="focus:ring-2 focus:ring-blue-100 w-10"
-                                                            />
-                                                            <div>
-
-
-                                                            </div>
 
                                                         </div>
+
                                                     </div>
-                                                    <div>
+
+                                                    {/* <div className="">
                                                         <TextInputNew
                                                             name={"Contact Number"}
-                                                            type="number"
                                                             value={contact}
 
                                                             setValue={setContact}
@@ -901,18 +944,19 @@ export default function Form({ partyId }) {
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
-                                                    <div className='col-span-1'>
-                                                        <TextInputNew
-                                                            name="Alternative Contact Number"
-                                                            type="number"
-                                                            value={companyAlterNumber}
-                                                            setValue={setCompanyAlterNumber}
+                                                    <div className="">
+                                                        <TextInputNew1
+                                                            name={"Email"}
+                                                            type="text"
+                                                            value={email}
 
-                                                            // readOnly={readOnly}
-                                                            // disabled={childRecord.current > 0}
+                                                            setValue={setEmail}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
-                                                    </div>
+
+                                                    </div> */}
 
 
 
@@ -924,60 +968,27 @@ export default function Form({ partyId }) {
 
                                     </div>
                                     <div className="lg:col-span-4 space-y-3">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200  h-[330px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200  h-[260px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
                                             <div className="space-y-2">
 
 
 
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <div className="col-span-2 flex flex-row gap-4 mt-2">
-                                                        <div className="w-96">
+                                                    <div className="">
 
-                                                            <TextInputNew1
-                                                                name="Contact Person Name"
-                                                                type="text"
-                                                                value={contactPersonName}
+                                                        <TextInputNew1
+                                                            name="Contact Person Name"
+                                                            type="text"
+                                                            value={contactPersonName}
 
-                                                                setValue={setContactPersonName}
-                                                                readOnly={readOnly}
-                                                                disabled={childRecord.current > 0}
-                                                                className="focus:ring-2 focus:ring-blue-100 w-10"
-                                                            />
-                                                        </div>
-                                                        {/* <div className="relative inline-block">
-                                                        <button
-                                                            className="w-7 h-6 border border-green-500 rounded-md mt-6
-                                            hover:bg-green-500 text-green-600 hover:text-white
-                                            transition-colors flex items-center justify-center"
-                                                            disabled={readOnly}
-                                                            onClick={() => {
-                                                                // openAddModal();
-                                                                // setIsDropdownOpen(false);
-                                                                // setEditingItem("new");
-                                                                // setOpenModel(true);
-                                                                setBranchForm(false)
-                                                                setIsContactPerson(true)
-                                                            }}
-                                                            onMouseEnter={() => setTooltipVisible(true)}
-                                                            onMouseLeave={() => setTooltipVisible(false)}
-                                                            aria-label="Add supplier"
-                                                        >
-                                                            <FaPlus className="text-sm" />
-                                                        </button>
-
-                                                        {tooltipVisible && (
-                                                            <div className="absolute z-10 top-full right-0 mt-1 w-48 bg-indigo-800 text-white text-xs rounded p-2 shadow-lg">
-                                                                <div className="flex items-start">
-                                                                    <FaInfoCircle className="flex-shrink-0 mt-0.5 mr-1" />
-                                                                    <span>Click to add a new Contact Person</span>
-                                                                </div>
-                                                                <div className="absolute -top-1 right-3 w-2.5 h-2.5 bg-indigo-800 transform rotate-45"></div>
-                                                            </div>
-                                                        )}
-                                                    </div> */}
-
+                                                            setValue={setContactPersonName}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
                                                     </div>
+
                                                     <TextInputNew1
                                                         name="Designation"
                                                         type="text"
@@ -998,7 +1009,8 @@ export default function Form({ partyId }) {
                                                         disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
-                                                    <div className='col-span-2'>
+                                                    <div className='col-span-1'>
+
 
                                                         <TextInputNew
                                                             name="Email"
@@ -1011,11 +1023,10 @@ export default function Form({ partyId }) {
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
-                                                    <div className='col-span-1'>
+                                                    <div className='w-64'>
 
                                                         <TextInputNew
                                                             name="Contact Number"
-                                                            type="number"
                                                             value={contactNumber}
                                                             setValue={setContactNumber}
 
@@ -1024,7 +1035,7 @@ export default function Form({ partyId }) {
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
-                                                    <div className='col-span-1'>
+                                                    {/* <div className='col-span-1'>
                                                         <TextInputNew
                                                             name="Alternative Contact Number"
                                                             type="number"
@@ -1035,7 +1046,7 @@ export default function Form({ partyId }) {
                                                             // disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
-                                                    </div>
+                                                    </div> */}
 
 
 
@@ -1199,20 +1210,166 @@ export default function Form({ partyId }) {
                                     </div>
                                     <div className="lg:col-span-4 space-y-3">
                                         <div className="bg-white p-3 rounded-md border border-gray-200  h-[240px]">
-                                            <h3 className="font-medium text-gray-800 mb-2 text-sm">Attchments</h3>
-                                            <div className="space-y-2">
-                                                <div className="flex pt-4">
-                                                    <button
-                                                        className="relative w-20 h-7 bg-gray-800    text-white rounded-md shadow-md hover:shadow-xl hover:scale-105 
-        transform transition-all duration-300 ease-in-out overflow-hidden flex items-center justify-center"
-                                                        onClick={() => setFormReport(true)}
-                                                    >
-                                                        <span className="absolute inset-0 bg-white opacity-10 rounded-md"></span>
-                                                        <Paperclip className="relative z-10 w-5 h-5" />
-                                                    </button>
-                                                </div>
+                                            <h3 className="font-medium text-gray-800 mb-2 text-sm">Attachments</h3>
 
+
+
+                                            <div className="max-h-[200px] overflow-auto">
+                                                <div className="grid grid-cols-1 gap-3  border-collapse bg-[#F1F1F0]   shadow-sm overflow-auto">
+                                                    <table className="bg-gray-200 text-gray-800 text-sm table-auto w-full">
+                                                        <thead className=" py-2  font-medium ">
+                                                            <tr>
+                                                                <th className="py-2  font-medium  w-10 text-center border-r border-white/50">S.No</th>
+                                                                {/* <th className="py-2  font-medium  w-24 text-center border-r border-white/50">Date</th> */}
+                                                                {/* <th className="py-1 px-3 w-32 text-left border border-gray-400">User</th> */}
+                                                                <th className="py-2  font-medium  w-60 center border-white/50"> Name</th>
+                                                                <th className="py-2  font-medium center w-60 border-r border-white/50">File</th>
+                                                                <th className="py-2  font-medium  w-10 text-center">
+                                                                    actions
+                                                                </th>
+
+                                                            </tr>
+                                                        </thead>
+
+
+                                                        <tbody>
+                                                            {attachments?.map((item, index) => (
+                                                                <tr
+                                                                    key={index}
+                                                                    className={`hover:bg-gray-50 transition-colors border-b   border-gray-200 text-[12px] ${index % 2 === 0 ? "bg-white" : "bg-gray-100"
+                                                                        }`}
+                                                                >
+                                                                    <td className="border-r border-white/50 center h-8 text-center "
+                                                                    >
+                                                                        {index + 1}
+                                                                    </td>
+                                                     
+
+                                                                    <td className=" border-r border-white/50' h-8 ">
+                                                                        <input
+                                                                            type="text"
+                                                                            className="text-left rounded py-1 px-2 w-full  focus:outline-none focus:ring focus:border-blue-300"
+                                                                            value={item?.name}
+                                                                            onChange={(e) =>
+                                                                                handleInputChange(e.target.value, index, "name")
+                                                                            }
+
+                                                                        />
+                                                                    </td>
+                                                                    <td className="border-r border-white/50 h-8">
+                                                                        <div className="flex items-center gap-2">
+
+                                                                            {/* Hidden File Input */}
+                                                                            {!readOnly && !item.filePath && (
+                                                                                <>
+                                                                                    <input
+                                                                                        type="file"
+                                                                                        id={`file-upload-${index}`}
+                                                                                        className="hidden"
+                                                                                        onChange={(e) => {
+                                                                                            if (e.target.files[0]) {
+                                                                                                handleInputChange(
+                                                                                                    renameFile(e.target.files[0]),
+                                                                                                    index,
+                                                                                                    "filePath"
+                                                                                                );
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+
+                                                                                    {/* Attach Icon */}
+                                                                                    <label
+                                                                                        htmlFor={`file-upload-${index}`}
+                                                                                        className="cursor-pointer flex items-center justify-center p-1 bg-gray-100 rounded hover:bg-gray-200"
+                                                                                        title="Attach file"
+                                                                                    >
+                                                                                        📎
+                                                                                    </label>
+                                                                                </>
+                                                                            )}
+
+                                                                            {/* Show File + Actions */}
+                                                                            {item.filePath && (
+                                                                                <>
+                                                                                    <span className="truncate max-w-[120px]">
+                                                                                        {item.filePath?.name ?? item.filePath}
+                                                                                    </span>
+
+                                                                                    <button
+                                                                                        onClick={() => openPreview(item.filePath)}
+                                                                                        className="text-blue-600 text-xs hover:underline"
+                                                                                    >
+                                                                                        View
+                                                                                    </button>
+
+                                                                                    {!readOnly && (
+                                                                                        <button
+                                                                                            onClick={() => handleInputChange('', index, "filePath")}
+                                                                                            className="text-red-600 text-xs"
+                                                                                            title="Remove file"
+                                                                                        >
+                                                                                            ✕
+                                                                                        </button>
+                                                                                    )}
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </td>
+
+
+                                                                    <td className="w-[30px] border-gray-200 h-8">
+                                                                        <div className="flex items-center justify-center gap-1">
+                                                                            {/* Add Button */}
+                                                                            <button
+                                                                                onKeyDown={(e) => {
+                                                                                    if (e.key === "Enter") {
+                                                                                        e.preventDefault();
+                                                                                        addNewComments();
+                                                                                    }
+                                                                                }}
+                                                                                onClick={addNewComments}
+                                                                                className="flex items-center px-1 bg-blue-50 rounded"
+                                                                            >
+                                                                                <Plus size={18} className="text-blue-800" />
+                                                                            </button>
+
+                                                                            {/* Delete Button */}
+                                                                            <button
+                                                                                className="flex items-center px-1 bg-red-50 rounded"
+                                                                                onClick={() => deleteRow(index)}
+                                                                            >
+                                                                                <svg
+                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                    className="h-4 w-4 text-red-800"
+                                                                                    viewBox="0 0 20 20"
+                                                                                    fill="currentColor"
+                                                                                >
+                                                                                    <path
+                                                                                        fillRule="evenodd"
+                                                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                                                        clipRule="evenodd"
+                                                                                    />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+
+
+
+
+                                                                </tr>
+                                                            ))}
+
+
+                                                        </tbody>
+                                                    </table>
+
+
+                                                </div>
                                             </div>
+
+
+
                                         </div>
 
 

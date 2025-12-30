@@ -211,7 +211,9 @@ async function getOne(id) {
                     },
                     qty: true,
                     isInvoice: true,
-                    active: true
+                    active: true,
+                    hsnId : true,
+                    
                 }
             }
         }
@@ -240,7 +242,7 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { finYearId, branchId, supplierId, deliveryType, dcNo, dcDate, deliveryItems, remarks } = await body
+    const { finYearId, branchId, supplierId, deliveryType, dcNo, dcDate, deliveryItems, remarks, vehicleNo, deliveryTo } = await body
 
 
 
@@ -264,6 +266,8 @@ async function create(body) {
                 // },
 
                 deliveryType: deliveryType ? deliveryType : "",
+                vechineNo: vehicleNo ? vehicleNo : "",
+                deliveryTo: deliveryTo ? parseInt(deliveryTo) : "",
                 DeliveryChallanItems: deliveryItems?.length > 0
                     ? {
                         createMany: {
@@ -274,6 +278,8 @@ async function create(body) {
                                 uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                                 colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                                 qty: sub?.qty ? parseFloat(sub.qty) : undefined,
+                                hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
+
 
                             })),
                         },
@@ -290,7 +296,7 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { supplierId, dcNo, dcDate, deliveryItems ,remarks    } = await body
+    const { supplierId, dcNo, dcDate, deliveryItems, remarks, vehicleNo, deliveryTo } = await body
 
 
     const incomingIds = deliveryItems?.filter(i => i.id).map(i => parseInt(i.id));
@@ -313,7 +319,8 @@ async function update(id, body) {
             dcNo: dcNo ? dcNo : "",
             dcDate: dcDate ? new Date(dcDate) : undefined,
             remarks: remarks ? remarks : "",
-
+            vechineNo: vehicleNo ? vehicleNo : "",
+            deliveryTo: deliveryTo ? parseInt(deliveryTo) : "",
             DeliveryChallanItems: {
                 deleteMany: {
                     ...(incomingIds.length > 0 && {
@@ -332,7 +339,7 @@ async function update(id, body) {
                             uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                             colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                             qty: sub?.qty ? parseFloat(sub.qty) : undefined,
-
+                            hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
 
 
                         },
@@ -347,6 +354,7 @@ async function update(id, body) {
                         uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                         colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                         qty: sub?.qty ? parseFloat(sub.qty) : undefined,
+                        hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
 
 
 

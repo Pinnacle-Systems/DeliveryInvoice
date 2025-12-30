@@ -1025,7 +1025,7 @@ export const ToggleButton = ({
     <div>
       <div className="">
         <label className={`block  font-bold text-slate-700 mb-1 text-xs`}>{required ? <RequiredLabel name={name} /> : `${name}`}</label>
-        <div className="flex items-center">
+        <div className="flex items-center mt-1" >
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -1070,7 +1070,7 @@ export const TextInputNew1 = forwardRef(({
   handleChange
 }, ref) => {
   return (
-    <div className={`mb-2 ${width}`}>
+    <div className={`mb ${width}`}>
       {name && (
         <label className="block text-xs font-bold text-gray-600 mb-1">
           {required ? <RequiredLabel name={label ? label : name} /> : name}
@@ -1816,7 +1816,7 @@ export const TextAreaNew = ({
   readOnly,
   required = false,
   disabled = false,
-  rows = 2,
+  rows = 1,
   cols = 30,
   tabIndex = null,
   label = null,
@@ -1824,7 +1824,7 @@ export const TextAreaNew = ({
   onBlur = null,
 }) => {
   return (
-    <div className="mb-3 w-full">
+    <div className=" w-full">
       {name && (
         <label className="block text-xs font-bold text-gray-600 mb-1">
           {required ? <RequiredLabel name={label ?? name} /> : (label ?? name)}

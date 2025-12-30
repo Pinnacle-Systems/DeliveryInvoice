@@ -30,5 +30,7 @@ export {default as DeliveryInvoiceApi} from "./DeliveryInvoiceService"
 export {default as ColorMasterApi} from "./ColorMasterService"
 export { default as TaxTermMasterApi } from './TaxTermMasterServices'
 export { default as TaxTemplateApi } from './TaxTemplateServices'
+export { default as HsnMasterApi } from './HsnMasterServices'
+
 
 

@@ -21,6 +21,8 @@ import { PDFViewer } from "@react-pdf/renderer";
 import tw from "../../../Utils/tailwind-react-pdf";
 import DeliveryChallanPrint from "./PrintFormat-PO";
 import { useGetBranchByIdQuery } from "../../../redux/services/BranchMasterService";
+import { useGetHsnMasterQuery } from "../../../redux/services/HsnMasterServices";
+import PopUp from "./Pop";
 
 const ChallanForm = ({
     onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, taxTypeList, supplierList, params, termsData, branchList, hsnData,
@@ -45,7 +47,7 @@ const ChallanForm = ({
 
 
     const [deliveryType, setDeliveryType] = useState("")
-    const [deliveryToId, setDeliveryToId] = useState("")
+    const [deliveryTo, setDeliveryTo] = useState("")
     const [showExtraCharge, setShowExtraCharge] = useState(false)
     const [printModalOpen, setPrintModalOpen] = useState(false);
     const [tableDataView, setTableDataView] = useState(false)
@@ -53,6 +55,9 @@ const ChallanForm = ({
     const [dcNo, setDcNo] = useState("");
     const [dcDate, setDcDate] = useState()
     const allSuppliers = supplierList ? supplierList.data : []
+    const [vehicleNo, setVechileNo] = useState("");
+    const [isPrintOpen, setIsPrintOpen] = useState(false)
+    const [nextprocess, setNextProcess] = useState("")
 
 
     const { branchId, finYearId, companyId } = params;
@@ -62,8 +67,9 @@ const ChallanForm = ({
     const { data: styleItemList } = useGetStyleItemMasterQuery({ params: { ...params } });
     const { data: uomList } = useGetUomQuery({ params: { ...params } });
     const { data: colorList } = useGetColorMasterQuery({ params: { ...params } });
+    const { data: hsnList } = useGetHsnMasterQuery({ params: { ...params } });
 
-      const { data: supplierDetails } =
+    const { data: supplierDetails } =
         useGetPartyByIdQuery(supplierId, { skip: !supplierId });
 
 
@@ -113,12 +119,11 @@ const ChallanForm = ({
             : ""
         );
         setDeliveryType(data?.deliveryType || "");
-        setDeliveryToId(
-            data?.deliveryType === "ToSelf"
-                ? data?.deliveryBranchId
-                : data?.deliveryPartyId || ""
+        setDeliveryTo(
+            data?.deliveryTo ? data?.deliveryTo : ""
         );
         setRemarks(data?.remarks || "");
+        setVechileNo(data?.vechineNo ? data?.vechineNo : "")
     }, [id]);
 
 
@@ -154,26 +159,21 @@ const ChallanForm = ({
                     showConfirmButton: false,
                     timer: 2000
                 });
-
-                if (returnData.statusCode === 0) {
-                    if (nextProcess == "new") {
-                        syncFormWithDb(undefined);
-                        onNew()
-                    }
-                    if (nextProcess == "close") {
-                        syncFormWithDb(undefined);
-                        onClose()
-                    }
-                    else {
-                        setId(returnData?.data?.id);
-
-                    }
+                setIsPrintOpen(true)
+                if (nextProcess == "new") {
+                    syncFormWithDb(undefined);
+                    onNew()
                 }
-                else {
-                    toast.error(returnData?.message);
+                if (nextProcess == "close") {
+                    syncFormWithDb(undefined);
                 }
-                // setId()
-                // syncFormWithDb(undefined)
+                // else {
+                //     setId(returnData?.data?.id);
+
+                // }
+
+
+
             }
         } catch (error) {
             console.log("handle");
@@ -184,10 +184,10 @@ const ChallanForm = ({
 
     let data = {
 
-        supplierId, deliveryType, deliveryToId, branchId, finYearId, companyId, dcNo, dcDate,
+        supplierId, deliveryType, deliveryTo, branchId, finYearId, companyId, dcNo, dcDate,
         id,
         remarks,
-        deliveryItems: deliveryItems?.filter(po => po.styleId),
+        deliveryItems: deliveryItems?.filter(po => po.styleId), vehicleNo,
 
 
     }
@@ -195,7 +195,7 @@ const ChallanForm = ({
 
 
     const validateData = (data) => {
-        let mandatoryFields = ["styleId", "styleItemId", "noOfBox", "uomId", "qty"];
+        let mandatoryFields = ["styleId", "styleItemId", "uomId", "qty"];
 
 
 
@@ -211,6 +211,7 @@ const ChallanForm = ({
     }
 
     const saveData = (nextProcess) => {
+        setNextProcess(nextProcess)
         if (!validateData(data)) {
             // Swal.fire({
             //     // title: "Total percentage exceeds 100%",
@@ -249,19 +250,33 @@ const ChallanForm = ({
 
 
     const inputRef = useRef(null);
-    const customerRef =  useRef(null)
-    const customerDate  =  useRef(null)
+    const customerRef = useRef(null)
+    const customerDate = useRef(null)
 
     useEffect(() => {
-        if(id) return;
+        if (id) return;
         inputRef.current?.focus();
     }, []);
 
     return (
         <>
             <Modal
+                isOpen={isPrintOpen}
+                onClose={() => setIsPrintOpen(false)}
+                widthClass={"px-2 h-[30%] w-[40%]"} >
+
+                <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
+                    nextprocess={nextprocess} formclose={onClose}
+                    id={id} />
+            </Modal>
+            <Modal
                 isOpen={printModalOpen}
-                onClose={() => setPrintModalOpen(false)}
+                onClose={() => {
+                    setPrintModalOpen(false)
+                    if (nextprocess == "close") {
+                        onClose()
+                    }
+                }}
                 widthClass={"w-[90%] h-[90%]"}
             >
                 <PDFViewer style={tw("w-full h-full")}>
@@ -281,7 +296,7 @@ const ChallanForm = ({
                         deliveryItems={deliveryItems}
                         supplierDetails={supplierDetails ? supplierDetails?.data : null}
                         deliveryType={deliveryType}
-                        deliveryToId={deliveryToId}
+                        deliveryToId={deliveryTo}
                         taxTemplateId={taxTemplateId}
                         // yarnList={yarnList}
                         uomList={uomList} colorList={colorList}
@@ -298,8 +313,8 @@ const ChallanForm = ({
                                 return sum + (Number(next?.qty) || 0);
                             }, 0)
                         }
-                        // invoiceItems={invoiceItems}
-                        // termsAndCondition={termsAndCondition}
+                    // invoiceItems={invoiceItems}
+                    // termsAndCondition={termsAndCondition}
                     // payTermList={payTermList}
 
                     />
@@ -331,7 +346,7 @@ const ChallanForm = ({
                             Basic Details
                         </h2>
                         <div className="grid grid-cols-2 gap-1">
-                            <ReusableInputNew label="Delivery Challan Id" readOnly value={docId} />
+                            <ReusableInputNew label="Delivery Challan No" readOnly value={docId} />
                             <ReusableInputNew label="Delivery Challan Date" value={date} type={"date"} required={true} readOnly={true} disabled={readOnly} />
 
 
@@ -385,7 +400,7 @@ const ChallanForm = ({
                                 <TextInputNew
                                     name="Contact Number"
                                     placeholder="Contact name"
-                                    value={findFromList(supplierId, supplierList?.data, "contactMobile")}
+                                    value={findFromList(supplierId, supplierList?.data, "contactNumber")}
 
                                     disabled={true}
 
@@ -404,9 +419,9 @@ const ChallanForm = ({
 
                             <div className="col-span-1">
                                 <TextInputNew name="Customer Dc No"
-                                    value={dcNo} setValue={setDcNo} readOnly={readOnly} 
+                                    value={dcNo} setValue={setDcNo} readOnly={readOnly}
                                     ref={customerRef} nextRef={customerDate}
-                                    />
+                                />
 
                             </div>
 
@@ -444,6 +459,7 @@ const ChallanForm = ({
 
                     <DeliveryItems deliveryItems={deliveryItems} setDeliveryItems={setDeliveryItems} styleList={styleList}
                         styleItemList={styleItemList} uomList={uomList} colorList={colorList} readOnly={readOnly} setReadOnly={setReadOnly}
+                        hsnList={hsnList}
                     />
 
                 </fieldset>
@@ -453,14 +469,28 @@ const ChallanForm = ({
 
 
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-5 gap-3">
 
-                    <div className="border border-slate-200 p-2  rounded-md shadow-sm ">
+
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm  col-span-2">
+
+                        <h2 className="font-medium text-slate-700 mb-2 text-base">Delivery Details</h2>
+                        <div className="grid grid-cols-4 gap-2">
+                            <TextInputNew name="Vehicle No"
+                                value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
+
+
+                            <div className="col-span-2">
+                                <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} required={true} readOnly={readOnly} />
+
+                            </div>
+
+                        </div>
 
 
                     </div>
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
                         <h2 className="font-medium text-slate-700 mb-2 text-base">Remarks</h2>
                         <textarea
                             readOnly={readOnly}
@@ -468,13 +498,13 @@ const ChallanForm = ({
                             onChange={(e) => {
                                 setRemarks(e.target.value)
                             }}
-                            className="w-full h-10 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
+                            className="w-full h-20 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
                             placeholder="Additional notes..."
                         />
                     </div>
 
                     <div className="border border-slate-200  bg-white rounded-md shadow-sm flex justify-between p-5">
-                        <h2 className="font-bold text-slate-800 text-md">
+                        <h2 className="font-medium text-slate-700 mb-2 text-base">
                             Total Qty
                         </h2>
 

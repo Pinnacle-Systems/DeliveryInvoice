@@ -382,7 +382,7 @@ const DeliveryChallanPrint = ({
               width: '42%',
             }}>
               <Image source={MsExports} style={styles.logo} />
-              <View style={{ width: 125, flexWrap: 'wrap' }}>
+              <View style={{ width: 145, flexWrap: 'wrap' }}>
 
                 <Text
                   style={{
@@ -407,7 +407,7 @@ const DeliveryChallanPrint = ({
                   marginBottom: 1,
                   textAlign: "left",
                   marginRight: 1,
-                  width: 160
+                  width: 150
                 }}>{branchData?.address}</Text>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -519,7 +519,7 @@ const DeliveryChallanPrint = ({
 
                 <View style={{ flexDirection: "row", marginTop: 1, paddingLeft: 7, }}>
                   <Text style={[styles.companyText, { width: 40 }]}>Mobile No</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.contactMobile ? supplierDetails?.contactMobile : "NA"}</Text>
+                  <Text style={styles.companyText}>: {supplierDetails?.contactNumber ? supplierDetails?.contactNumber : ""}</Text>
                 </View>
 
 
@@ -530,7 +530,7 @@ const DeliveryChallanPrint = ({
 
                 <View style={{ flexDirection: "row", paddingLeft: 7, }}>
                   <Text style={[styles.companyText, { width: 40 }]}>Email</Text>
-                  <Text style={styles.companyText}>: {supplierDetails?.email}</Text>
+                  <Text style={styles.companyText}>: {supplierDetails?.contactPersonEmail}</Text>
                 </View>
               </View>
             </View>

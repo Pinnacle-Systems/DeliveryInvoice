@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { VIEW } from "../../../icons";
 import Modal from "../../../UiComponents/Modal";
 import DynamicRenderer from "./DynamicComponent";
+import { Plus } from "lucide-react";
 
 const DeliveryItems = ({
     id,
@@ -23,7 +24,7 @@ const DeliveryItems = ({
     yarnList,
     uomList,
     colorList,
-    countsList,
+    hsnList,
 
 }) => {
 
@@ -31,20 +32,28 @@ const DeliveryItems = ({
     const [currentSelectedIndex, setCurrentSelectedIndex] = useState("")
     const [contextMenu, setContextMenu] = useState(null);
 
+    const defaulthsnId = hsnList?.data?.find(
+        item => item.name == "9988"
+    )?.id;
+
+    const defaultUomId = uomList?.data?.find(
+        item => item.name == "PCS"
+    )?.id;
+
+    console.log(defaulthsnId, "defaulthsnId")
 
 
-    console.log(deliveryItems, "deliveryItems")
+
     useEffect(() => {
         if (deliveryItems?.length >= 3) return
-        const defaultUomId = uomList?.data?.find(
-            item => item.name == "PCS"
-        )?.id;
+
         setDeliveryItems(prev => {
             let newArray = Array?.from({ length: 3 - prev?.length }, () => {
                 return {
                     styleId: "",
                     styleItemId: "",
                     uomId: defaultUomId,
+                    hsnId: defaulthsnId,
                     colorId: "",
                     noOfBox: "",
                     qty: "",
@@ -67,36 +76,74 @@ const DeliveryItems = ({
 
         const newBlend = structuredClone(deliveryItems);
 
-
+        console.log(newBlend[index], "newBlend", index)
 
 
         newBlend[index][field] = value;
-
-
 
         setDeliveryItems(newBlend);
     };
 
 
 
-    const addNewRow = () => {
+
+
+
+
+
+
+
+    const defaultRow = {
+        styleId: "",
+        styleItemId: "",
+        hsnId: defaulthsnId,
+        qty: "0",
+        tax: "0",
+        colorId: "",
+        uomId: defaultUomId,
+        price: "0",
+        discountValue: "0.00",
+        noOfBox: 0,
+        weightPerBag: 0,
+    };
+
+    const COPY_FIELDS = ["styleId", "styleItemId", "hsnId","uomId"];
+
+    const addNewRow = (index) => {
+        let prevObject = {};
+
+        if (index == 0) {
+            const prevRow = deliveryItems[index];
+            prevObject = COPY_FIELDS.reduce((acc, key) => {
+                acc[key] = prevRow[key] || ""; 
+                return acc;
+            }, {});
+        } else {
+                 const prevRow = deliveryItems[index  - 1  ];
+            prevObject = COPY_FIELDS.reduce((acc, key) => {
+                acc[key] = prevRow[key] || ""; 
+                return acc;
+            }, {});
+        }
+
         const newRow = {
-            yarnId: "",
+            ...prevObject,
+            noOfBox: "0",
             qty: "0",
             tax: "0",
-            colorId: "",
-            uomId: "",
-            price: "0",
-            discountValue: "0.00",
-            noOfBags: 0,
-            weightPerBag: 0,
         };
-        setDeliveryItems([...deliveryItems, newRow]);
+
+        const updatedItems = [
+            ...deliveryItems.slice(0, index + 1),
+            newRow,
+            ...deliveryItems.slice(index + 1),
+        ];
+
+        setDeliveryItems(updatedItems);
     };
 
 
-
-
+    console.log(deliveryItems, "deliveryItemsdeliveryItems")
 
 
 
@@ -109,10 +156,9 @@ const DeliveryItems = ({
     };
 
     const handleDeleteAllRows = () => {
-        setDeliveryItems((prevRows) => {
-            if (prevRows.length <= 1) return prevRows;
-            return [prevRows[0]];
-        });
+        // create an array with 3 empty rows
+        const emptyRows = Array.from({ length: 3 }, () => ({ ...defaultRow }));
+        setDeliveryItems(emptyRows);
     };
 
 
@@ -224,9 +270,9 @@ const DeliveryItems = ({
 
                                 <th
 
-                                    className={`w-16 px-3 py-2 text-center font-medium text-[13px] `}
+                                    className={`w-8 px-3 py-2 text-center font-medium text-[13px] `}
                                 >
-                                    Actions
+
                                 </th>
                             </tr>
                         </thead>
@@ -251,7 +297,6 @@ const DeliveryItems = ({
                                                         handleInputChange("", index, "styleId");
                                                     }
                                                 }}
-                                                tabIndex={0}
                                                 className="text-left w-full rounded py-1 table-data-input"
                                                 value={row.styleId}
                                                 onChange={(e) =>
@@ -311,7 +356,27 @@ const DeliveryItems = ({
                                                 </option>)}
                                         </select>
                                     </td>
-                                    <td className="py-0.5 border border-gray-300 text-[11px] text-right">{row.styleItemId ? 9988 : ""}</td>
+                                    <td className="py-0.5 border border-gray-300 text-[11px] text-right">
+                                        <select
+                                            onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "hsnId") } }}
+                                            tabIndex={"0"} className='text-left w-full rounded py-1 table-data-input'
+                                            value={row.styleItemId ? row.hsnId : ""}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "hsnId")}
+                                            onBlur={(e) => {
+                                                handleInputChange((e.target.value), index, "hsnId")
+                                            }
+                                            }
+                                            disabled={!row.styleId || readOnly}
+
+                                        >
+                                            <option >
+                                            </option>
+                                            {(id ? hsnList?.data : hsnList?.data?.filter(item => item.active))?.map((blend) =>
+                                                <option value={blend.id} key={blend.id}>
+                                                    {blend?.name}
+                                                </option>)}
+                                        </select>
+                                    </td>
                                     <td className="py-0.5 border border-gray-300 text-[11px] ">
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "colorId") } }}
@@ -322,7 +387,7 @@ const DeliveryItems = ({
                                                 handleInputChange((e.target.value), index, "colorId")
                                             }
                                             }
-                                            disabled={!row.styleItemId || readOnly }
+                                            disabled={!row.styleItemId || readOnly}
 
 
                                         >
@@ -413,7 +478,7 @@ const DeliveryItems = ({
                                             min="0"
                                             value={row?.qty}
 
-                                            disabled={!row.uomId || readOnly}
+                                            disabled={!row.uomId || readOnly || !row.noOfBox}
 
 
                                             onFocus={e => e.target.select()}
@@ -425,17 +490,17 @@ const DeliveryItems = ({
                                             placeHolder="0.000"
 
                                             onChange={(e) => {
-                                                const numVal = parseFloat(e.target.value) || 0;
-                                                const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
+                                                const numVal = parseInt(e.target.value) || 0;
+                                                const balanceQty = Math.max(0, (parseInt(row?.requiredQty) || 0) - (parseInt(row?.alreadyPoqty) || 0));
 
                                                 handleInputChange(numVal, index, "qty", row.requiredQty, balanceQty);
 
 
                                             }}
                                             onBlur={(e) => {
-                                                const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
+                                                const balanceQty = Math.max(0, (parseInt(row?.requiredQty) || 0) - (parseInt(row?.alreadyPoqty) || 0));
                                                 const val = e.target.value;
-                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(3);
+                                                const formatted = e.target.value === "" ? "" : parseInt(e.target.value).toFixed(3);
                                                 e.target.value = formatted;
                                                 handleInputChange(val === "" ? 0 : formatted, index, "qty", row.requiredQty, balanceQty);
                                             }}
@@ -446,18 +511,19 @@ const DeliveryItems = ({
 
 
 
-                                    <td className="w-40 py-0.5 border border-gray-300 text-[11px] text-right">
-                                        <input
-                                            readOnly
-                                            className="w-full bg-transparent focus:outline-none focus:border-transparent text-right pr-2"
+                                    <td className="w-8   flex justify-center items-center ">
+
+                                        <button
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") {
                                                     e.preventDefault();
-                                                    addNewRow();
+                                                    addNewRow(index);
                                                 }
                                             }}
+                                            className="border-0 outline-none bg-blue-50 rounded mt-2 ml-2"                                            >
 
-                                        />
+                                            <Plus size={18} className="text-red-800 border-collapse border:none" />
+                                        </button>
                                     </td>
 
 

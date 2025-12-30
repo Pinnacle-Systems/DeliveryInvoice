@@ -704,9 +704,11 @@ model Payment {
 }
 
 model Style {
-  id                   Int                    @id @default(autoincrement())
-  name                 String?
-  aliasName            String?
+  id        Int     @id @default(autoincrement())
+  name      String?
+  aliasName String?
+  code      String?
+
   active               Boolean?               @default(false)
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
@@ -716,6 +718,7 @@ model StyleItem {
   id                   Int                    @id @default(autoincrement())
   name                 String?
   aliasName            String?
+  code                 String?
   active               Boolean?               @default(false)
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
@@ -742,6 +745,8 @@ model DeliveryChallan {
   dcNo                 String?
   dcDate               DateTime?
   remarks              String?
+  vechineNo            String?
+  deliveryTo           Int?
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
 }
@@ -759,6 +764,8 @@ model DeliveryChallanItems {
   uomId                Int?
   Color                Color?                 @relation(fields: [colorId], references: [id], onDelete: Restrict)
   colorId              Int?
+  Hsn                  Hsn?                   @relation(fields: [hsnId], references: [id], onDelete: Restrict)
+  hsnId                Int?
   qty                  Float?
   active               Boolean?               @default(false)
   isInvoice            Boolean?               @default(false)
@@ -821,6 +828,8 @@ model DeliveryInvoiceItems {
   DeliveryChallan        DeliveryChallan?      @relation(fields: [deliveryChallanId], references: [id], onDelete: Cascade)
   deliveryChallanId      Int?
   invoiceQty             Float?
+  Hsn                    Hsn?                  @relation(fields: [hsnId], references: [id], onDelete: Restrict)
+  hsnId                  Int?
 }
 
 enum LedgerEntryType {
@@ -892,3 +901,13 @@ model TaxTemplateDetails {
   value         String?
   amount        String?
 }
+
+model Hsn {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  active               Boolean                @default(true)
+  tax                  String?
+  DeliveryChallanItems DeliveryChallanItems[]
+  DeliveryInvoiceItems DeliveryInvoiceItems[]
+}
+

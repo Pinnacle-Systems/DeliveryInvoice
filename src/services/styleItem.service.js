@@ -46,11 +46,11 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { name, aliasName, active } = await body
+    const { name, aliasName, active ,code } = await body
     const data = await prisma.styleItem.create(
         {
             data: {
-                name, aliasName, active,
+                name, aliasName, active,code
             }
         }
     )
@@ -58,8 +58,7 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, active ,aliasName } = await body
-    console.log(aliasName,"aliasname",name);
+    const { name, active ,aliasName  ,code } = await body
     
     const dataFound = await prisma.styleItem.findUnique({
         where: {
@@ -73,7 +72,7 @@ async function update(id, body) {
         },
         data:
         {
-                name, aliasName, active,
+                name, aliasName, active,code
         },
     })
     return { statusCode: 0, data };

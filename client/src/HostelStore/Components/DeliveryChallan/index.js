@@ -100,47 +100,47 @@ export default function Form() {
   //   const [addData] = useAddPoMutation();
   //   const [updateData] = useUpdatePoMutation();
 
-  const syncFormWithDb = useCallback((data) => {
-    if (id) {
-      setReadOnly(true);
-    } else {
-      setReadOnly(false);
-    }
+  // const syncFormWithDb = useCallback((data) => {
+  //   if (id) {
+  //     setReadOnly(true);
+  //   } else {
+  //     setReadOnly(false);
+  //   }
 
-    setTransType(data?.transType ? data.transType : "GreyYarn");
-    setDate(data?.createdAt ? moment.utc(data.createdAt).format("YYYY-MM-DD") : moment.utc(new Date()).format("YYYY-MM-DD"));
+  //   setTransType(data?.transType ? data.transType : "GreyYarn");
+  //   setDate(data?.createdAt ? moment.utc(data.createdAt).format("YYYY-MM-DD") : moment.utc(new Date()).format("YYYY-MM-DD"));
 
-    setPoItems(data?.PoItems ? data?.PoItems : [])
-    if (data?.docId) {
-      setDocId(data?.docId)
-    }
-    if (data?.date) setDate(data?.date);
+  //   setPoItems(data?.PoItems ? data?.PoItems : [])
+  //   if (data?.docId) {
+  //     setDocId(data?.docId)
+  //   }
+  //   if (data?.date) setDate(data?.date);
 
-    setPayTermId(data?.payTermId ? data?.payTermId : "");
-    setDiscountType(data?.discountType ? data?.discountType : "Percentage")
-    setDiscountValue(data?.discountValue ? data?.discountValue : "0")
-    setSupplierId(data?.supplierId ? data?.supplierId : "");
-    setDueDate(data?.dueDate ? moment.utc(data?.dueDate).format("YYYY-MM-DD") : "");
-    setDeliveryType(data?.deliveryType ? data?.deliveryType : "")
-    if (data) {
-      setDeliveryToId(data?.deliveryType === "ToSelf" ? data?.deliveryBranchId : data?.deliveryPartyId)
-    } else {
-      setDeliveryToId("")
-    }
-    setRemarks(data?.remarks ? data.remarks : "")
+  //   setPayTermId(data?.payTermId ? data?.payTermId : "");
+  //   setDiscountType(data?.discountType ? data?.discountType : "Percentage")
+  //   setDiscountValue(data?.discountValue ? data?.discountValue : "0")
+  //   setSupplierId(data?.supplierId ? data?.supplierId : "");
+  //   setDueDate(data?.dueDate ? moment.utc(data?.dueDate).format("YYYY-MM-DD") : "");
+  //   setDeliveryType(data?.deliveryType ? data?.deliveryType : "")
+  //   if (data) {
+  //     setDeliveryToId(data?.deliveryType === "ToSelf" ? data?.deliveryBranchId : data?.deliveryPartyId)
+  //   } else {
+  //     setDeliveryToId("")
+  //   }
+  //   setRemarks(data?.remarks ? data.remarks : "")
 
-  }, [id]);
-
-
+  // }, [id]);
 
 
-  useEffect(() => {
-    if (id) {
-      syncFormWithDb(singleData?.data);
-    } else {
-      syncFormWithDb(undefined);
-    }
-  }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
+
+
+  // useEffect(() => {
+  //   if (id) {
+  //     syncFormWithDb(singleData?.data);
+  //   } else {
+  //     syncFormWithDb(undefined);
+  //   }
+  // }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
 
   const data = {
     transType, supplierId, dueDate, payTermId,
@@ -167,26 +167,26 @@ export default function Form() {
       && isGridDatasValid(data.poItems, false, mandatoryFields) && data.poItems.length !== 0
   }
 
-  const handleSubmitCustom = async (callback, data, text) => {
-    try {
-      let returnData;
-      if (text === "Updated") {
-        returnData = await callback(data).unwrap();
-      } else {
-        returnData = await callback(data).unwrap();
-      }
+  // const handleSubmitCustom = async (callback, data, text) => {
+  //   try {
+  //     let returnData;
+  //     if (text === "Updated") {
+  //       returnData = await callback(data).unwrap();
+  //     } else {
+  //       returnData = await callback(data).unwrap();
+  //     }
 
-      if (returnData.statusCode === 1) {
-        toast.error(returnData.message);
-        return
-      }
-      setId("")
-      syncFormWithDb(undefined)
-      toast.success(text + "Successfully");
-    } catch (error) {
-      console.log("handle");
-    }
-  };
+  //     if (returnData.statusCode === 1) {
+  //       toast.error(returnData.message);
+  //       return
+  //     }
+  //     setId("")
+  //     syncFormWithDb(undefined)
+  //     toast.success(text + "Successfully");
+  //   } catch (error) {
+  //     console.log("handle");
+  //   }
+  // };
 
 
   //   const saveData = () => {

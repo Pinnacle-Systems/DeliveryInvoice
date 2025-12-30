@@ -41,6 +41,7 @@ export { default as deliveryInvoice } from "./deliveryInvoice.route.js";
 export { default as color } from "./color.route.js";
 export { default as taxTerm } from "./taxTerm.route.js"
 export { default as taxTemplate } from "./taxTemplate.route.js"
+export { default as hsn } from "./hsn.route.js"
 
 
 

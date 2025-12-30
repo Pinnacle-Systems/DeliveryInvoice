@@ -36,6 +36,7 @@ export const DELIVERY_INVOICE_API = "deliveryInvoice"
 export const COLOR_API = "color"
 export const TAX_TEMPLATE_API = 'taxTemplate'
 export const TAX_TERM_API = 'taxTerm'
+export const HSN_API = "hsn"
 
 
 

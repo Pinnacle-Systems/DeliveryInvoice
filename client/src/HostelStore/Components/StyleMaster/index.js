@@ -20,7 +20,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     const [id, setId] = useState("");
     const [name, setName] = useState("");
     const [sku, setSku] = useState("");
-
+    const [code,setCode]   =  useState("")
     const [active, setActive] = useState(true);
 
 
@@ -51,7 +51,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     const syncFormWithDb = useCallback(
         (data) => {
             setName(data?.name ? data.name : "");
-            setSku(data?.aliasName ? data?.aliasName : "");
+            setCode(data?.code ? data?.code : "");
             setActive(id ? (data?.active ? data.active : false) : true);
         },
         [id]
@@ -63,12 +63,9 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
 
 
-    useEffect(() => {
-        setSku(name)
-    }, [name, setName]);
 
     const data = {
-        id, sku, active,
+        id, sku, active, code ,
         //  productType, 
         name,
         // seoTitle, sleeve, fabricId, sizeTemplateId,
@@ -465,7 +462,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
 
                                                 </div>
                                                 <div className="">
-                                                    <TextInputNew1 name="Alias Name" type="text" value={sku} setValue={setSku} readOnly={readOnly} />
+                                                    <TextInputNew1 name="code" type="text" value={code} setValue={setCode} readOnly={readOnly} />
                                                 </div>
                                             </div>
                                             <div className="">
