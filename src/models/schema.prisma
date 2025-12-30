@@ -173,6 +173,7 @@ model Employee {
   accountNo          String?
   ifscNo             String?
   branchName         String?
+  bankName           String?
   degree             String?
   specialization     String?
   localAddress       String?

@@ -186,10 +186,10 @@ async function getSearch(req) {
 
 async function create(req) {
     const image = req.file
-    const { branchId,finYearId, name, email, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
+    const { branchId, finYearId, name, email, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
         panNo, consultFee, salaryPerMonth, commissionCharges, mobile, accountNo, ifscNo, branchName, degree,
         specialization, localAddress, localCity, localPincode, permAddress, permCity,
-        permPincode, department, employeeCategoryId, permanent, active } = await req.body
+        permPincode, department, employeeCategoryId, permanent, active, bankName } = await req.body
 
     const branch = await prisma.branch.findUnique({
         where: {
@@ -225,42 +225,42 @@ async function create(req) {
             : parseInt(permanent ? JSON.parse(permanent) : false ? branch.idSequence : branch.tempSequence) + 1);
         employeeId = prefix + "/" + sequenceNumber;
     }
-async function getEmployeeId(branchId,startTime,endTime) {
+    async function getEmployeeId(branchId, startTime, endTime) {
 
-    let lastObject = await prisma.employee.findFirst({
-        where: {
-            branchId: parseInt(branchId),
-            // isTaxBill: typeof (isTaxBill) === "undefined" ? undefined : JSON.parse(isTaxBill),
-            AND: [
-                {
-                    createdAt: {
-                        gte: startTime
+        let lastObject = await prisma.employee.findFirst({
+            where: {
+                branchId: parseInt(branchId),
+                // isTaxBill: typeof (isTaxBill) === "undefined" ? undefined : JSON.parse(isTaxBill),
+                AND: [
+                    {
+                        createdAt: {
+                            gte: startTime
 
+                        }
+                    },
+                    {
+                        createdAt: {
+                            lte: endTime
+                        }
                     }
-                },
-                {
-                    createdAt: {
-                        lte: endTime
-                    }
-                }
-            ],
-    
-        },
-        orderBy: {
-            id: 'desc'
+                ],
+
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        });
+        console.log(lastObject, "lastObject")
+        const code = "EMP"
+        const branchObj = await getTableRecordWithId(branchId, "branch")
+        let newDocId = `${branchObj.branchCode}/${code}/1`
+
+        if (lastObject) {
+            newDocId = `${branchObj.branchCode}/${code}/${parseInt(lastObject.regNo.split("/").at(-1)) + 1}`
         }
-    });
-    console.log(lastObject,"lastObject")
-    const code = "EMP"
-    const branchObj  = await getTableRecordWithId(branchId, "branch")
-    let newDocId = `${branchObj.branchCode}/${code}/1`
-    
-    if (lastObject) {
-        newDocId = `${branchObj.branchCode}/${code}/${parseInt(lastObject.regNo.split("/").at(-1)) + 1}`
+        console.log(newDocId, "newDocId")
+        return newDocId
     }
-    console.log(newDocId,"newDocId")
-    return newDocId
-}
 
     let finYearDate = await getFinYearStartTimeEndTime(finYearId);
     console.log("Regno", finYearDate)
@@ -280,7 +280,8 @@ async function getEmployeeId(branchId,startTime,endTime) {
                 ifscNo, branchName, degree, specialization, localAddress, localPincode: localPincode ? parseInt(localPincode) : null, permAddress,
                 permCity: permCity ? { connect: { id: parseInt(permCity) } } : undefined, permPincode: permPincode ? parseInt(permPincode) : null,
                 image: image ? image.buffer : undefined,
-                permanent: permanent ? JSON.parse(permanent) : undefined
+                permanent: permanent ? JSON.parse(permanent) : undefined,
+                bankName: bankName ? bankName : ''
             }
         }
     )
@@ -292,7 +293,7 @@ async function update(id, req) {
     const { name, email, regNo, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
         panNo, consultFee, salaryPerMonth, commissionCharges, mobile, accountNo, ifscNo, branchName, degree,
         specialization, localAddress, localCity, localPincode, permAddress, permCity, permPincode, department, employeeCategoryId, active,
-        leavingReason, leavingDate, canRejoin, rejoinReason, isDeleteImage } = await req.body
+        leavingReason, leavingDate, canRejoin, rejoinReason, isDeleteImage ,bankName } = await req.body
     const dataFound = await prisma.employee.findFirst({
         where: {
             id: parseInt(id),
@@ -319,7 +320,9 @@ async function update(id, req) {
             permPincode: permPincode ? parseInt(permPincode) : undefined,
             employeeCategoryId: employeeCategoryId ? parseInt(employeeCategoryId) : undefined, active: active ? JSON.parse(active) : undefined,
             leavingDate: leavingDate ? new Date(leavingDate) : undefined, leavingReason, rejoinReason,
-            canRejoin: canRejoin ? JSON.parse(canRejoin) : undefined
+            canRejoin: canRejoin ? JSON.parse(canRejoin) : undefined,
+            bankName: bankName ? bankName : ''
+
         },
     })
     return { statusCode: 0, data: exclude({ ...data }, ["image"]) };

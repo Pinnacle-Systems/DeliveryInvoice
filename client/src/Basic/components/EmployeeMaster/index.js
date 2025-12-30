@@ -71,7 +71,7 @@ export default function Form() {
     const [employeeCategory, setEmployeeCategory] = useState();
     const [permanent, setPermanent] = useState("");
     const [active, setActive] = useState(true);
-
+    const [bankName, setBankName] = useState('')
     const [branchPrefixCategory, setBranchPrefixCategory] = useState("");
     // Employee Leaving form fields
     const [leavingForm, setLeavingForm] = useState(false);
@@ -154,7 +154,7 @@ export default function Form() {
         setEmployeeCategory(data?.employeeCategoryId ? data?.employeeCategoryId : "");
         setPermanent(data?.permanent ? data?.permanent : "");
         setActive(data ? data.active : true);
-
+        setBankName(data?.bankName ? data?.bankName : "")
         // Employee Leaving Form states
         setLeavingDate(data?.leavingDate ? data?.leavingDate : "");
         setLeavingReason(data?.leavingReason ? data?.leavingReason : "");
@@ -172,7 +172,7 @@ export default function Form() {
         panNo, name, fatherName, dob, chamberNo, localAddress, localCity, localPincode, mobile, degree, specialization, salaryPerMonth,
         commissionCharges, gender, joiningDate, permAddress, permCity, permPincode, email, maritalStatus, consultFee, accountNo,
         ifscNo, branchName, bloodGroup, ...department && { department }, employeeCategoryId: employeeCategory, permanent, active,
-        id, leavingReason, leavingDate, canRejoin, rejoinReason
+        id, leavingReason, leavingDate, canRejoin, rejoinReason ,bankName
     }
 
     // if (data.name && data.gender && data.bloodGroup && data.dob && data.active && data.employeeCategory && data.department && data.chamberNo && data.joiningDate && data.fatherName && data.maritalStatus && data.panNo && data.specialization && data.accountNo
@@ -751,7 +751,7 @@ export default function Form() {
                 <Modal
                     isOpen={form}
                     form={form}
-                    widthClass={"w-[85%] h-[85vh]"}
+                    widthClass={"w-[95%] h-[85vh]"}
                     onClose={() => {
                         setForm(false);
                         // setErrors({});
@@ -1038,14 +1038,15 @@ export default function Form() {
                                     <div className="bg-white p-3 rounded-md border border-gray-200">
                                         <h3 className="font-medium text-gray-800 mb-2 text-sm">Bank Details</h3>
                                         <div className="space-y-2">
-                                            <TextInputNew
-                                                name="Account No"
-                                                type="number"
-                                                value={accountNo}
-                                                setValue={setAccountNo}
-                                                readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
-                                            />
+                                            <div className="col-span-1">
+                                                <TextInputNew1
+                                                    name="Bank Name"
+                                                    value={bankName}
+                                                    setValue={setBankName}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
+                                            </div>
                                             <div className="col-span-1">
                                                 <TextInputNew1
                                                     name="Branch Name"
@@ -1055,6 +1056,8 @@ export default function Form() {
                                                     disabled={childRecord.current > 0}
                                                 />
                                             </div>
+
+
                                             <div className="grid grid-cols-2 gap-2">
                                                 <TextInputNew
                                                     name="IFSC No"
@@ -1064,7 +1067,14 @@ export default function Form() {
                                                     disabled={childRecord.current > 0}
                                                 />
 
-
+                                                <TextInputNew
+                                                    name="Account No"
+                                                    type="number"
+                                                    value={accountNo}
+                                                    setValue={setAccountNo}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
 
                                             </div>
                                         </div>
@@ -1073,31 +1083,25 @@ export default function Form() {
                                     <div className="bg-white p-3 rounded-md border border-gray-200 sticky h-[250px]">
                                         <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact Information</h3>
                                         <div className="space-y-2">
-                                            <div className="flex flex-wrap">
-                                                <div className="w-full md:w-1/2">
-                                                    <TextInputNew
-                                                        name="Mobile No"
-                                                        type="number"
-                                                        value={mobile}
-                                                        setValue={setMobile}
-                                                        required={true}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                    />
-                                                    {errors.mobile && <span className="text-red-500 text-xs ml-1">{errors.mobile}</span>}
-                                                </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <TextInputNew
+                                                    name="Mobile No"
+                                                    type="number"
+                                                    value={mobile}
+                                                    setValue={setMobile}
+                                                    required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
 
-                                                <div className="w-full md:w-1/2">
-                                                    <TextInputNew
-                                                        name="Email Id"
-                                                        type="email"
-                                                        value={email}
-                                                        setValue={setEmail}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                    />
-                                                    {errors.email && <span className="text-red-500 text-xs ml-1">{errors.email}</span>}
-                                                </div>
+                                                <TextInputNew
+                                                    name="Email Id"
+                                                    type="email"
+                                                    value={email}
+                                                    setValue={setEmail}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                />
                                             </div>
 
                                             <TextAreaNew
