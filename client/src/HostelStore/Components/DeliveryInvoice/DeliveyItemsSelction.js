@@ -1,5 +1,5 @@
 
-export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvoiceItems, invoiceItems, setInvoiceItems,
+export default function DeliveryItemsSelection({ transactionId, onClose, readOnly, tempInvoiceItems, invoiceItems, setInvoiceItems,
 
 
 }) {
@@ -29,9 +29,9 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
             const index = newItems.findIndex(item => item?.styleId == "");
 
             if (index !== -1) {
-                newItems[index] = obj; 
+                newItems[index] = obj;
             } else {
-                newItems.push(obj); 
+                newItems.push(obj);
             }
 
             return newItems;
@@ -57,10 +57,33 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
     }
 
     function isItemAdded(id) {
-        console.log(id, "id")
 
-        return (invoiceItems)?.findIndex(item => parseInt(item?.id) == parseInt(id)) !== -1
+        if (transactionId) {
+            return invoiceItems?.findIndex(item => parseInt(item?.deliveryChallanId) == parseInt(id)) !== -1
+        }
+        else {
+            return (invoiceItems)?.findIndex(item => parseInt(item?.id) == parseInt(id)) !== -1
+
+        }
+
     }
+
+
+    // function isItemAdded(id) {
+    //     if (!id) return false;
+    // console.log(transactionId,invoiceItems,"invoiceItemsinvoiceItems",id)
+
+    //     if (transactionId) {
+    //         return invoiceItems?.some(
+    //             item => (item?.deliveryChallanItemsId) == (id)
+    //         );
+    //     }
+
+    //     return invoiceItems?.some(
+    //         item => (item?.id) == (id)
+    //     );
+    // }
+
 
     function handleSelectAllChange(value, invoiceItems) {
 
@@ -124,24 +147,24 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
                                         <table className="border-collapse w-full">
                                             <thead className="bg-gray-200 text-gray-800">
                                                 <tr>
-                                                    <th className="border border-gray-300 px-2 py-1 text-center text-xs w-11">
+                                                    <th className=" px-2 py-1 text-center text-xs w-11">
                                                         <input type="checkbox" onChange={(e) => handleSelectAllChange(e.target.checked, tempInvoiceItems ? tempInvoiceItems : [])}
                                                             checked={getSelectAll(tempInvoiceItems ? tempInvoiceItems : [])}
                                                         />
                                                     </th>
                                                     <th
-                                                        className={`w-12 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-2 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         S.No
                                                     </th>
                                                     <th
-                                                        className={`w-12 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-36 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         Dc No
                                                     </th>
                                                     <th
 
-                                                        className={`w-32 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-44 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         Style No
                                                     </th>
@@ -160,14 +183,14 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
                                                     </th>
                                                     <th
 
-                                                        className={`w-32 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-11 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         No of Box
                                                     </th>
 
                                                     <th
 
-                                                        className={`w-32 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-11 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         UOM
                                                     </th>
@@ -199,7 +222,7 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
                                                                 }`}
                                                             onClick={() => {
                                                                 handleChange(item.id, item)
-                                                                // 
+                                                                 
                                                             }}
                                                         >
                                                             <td className='py-1 text-center'>
@@ -208,10 +231,10 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
                                                                 // disabled={(parseFloat(item?.requiredQty) || 0) - (parseFloat(item?.alreadyPoqty) || 0) === 0}
                                                                 />
                                                             </td>
-                                                            <td className="w-5 border border-gray-300 px-2 py-1 text-center text-xs">
+                                                            <td className=" border border-gray-300 px-2 py-1 text-center text-xs">
                                                                 {index + 1}
                                                             </td>
-                                                            <td className="w-5 border border-gray-300 px-2 py-1 text-left text-xs">
+                                                            <td className=" border border-gray-300 px-2 py-1 text-left text-xs">
                                                                 {item?.DeliveryChallan?.docId}
                                                             </td>
                                                             <td className=" border border-gray-300 text-[11px] py-1.5 px-2">
@@ -245,7 +268,7 @@ export default function DeliveryItemsSelection({ id, onClose, readOnly, tempInvo
                                         </table>
                                     </div>
                                 </div>
-                 
+
                             </div>
                         </div>
                     </div>

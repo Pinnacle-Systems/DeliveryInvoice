@@ -286,7 +286,7 @@ export default function Form() {
       {purchaseOrderForm ? (
 
         <InvoiceForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={supplierList}
-          branchList={branchList} docId={docId} params={params} id={id} setDocId={setDocId} onNew={onNew}
+          branchList={branchList} docId={docId} params={params} id={id} setDocId={setDocId} onNew={onNew} setId={setId}
         />
       ) : (
         <div className="p-2 bg-[#F1F1F0] ">

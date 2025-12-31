@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextInput, TextInputNew } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -30,6 +30,7 @@ import useTaxDetailsHook from "../../../CustomHooks/TaxHookDetails";
 import { groupBy } from "lodash";
 import { useGetTaxTermMasterQuery } from "../../../redux/services/TaxTermMasterServices";
 import { useDispatch } from "react-redux";
+import PopUp from "./Pop";
 
 const InvoiceForm = ({
     onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, supplierList, params, termsData, branchList, hsnData,
@@ -67,6 +68,8 @@ const InvoiceForm = ({
     const [transportMode, setTransportMode] = useState("")
     const allSuppliers = supplierList ? supplierList.data : []
     const [termsandcondtions, setTermsAndConditions] = useState("")
+    const [nextprocess, setNextProcess] = useState("")
+    const [isPrintOpen, setIsPrintOpen] = useState(false)
 
 
     const { branchId, finYearId, companyId } = params;
@@ -161,8 +164,10 @@ const InvoiceForm = ({
         setInvoiceItems(
             (data?.DeliveryInvoiceItems || []).map(i => ({
                 ...i,
-                qty: i.DeliveryChallanItems?.qty ? parseFloat(i.DeliveryChallanItems?.qty).toFixed(3) : "",
+                qty: i.DeliveryChallanItems?.qty ? parseInt(i.DeliveryChallanItems?.qty).toFixed(3) : "",
                 noOfBox: i.noOfBox ? parseFloat(i.noOfBox).toFixed(3) : "",
+                invoiceQty: i.invoiceQty ? parseInt(i.invoiceQty).toFixed(3) : "",
+                price: i.price ? parseFloat(i.price).toFixed(3) : '',
                 balanceQty: i.DeliveryChallanItems?.qty
             }))
         );
@@ -178,7 +183,7 @@ const InvoiceForm = ({
                 : data?.deliveryPartyId || ""
         );
         setRemarks(data?.remarks || "");
-        setTermsAndConditions(data?.termsandcondtions? data?.termsandcondtions : "")
+        setTermsAndConditions(data?.termsandcondtions ? data?.termsandcondtions : "")
     }, [id]);
 
 
@@ -255,23 +260,27 @@ const InvoiceForm = ({
                 });
                 dispatch(DeliveryChallanApi.util.invalidateTags(["DeliveryChallan"]));
 
-                if (returnData.statusCode === 0) {
-                    if (nextProcess == "new") {
-                        syncFormWithDb(undefined);
-                        onNew()
-                    }
-                    if (nextProcess == "close") {
-                        syncFormWithDb(undefined);
-                        onClose()
-                    }
-                    else {
-                        setId(returnData?.data?.id);
+                // if (returnData.statusCode === 0) {
+                //     if (nextProcess == "new") {
+                //         syncFormWithDb(undefined);
+                //         onNew()
+                //     }
+                //     if (nextProcess == "close") {
+                //         syncFormWithDb(undefined);
+                //         onClose()
+                //     }
+                //     else {
+                //         setId(returnData?.data?.id);
 
-                    }
-                }
-                else {
-                    toast.error(returnData?.message);
-                }
+                //     }
+                // }
+                // else {
+                //     toast.error(returnData?.message);
+                // }
+                setId(returnData?.data?.id)
+                
+                setIsPrintOpen(true)
+                console.log(returnData?.data?.id,"returnData?.data?.id")
             }
         } catch (error) {
             console.log("handle");
@@ -290,7 +299,7 @@ const InvoiceForm = ({
         id,
         remarks, dcDate, dcNo,
         invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: netAmount, transportMode, transporter, vehicleNo, taxTemplateId,
-         termsandcondtions
+        termsandcondtions
 
 
     }
@@ -313,6 +322,8 @@ const InvoiceForm = ({
     }
 
     const saveData = (nextProcess) => {
+        setNextProcess(nextProcess)
+
         if (!validateData(data)) {
 
             Swal.fire({
@@ -336,7 +347,7 @@ const InvoiceForm = ({
                 ...data,
                 invoiceItems: data.invoiceItems?.map(item => ({
                     ...item,
-                    deliveryChallanItemsId: item.id, // map id
+                    deliveryChallanItemsId: item.id, 
                 })),
             }, "Added", nextProcess);
         }
@@ -357,8 +368,25 @@ const InvoiceForm = ({
 
         <>
             <Modal
+                isOpen={isPrintOpen}
+                onClose={() => setIsPrintOpen(false)}
+                widthClass={"px-2 h-[25%] w-[40%]"} >
+
+                <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
+                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew}
+                    id={id} />
+            </Modal>
+            <Modal
                 isOpen={printModalOpen}
-                onClose={() => setPrintModalOpen(false)}
+                onClose={() => {
+                    setPrintModalOpen(false)
+                    if (nextprocess == "close") {
+                        onClose()
+                    }
+                    if (nextprocess == "New") {
+                        syncFormWithDb(undefined)
+                    }
+                }}
                 widthClass={"w-[90%] h-[90%]"}
             >
                 <PDFViewer style={tw("w-full h-full")}>
@@ -414,6 +442,7 @@ const InvoiceForm = ({
                     // taxDetails={taxDetails}
                     invoiceItems={invoiceItems}
                     setInvoiceItems={setInvoiceItems}
+                    transactionId={id}
 
 
                 />
@@ -456,8 +485,8 @@ const InvoiceForm = ({
                             Basic Details
                         </h2>
                         <div className="grid grid-cols-2 gap-1">
-                            <ReusableInputNew label="Delivery Invoice Id" readOnly value={docId} />
-                            <ReusableInputNew label="Delivery Invoice Date" value={date} type={"date"} required={true} readOnly={true} disabled />
+                            <ReusableInputNew label="Invoice No" readOnly value={docId} />
+                            <ReusableInputNew label="Invoice Date" value={date} type={"date"} required={true} readOnly={true} disabled />
 
 
 
@@ -468,7 +497,7 @@ const InvoiceForm = ({
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-4">
                         <h2 className="font-medium text-slate-700 mb-2">
-                            Delivery Invoice Details
+                            Invoice Details
                         </h2>
                         <div className="grid grid-cols-6 gap-2">
 
@@ -510,14 +539,14 @@ const InvoiceForm = ({
                             <TextInputNew
                                 name="Contact Number"
                                 placeholder="Contact name"
-                                value={findFromList(supplierId, supplierList?.data, "contactMobile")}
+                                value={findFromList(supplierId, supplierList?.data, "contactNumber")}
 
                                 disabled={true}
 
 
                             />
-                            <DropdownInputNew name="Tax Percentage" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly} 
-                            ref={customerRef}
+                            <DropdownInputNew name="Tax Percentage" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly}
+                                ref={customerRef}
                             />
 
 
@@ -627,7 +656,7 @@ const InvoiceForm = ({
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div className="col-span-2">
-                                <TextInputNew name="Transporter"
+                                <TextInputNew1 name="Transporter"
                                     value={transporter} setValue={setTransporter} readOnly={readOnly} />
 
                             </div>
@@ -652,7 +681,7 @@ const InvoiceForm = ({
 
 
                             <div className="col-span-1">
-                                <TextInputNew name="Vehicle No"
+                                <TextInputNew1 name="Vehicle No"
                                     value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
 
                             </div>
@@ -689,7 +718,13 @@ const InvoiceForm = ({
                         />
                     </div>
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">
+                        {/* <div className="flex justify-between mr-6">
+                            <h2 className="text-md text-slate-700 " >Total Qty</h2>
+                            <span className="text-sm text-slate-700" >
+                                {totalQty.toFixed(3)} PCS
+                            </span>
+                        </div> */}
+                        <h2 className="font-medium text-slate-700 mb-2 text-base ">
                             Tax Details
                         </h2>
 
@@ -720,24 +755,24 @@ const InvoiceForm = ({
 
 
                     <div className="border border-slate-200 bg-white rounded-md shadow-sm p-5 space-y-2">
-                        <div className="flex justify-between">
-                            <h2 className="text-md text-slate-700" >Total Qty</h2>
+                        {/* <div className="flex justify-between mr-6">
+                            <h2 className="text-md text-slate-700 " >Total Qty</h2>
                             <span className="text-sm text-slate-700" >
                                 {totalQty.toFixed(3)} PCS
                             </span>
-                        </div>
+                        </div> */}
 
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm ">
                             <span className="text-md text-slate-700" >Taxable Amount</span>
-                            <span className="text-sm text-slate-700">₹ {taxableAmount.toFixed(2)}</span>
+                            <span className="text-sm text-slate-700 ">{taxableAmount.toFixed(3)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm ">
                             <span className="text-md text-slate-700">Toatl GST Amount</span>
-                            <span className="text-sm text-slate-700">₹ {totalGstAmount.toFixed(2)}</span>
+                            <span className="text-sm text-slate-700 "> {totalGstAmount.toFixed(3)}</span>
                         </div>
                         <div className="flex justify-between border-t pt-2 font-semibold">
                             <span >Net Amount</span>
-                            <span>₹ {netAmount.toFixed(2)}</span>
+                            <span className="" >{netAmount.toFixed(2)}</span>
                         </div>
                     </div>
 

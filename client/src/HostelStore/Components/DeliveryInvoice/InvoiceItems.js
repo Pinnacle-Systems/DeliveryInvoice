@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -127,7 +128,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
                             }
                         }}
-                        disabled={id}
+                        // disabled={id}
                         onClick={() => {
                             if (!supplierId) {
                                 Swal.fire({
@@ -199,9 +200,6 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 Gross Amount
                             </th>
 
-                            <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                Actions
-                            </th>
                         </tr>
                     </thead>
 
@@ -393,19 +391,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
 
 
-                                <td className="w-40 py-0.5 border border-gray-300 text-[11px] text-right">
-                                    <input
-                                        readOnly
-                                        className="w-full bg-transparent focus:outline-none focus:border-transparent text-right pr-2"
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                e.preventDefault();
-                                                addNewRow();
-                                            }
-                                        }}
-
-                                    />
-                                </td>
+                        
 
 
 

@@ -19,10 +19,11 @@ export const openTabs = createSlice({
         state.tabs[existingIndex] = {
           ...state.tabs[existingIndex],
           active: true,
-          previewId: action.payload.previewId
+          previewId: action.payload.previewId,
+          date : action.payload.date
         };
       } else {
-        state.tabs.push({ name: action.payload.name, active: true, previewId: action.payload.previewId });
+        state.tabs.push({ name: action.payload.name, active: true, previewId: action.payload.previewId ,date : action.payload.date });
       }
       localStorage.setItem("openTabs", JSON.stringify(state.tabs));
     },

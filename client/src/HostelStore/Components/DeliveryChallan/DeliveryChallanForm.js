@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextArea, TextAreaNew, TextInput, TextInputNew } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextArea, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -159,19 +159,17 @@ const ChallanForm = ({
                     showConfirmButton: false,
                     timer: 2000
                 });
+                console.log(returnData?.data,"returnData")
+                setId(returnData?.data?.id)
                 setIsPrintOpen(true)
-                if (nextProcess == "new") {
-                    syncFormWithDb(undefined);
-                    onNew()
-                }
-                if (nextProcess == "close") {
-                    syncFormWithDb(undefined);
-                }
-                // else {
-                //     setId(returnData?.data?.id);
-
+                // if (nextProcess == "new") {
+                //     syncFormWithDb(undefined);
+                //     onNew()
                 // }
-
+                // if (nextProcess == "close") {
+                //     syncFormWithDb(undefined);
+                // }
+          
 
 
             }
@@ -263,10 +261,10 @@ const ChallanForm = ({
             <Modal
                 isOpen={isPrintOpen}
                 onClose={() => setIsPrintOpen(false)}
-                widthClass={"px-2 h-[30%] w-[40%]"} >
+                widthClass={"px-2 h-[25%] w-[40%]"} >
 
                 <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
-                    nextprocess={nextprocess} formclose={onClose}
+                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb}  onNew={onNew}
                     id={id} />
             </Modal>
             <Modal
@@ -275,6 +273,9 @@ const ChallanForm = ({
                     setPrintModalOpen(false)
                     if (nextprocess == "close") {
                         onClose()
+                    }
+                    if(nextprocess == "New"){
+                        syncFormWithDb(undefined)
                     }
                 }}
                 widthClass={"w-[90%] h-[90%]"}
@@ -459,7 +460,7 @@ const ChallanForm = ({
 
                     <DeliveryItems deliveryItems={deliveryItems} setDeliveryItems={setDeliveryItems} styleList={styleList}
                         styleItemList={styleItemList} uomList={uomList} colorList={colorList} readOnly={readOnly} setReadOnly={setReadOnly}
-                        hsnList={hsnList}
+                        hsnList={hsnList} id={id}
                     />
 
                 </fieldset>
@@ -476,12 +477,12 @@ const ChallanForm = ({
 
                         <h2 className="font-medium text-slate-700 mb-2 text-base">Delivery Details</h2>
                         <div className="grid grid-cols-4 gap-2">
-                            <TextInputNew name="Vehicle No"
+                            <TextInputNew1 name="Vehicle No"
                                 value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
 
 
                             <div className="col-span-2">
-                                <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} required={true} readOnly={readOnly} />
+                                <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} readOnly={readOnly} />
 
                             </div>
 

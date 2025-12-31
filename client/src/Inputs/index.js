@@ -228,7 +228,7 @@ export const validatePincode = (data) => {
   return data.toString().length === 6;
 }
 
-export const DropdownWithSearch = ({ options, value, setValue, readOnly }) => {
+export const DropdownWithSearch = ({ options, value, setValue, readOnly ,required }) => {
   const [currentIndex, setCurrentIndex] = useState("");
   useEffect(() => setCurrentIndex(new Date()), [])
   useEffect(() => {

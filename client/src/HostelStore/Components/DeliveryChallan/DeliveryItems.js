@@ -4,6 +4,7 @@ import { VIEW } from "../../../icons";
 import Modal from "../../../UiComponents/Modal";
 import DynamicRenderer from "./DynamicComponent";
 import { Plus } from "lucide-react";
+import Swal from "sweetalert2";
 
 const DeliveryItems = ({
     id,
@@ -69,20 +70,31 @@ const DeliveryItems = ({
         )
     }, [setDeliveryItems, deliveryItems])
 
-
-    const handleInputChange = (value, index, field) => {
-
-
-
+    const handleInputChange = (value, index, field, invoiceQty) => {
         const newBlend = structuredClone(deliveryItems);
 
-        console.log(newBlend[index], "newBlend", index)
+        // if (id) {
+        //     if (field === "qty") {
+        //         if (Number(value) < Number(invoiceQty)) {
+        // Swal.fire({
+        //     icon: "error",
+        //     title: "Invalid quantity",
+        //     text: `Quantity cannot be less than Invoice Quantity (${invoiceQty})`,
+        // });
+        //             return; // 🚫 stop update
+        //         }
 
-
+        //         newBlend[index][field] = value;
+        //     } else {
         newBlend[index][field] = value;
+        //     }
+        // }
 
         setDeliveryItems(newBlend);
     };
+
+
+
 
 
 
@@ -107,7 +119,7 @@ const DeliveryItems = ({
         weightPerBag: 0,
     };
 
-    const COPY_FIELDS = ["styleId", "styleItemId", "hsnId","uomId"];
+    const COPY_FIELDS = ["styleId", "styleItemId", "hsnId", "uomId"];
 
     const addNewRow = (index) => {
         let prevObject = {};
@@ -115,13 +127,13 @@ const DeliveryItems = ({
         if (index == 0) {
             const prevRow = deliveryItems[index];
             prevObject = COPY_FIELDS.reduce((acc, key) => {
-                acc[key] = prevRow[key] || ""; 
+                acc[key] = prevRow[key] || "";
                 return acc;
             }, {});
         } else {
-                 const prevRow = deliveryItems[index  - 1  ];
+            const prevRow = deliveryItems[index - 1];
             prevObject = COPY_FIELDS.reduce((acc, key) => {
-                acc[key] = prevRow[key] || ""; 
+                acc[key] = prevRow[key] || "";
                 return acc;
             }, {});
         }
@@ -468,7 +480,7 @@ const DeliveryItems = ({
                                             )}
                                         </select>
                                     </td>
-
+                                    {/* 
 
                                     <td className=" border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
                                         <input
@@ -491,23 +503,63 @@ const DeliveryItems = ({
 
                                             onChange={(e) => {
                                                 const numVal = parseInt(e.target.value) || 0;
-                                                const balanceQty = Math.max(0, (parseInt(row?.requiredQty) || 0) - (parseInt(row?.alreadyPoqty) || 0));
-
-                                                handleInputChange(numVal, index, "qty", row.requiredQty, balanceQty);
+                                                handleInputChange(numVal, index, "qty", row.totalInvoiceQty);
 
 
                                             }}
                                             onBlur={(e) => {
-                                                const balanceQty = Math.max(0, (parseInt(row?.requiredQty) || 0) - (parseInt(row?.alreadyPoqty) || 0));
                                                 const val = e.target.value;
                                                 const formatted = e.target.value === "" ? "" : parseInt(e.target.value).toFixed(3);
                                                 e.target.value = formatted;
-                                                handleInputChange(val === "" ? 0 : formatted, index, "qty", row.requiredQty, balanceQty);
+                                                handleInputChange(val === "" ? 0 : formatted, index, "qty", row.totalInvoiceQty);
                                             }}
 
                                         />
-                                    </td>
+                                    </td> */}
 
+                                    <td className="border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
+                                        <input
+                                            className="rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={row?.qty}
+                                            disabled={!row.uomId || readOnly || !row.noOfBox}
+                                            onFocus={e => e.target.select()}
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                                            }}
+                                            placeholder="0.000"
+
+                                            // Allow free typing
+                                            onChange={(e) => {
+                                                const val = e.target.value === "" ? "" : Number(e.target.value);
+                                                handleInputChange(val, index, "qty", row.totalInvoiceQty);
+                                            }}
+
+                                            // ✅ Enforce rule here
+                                            onBlur={(e) => {
+                                                let val = e.target.value === "" ? 0 : Number(e.target.value);
+                                                const invoiceQty = Number(row.totalInvoiceQty || 0);
+
+                                                if (id) {
+                                                    if (val < invoiceQty) {
+                                                        Swal.fire({
+                                                            icon: "error",
+                                                            text: `The Quantity must greater than or Equal to (${invoiceQty})`,
+                                                        });
+                                                        val = invoiceQty;
+                                                    }
+                                                }
+
+
+                                                const formatted = val.toFixed(3);
+
+                                                e.target.value = formatted;
+                                                handleInputChange(val, index, "qty", invoiceQty);
+                                            }}
+                                        />
+                                    </td>
 
 
 

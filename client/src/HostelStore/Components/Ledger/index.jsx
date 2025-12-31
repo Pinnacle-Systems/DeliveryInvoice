@@ -15,6 +15,7 @@ import { getCommonParams } from '../../../Utils/helper';
 import { useGetBranchByIdQuery } from '../../../redux/services/BranchMasterService';
 import { FaPlus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { useGetFinYearByIdQuery } from '../../../redux/services/FinYearMasterService';
 
 
 const Ledger = () => {
@@ -29,23 +30,27 @@ const Ledger = () => {
     const { token, ...params } = getCommonParams();
 
 
-    const { branchId } = getCommonParams()
+    const { branchId , finYearId } = getCommonParams()
     const { data: partyList } = useGetPartyQuery({ params: { ...params } });
 
     const { data: branchData } = useGetBranchByIdQuery(branchId, { skip: !branchId });
+        const { data: finYearData } = useGetFinYearByIdQuery(finYearId, { skip: !finYearId });
 
-    console.log(branchId, "branchdata")
+
+    console.log(finYearData, "finYearData")
 
     const ledgerData = data?.data;
     const dispatch = useDispatch();
 
     useEffect(() => {
         const currentTabPreviewId = openTabs.tabs.find(i => i.name === "CUSTOMER LEDGER")?.previewId
-        console.log(currentTabPreviewId, "currentTabPreviewId")
+        const currentTabPreviewDate = openTabs.tabs.find(i => i.name === "CUSTOMER LEDGER")?.date
+
+        console.log(openTabs.tabs.find(i => i.name === "CUSTOMER LEDGER"), "currentTabPreviewDate",currentTabPreviewId)
         if (!currentTabPreviewId) return
         setPartyId(currentTabPreviewId);
-        setStartDate(moment(new Date()).format("YYYY-MM-DD"))
-        setEndDate(moment(new Date()).format("YYYY-MM-DD"))
+        setStartDate(moment(finYearData?.data?.from).format("YYYY-MM-DD"))
+        setEndDate(moment(currentTabPreviewDate).format("YYYY-MM-DD"))
         dispatch(push({
             name: "CUSTOMER LEDGER",
             previewId: null
@@ -93,6 +98,7 @@ const Ledger = () => {
                                 name="Customer"
                                 selected={partyId}
                                 setSelected={setPartyId}
+                                required={true}
                             />
                         </div>
 

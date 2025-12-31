@@ -69,7 +69,7 @@ export default function Form() {
 
 
 
-    const [removeData] = useDeleteDeliveryChallanMutation();
+  const [removeData] = useDeleteDeliveryChallanMutation();
 
 
 
@@ -215,50 +215,58 @@ export default function Form() {
 
 
 
-    const handleView = (id) => {
+  const handleView = (id) => {
 
-      setId(id)
-      setPurchaseOrderForm(true)
-      setReadOnly(true);
-    };
+    setId(id)
+    setPurchaseOrderForm(true)
+    setReadOnly(true);
+  };
 
-    const handleEdit = (id) => {
-      setReadOnly(false);
-      setId(id)
-      setPurchaseOrderForm(true)
-    };
+  const handleEdit = (id) => {
+    setReadOnly(false);
+    setId(id)
+    setPurchaseOrderForm(true)
+  };
 
 
 
-    const handleDelete = async (id) => {
-      if (id) {
-        if (!window.confirm("Are you sure to delete...?")) {
-          return;
-        }
-        try {
-          let deldata = await removeData(id).unwrap();
-          if (deldata?.statusCode == 1) {
-            Swal.fire({
-              icon: "error",
-              title: "Child record Exists",
-              text: deldata.data?.message || "Data cannot be deleted!",
-            });
-            return;
-          }
-          setId("");
-          Swal.fire({
-            title: "Deleted Successfully",
-            icon: "success",
-          });
-        } catch (error) {
+  const handleDelete = async (id, childRecord) => {
+    if (id) {
+      if (childRecord) {
+        Swal.fire({
+          icon: "error",
+          title: "Child record Exists",
+          // text: deldata.data?.message || "Data cannot be deleted!",
+        });
+        return;
+      }
+      if (!window.confirm("Are you sure to delete...?")) {
+        return;
+      }
+      try {
+        let deldata = await removeData(id).unwrap();
+        if (deldata?.statusCode == 1) {
           Swal.fire({
             icon: "error",
-            title: "Submission error",
-            text: error.data?.message || "Something went wrong!",
+            title: "Child record Exists",
+            text: deldata.data?.message || "Data cannot be deleted!",
           });
+          return;
         }
+        setId("");
+        Swal.fire({
+          title: "Deleted Successfully",
+          icon: "success",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Submission error",
+          text: error.data?.message || "Something went wrong!",
+        });
       }
-    };
+    }
+  };
 
 
   const onNew = () => {
@@ -284,14 +292,14 @@ export default function Form() {
         //     supplierDetails={supplierDetails} branchList={branchList} hsnData={hsnData}
         //   yarnList={yarnList} uomList={uomList}  colorList={colorList}  termsData={termsData} 
         // />
-        <ChallanForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={supplierList} 
-        branchList={branchList} docId={docId} params={params} id={id} setDocId={setDocId} readOnly={readOnly} setReadOnly={setReadOnly}
-        /> 
+        <ChallanForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={supplierList}
+          branchList={branchList} docId={docId} params={params} id={id} setId={setId} setDocId={setDocId} readOnly={readOnly} setReadOnly={setReadOnly}
+        />
 
       ) : (
         <div className="p-2 bg-[#F1F1F0] ">
           <div className="flex flex-col sm:flex-row justify-between bg-white py-1 px-1 items-start sm:items-center mb-4 gap-x-4 rounded-tl-lg rounded-tr-lg shadow-sm border border-gray-200">
-      
+
             <h1 className="text-2xl font-bold text-gray-800  shadow-2xl">Delivery Challan</h1>
             <button
               className="hover:bg-green-700 bg-white border border-green-700 hover:text-white text-green-800 px-4 py-1 rounded-md flex items-center gap-2 text-sm"

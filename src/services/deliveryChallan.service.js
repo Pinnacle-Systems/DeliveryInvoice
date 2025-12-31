@@ -41,9 +41,9 @@ async function getNextDocId(branchId, shortCode, startTime, endTime, saveType, d
         console.log(lastObject, ":lastObject")
 
         const branchObj = await getTableRecordWithId(branchId, "branch")
-        let newDocId = `${branchObj.branchCode}${getYearShortCode(new Date())}/DC/1`
+        let newDocId = `${branchObj.branchCode}/${shortCode}/DC/1`
         if (lastObject) {
-            newDocId = `${branchObj.branchCode}${getYearShortCode(new Date())}/DC/${parseInt(lastObject.docId.split("/").at(-1)) + 1}`
+            newDocId = `${branchObj.branchCode}/${shortCode}/DC/${parseInt(lastObject.docId.split("/").at(-1)) + 1}`
         }
         return newDocId
     }
@@ -79,6 +79,11 @@ async function get(req) {
                 select: {
                     name: true
                 }
+            },
+            _count: {
+                select: {
+                    DeliveryInvoiceItems: true
+                }
             }
         }
     });
@@ -86,7 +91,13 @@ async function get(req) {
 
     data = manualFilterSearchData(searchDate, searchDueDate, data)
 
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0,
+        data: data = data.map(dc => ({
+            ...dc,
+            childRecord: dc?._count.DeliveryInvoiceItems > 0
+        })),
+    };
 }
 
 async function getDcItems(req) {
@@ -212,14 +223,38 @@ async function getOne(id) {
                     qty: true,
                     isInvoice: true,
                     active: true,
-                    hsnId : true,
-                    
+                    hsnId: true,
+                    DeliveryInvoiceItems: {
+                        select: {
+                            invoiceQty: true
+                        }
+                    }
+
                 }
             }
         }
+
     })
+
+    const updatedItems = data.DeliveryChallanItems.map(item => {
+        const totalInvoiceQty = item.DeliveryInvoiceItems.reduce(
+            (sum, inv) => sum + (inv.invoiceQty || 0),
+            0
+        );
+
+        return {
+            ...item,
+            totalInvoiceQty,
+        };
+    });
+
+
     if (!data) return NoRecordFound("styleItem");
-    return { statusCode: 0, data: { ...data, } };
+    return {
+        statusCode: 0, data: {
+            ...data, DeliveryChallanItems: updatedItems,
+        }
+    };
 }
 
 async function getSearch(req) {
@@ -265,9 +300,9 @@ async function create(body) {
                 //     connect: { id: deliveryToId ?  parseInt(deliveryToId) : 0 } // use actual ID
                 // },
 
-                deliveryType: deliveryType ? deliveryType : "",
-                vechineNo: vehicleNo ? vehicleNo : "",
-                deliveryTo: deliveryTo ? parseInt(deliveryTo) : "",
+                deliveryType: deliveryType ? deliveryType : undefined,
+                vechineNo: vehicleNo ? vehicleNo : undefined,
+                deliveryTo: deliveryTo ? parseInt(deliveryTo) : undefined,
                 DeliveryChallanItems: deliveryItems?.length > 0
                     ? {
                         createMany: {
@@ -316,11 +351,11 @@ async function update(id, body) {
             Party: {
                 connect: { id: parseInt(supplierId) }
             },
-            dcNo: dcNo ? dcNo : "",
+            dcNo: dcNo ? dcNo : undefined,
             dcDate: dcDate ? new Date(dcDate) : undefined,
-            remarks: remarks ? remarks : "",
-            vechineNo: vehicleNo ? vehicleNo : "",
-            deliveryTo: deliveryTo ? parseInt(deliveryTo) : "",
+            remarks: remarks ? remarks : undefined,
+            vechineNo: vehicleNo ? vehicleNo : undefined,
+            deliveryTo: deliveryTo ? parseInt(deliveryTo) : undefined,
             DeliveryChallanItems: {
                 deleteMany: {
                     ...(incomingIds.length > 0 && {

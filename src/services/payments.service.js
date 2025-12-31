@@ -28,17 +28,17 @@ async function getNextDocId(branchId, shortCode, startTime, endTime,) {
         }
     });
     const branchObj = await getTableRecordWithId(branchId, "branch")
-    let newDocId = `${branchObj.branchCode}/${24}/Pay/1`
+    let newDocId = `${branchObj.branchCode}/${shortCode}/Pay/1`
     if (lastObject) {
-        newDocId = `${branchObj.branchCode}/${24}/Pay/${parseInt(lastObject.docId.split("/").at(-1)) + 1}`
+        newDocId = `${branchObj.branchCode}/${shortCode}/Pay/${parseInt(lastObject.docId.split("/").at(-1)) + 1}`
     }
     return newDocId
 }
 
-function manualFilterSearchData(searchBillDate, searchMobileNo,searchType,searchDueDate, data) {
+function manualFilterSearchData(searchBillDate, searchMobileNo, searchType, searchDueDate, data) {
     return data.filter(item =>
         (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true)
-        &&(searchDueDate ? String(getDateFromDateTime(item.cvv)).includes(searchDueDate) : true)
+        && (searchDueDate ? String(getDateFromDateTime(item.cvv)).includes(searchDueDate) : true)
 
         && (searchMobileNo ? String(item.contactMobile).includes(searchMobileNo) : true)
         && (searchType ? String(item.paymentType).includes(searchType) : true)
@@ -47,9 +47,9 @@ function manualFilterSearchData(searchBillDate, searchMobileNo,searchType,search
 }
 
 async function get(req) {
-    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate,searchDueDate, searchCustomerName,searchType, searchMobileNo, finYearId ,serachDocNo , searchDate ,supplier} = req.query
-   console.log(searchBillDate,"searchBillDate")
-   console.log(searchDueDate,"searchDueDate")
+    const { active, branchId, pagination, pageNumber, dataPerPage, searchDocId, searchBillDate, searchDueDate, searchCustomerName, searchType, searchMobileNo, finYearId, serachDocNo, searchDate, supplier } = req.query
+    console.log(searchBillDate, "searchBillDate")
+    console.log(searchDueDate, "searchDueDate")
 
     let data = await prisma.payment.findMany({
         where: {
@@ -74,13 +74,13 @@ async function get(req) {
             }
         }
     });
-    data = manualFilterSearchData(searchDate, searchMobileNo,searchType,searchDueDate, data)
+    data = manualFilterSearchData(searchDate, searchMobileNo, searchType, searchDueDate, data)
     const totalCount = data.length
     // if (pagination) {
     //     data = data.slice(((pageNumber - 1) * parseInt(dataPerPage)), pageNumber * dataPerPage)
     // }
     let finYearDate = await getFinYearStartTimeEndTime(finYearId);
-    const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startTime, finYearDate?.endTime) : "";
+    const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
     let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startTime, finYearDate?.endTime)) : "";
     return { statusCode: 0, nextDocId: newDocId, data, totalCount };
 }
@@ -120,11 +120,11 @@ async function getSearch(req) {
 async function create(body) {
     let data;
     try {
-        const { branchId, id, paymentMode, cvv, paymentType, paidAmount,discount,paymentRefNo, supplierId, userId,finYearId,totalBillAmount } = body;
+        const { branchId, id, paymentMode, cvv, paymentType, paidAmount, discount, paymentRefNo, supplierId, userId, finYearId, totalBillAmount, totalAmount } = body;
 
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
-        const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startTime, finYearDate?.endTime) : "";
-        let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startTime, finYearDate?.endTime)) : "";
+        const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
+        let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startDateStartTime, finYearDate?.endDateEndTime)) : "";
 
         await prisma.$transaction(async (tx) => {
             data = await tx.payment.create({
@@ -139,7 +139,8 @@ async function create(body) {
                     createdById: parseInt(userId),
                     cvv: cvv ? new Date(cvv) : undefined,
                     paymentType,
-                    totalBillAmount: totalBillAmount? parseInt(totalBillAmount): undefined
+                    totalBillAmount: totalBillAmount ? parseInt(totalBillAmount) : undefined,
+                    totalAmount: totalAmount ? parseInt(totalAmount) : undefined
                 }
             });
         });
@@ -156,7 +157,7 @@ async function create(body) {
 async function update(id, body) {
     let data
     const {
-        branchId, paymentMode, cvv, paymentType, paidAmount,discount, supplierId, userId, paymentRefNo, partyId, finYearId } = await body
+        branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId ,totalAmount } = await body
     const dataFound = await prisma.payment.findUnique({
         where: {
             id: parseInt(id)
@@ -169,14 +170,16 @@ async function update(id, body) {
                 id: parseInt(id),
             },
             data: {
-                    partyId: parseInt(supplierId),
-                    branchId: parseInt(branchId),
-                    paymentMode,
-                    paidAmount: parseFloat(paidAmount),
-                    discount: parseFloat(discount),
-                    createdById: parseInt(userId),
-                    cvv: cvv ? new Date(cvv) : undefined,
-                    paymentType
+                partyId: parseInt(supplierId),
+                branchId: parseInt(branchId),
+                paymentMode,
+                paidAmount: parseFloat(paidAmount),
+                discount: parseFloat(discount),
+                createdById: parseInt(userId),
+                cvv: cvv ? new Date(cvv) : undefined,
+                paymentType,
+                totalAmount: totalAmount ? parseInt(totalAmount) : undefined
+
             },
         })
     })
@@ -188,7 +191,7 @@ async function remove(id) {
         where: {
             id: parseInt(id)
         },
-      
+
     })
     return { statusCode: 0, data };
 }

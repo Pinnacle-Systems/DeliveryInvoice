@@ -78,14 +78,15 @@ const PartyOverAllLedger = () => {
                             </td> */}
                                 <td className="table-data">
                                     <div className='flex items-center justify-center'>
-                                        {party?.outstandingAmount  ?  parseFloat(party?.outstandingAmount).toFixed(3)  : (0.000.toFixed(3))}
+                                        {party?.outstandingAmount  ?  parseFloat(party?.outstandingAmount).toFixed(2)  : (0.000.toFixed(2))}
                                     </div>
                                 </td>
                                 <td className="table-data">
                                     <div className='flex items-center justify-center' onClick={() => {
                                         dispatch(push({
                                             name: "CUSTOMER LEDGER",
-                                            previewId: party.id
+                                            previewId: party.id,
+                                            date : startDate
                                         }))
                                     }}>
                                         {VIEW}

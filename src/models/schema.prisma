@@ -201,12 +201,14 @@ model Employee {
 }
 
 model FinYear {
-  id        Int      @id @default(autoincrement())
-  from      DateTime
-  to        DateTime
-  Company   Company? @relation(fields: [companyId], references: [id])
-  companyId Int?
-  active    Boolean  @default(true)
+  id               Int               @id @default(autoincrement())
+  from             DateTime
+  to               DateTime
+  Company          Company?          @relation(fields: [companyId], references: [id])
+  companyId        Int?
+  active           Boolean           @default(true)
+  DeliveryChallan  DeliveryChallan[]
+  DeliveryInvoice DeliveryInvoice[]
 }
 
 model EmployeeCategory {
@@ -701,6 +703,7 @@ model Payment {
   totalBillAmount Int?
   discount        Int?     @default(0)
   paymentRefNo    String?
+  totalAmount     Int?
 }
 
 model Style {
@@ -747,6 +750,8 @@ model DeliveryChallan {
   remarks              String?
   vechineNo            String?
   deliveryTo           Int?
+  FinYear              FinYear?               @relation(fields: [finYearId], references: [id])
+  finYearId            Int?
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
 }
@@ -787,6 +792,8 @@ model DeliveryInvoice {
   supplierId           Int?
   Branch               Branch?                @relation(fields: [branchId], references: [id])
   branchId             Int?
+  FinYear              FinYear?               @relation(fields: [finYearId], references: [id])
+  finYearId            Int?
   deliveryType         String?
   createdBy            User?                  @relation("createdBy", fields: [createdById], references: [id])
   createdById          Int?
@@ -910,4 +917,3 @@ model Hsn {
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
 }
-

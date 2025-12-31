@@ -8,6 +8,7 @@ import commaNumber from 'comma-number';
 
 
 import { Font } from "@react-pdf/renderer";
+import moment from 'moment';
 
 // Font.register({
 //     family: "HelveticaBold",
@@ -24,13 +25,13 @@ const styles = StyleSheet.create({
     page: {
         // fontFamily: "Helvetica",
         fontSize: 8,
-        padding: 0,
+        padding: 4,
         border: "1 solid #000",
     },
     header: {
         alignItems: "center",
         textAlign: "center",
-        marginBottom: 7,
+        marginBottom: 4,
         justifyContent: "space-between",
         flexDirection: "row",
         padding: 7,
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
         fontSize: 9,
         marginBottom: 1,
         textAlign: "right",
-        marginRight: 4
+        // marginRight: 4
     },
     boxTitle: {
         fontSize: 9,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
 
 const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, partyId, partyData }) => {
 
-    console.log(endDate,"endDate")
+    console.log(endDate, "endDate")
 
     const ledgerDetails = ledgerData?.data ? ledgerData.data : []
     // Calculate the total credit and debit amounts
@@ -475,7 +476,7 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
                         <View style={{ width: "100%", marginVertical: 6 }}>
                             <Text
                                 style={{
-                                    fontSize: 13,
+                                    fontSize: 16,
                                     fontWeight: "bold",
                                     textAlign: "center",
                                     textTransform: "uppercase",
@@ -484,6 +485,7 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
                                 CUSTOMER LEDGER REPORT
                             </Text>
                         </View>
+
 
                         {/* <View style={{ alignItems: "center", justifyContent: "center", textAlign: "center" }}>
                             <Text
@@ -526,13 +528,25 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
 
 
                     </View> */}
-
+                    <View style={{ width: "100%", marginVertical: 6 }}>
+                        <Text
+                            style={{
+                                fontSize: 12,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                letterSpacing: 0.3
+                            }}
+                        >
+                            {moment(startDate).format("DD-MM-YYYY")}  TO  {moment(endDate).format("DD-MM-YYYY")}
+                        </Text>
+                    </View>
 
                     <View
                         style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            marginBottom: 12
+                            marginBottom: 12,
+                            marginTop : 5
                         }}
                     >
                         {/* FROM */}
@@ -606,18 +620,6 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
 
                     <View >
 
-                        <View style={{ width: "100%", marginVertical: 6 }}>
-                            <Text
-                                style={{
-                                    fontSize: 12,
-                                    fontWeight: "bold",
-                                    textAlign: "center",
-                                    letterSpacing: 0.3
-                                }}
-                            >
-                                {startDate}  TO  {endDate}
-                            </Text>
-                        </View>
 
 
 
@@ -642,8 +644,8 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
                         <Text style={[styles.th, { flex: 1 }]}>Date</Text>
                         <Text style={[styles.th, { flex: 5 }]}>Vch Type</Text>
                         <Text style={[styles.th, { flex: 2 }]}>Vch No</Text>
-                        <Text style={[styles.th, { flex: 2 }]}>Debit</Text>
-                        <Text style={[styles.th, { flex: 2 }]}>Credit</Text>
+                        <Text style={[styles.th, { flex: 2 ,textAlign : "right"  }]}>Debit</Text>
+                        <Text style={[styles.th, { flex: 2 ,textAlign : "right" }]}>Credit</Text>
 
                     </View>
 
@@ -664,11 +666,11 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
 
 
                             <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
-                                {parseFloat(r.debit ? r.debit : 0).toFixed(3)}
+                                {parseFloat(r.debit ? r.debit : 0).toFixed(2)}
                             </Text>
 
                             <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
-                                {parseFloat(r.credit ? r.credit : 0).toFixed(3)}
+                                {parseFloat(r.credit ? r.credit : 0).toFixed(2)}
                             </Text>
 
 
@@ -684,12 +686,12 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
                         <Text style={[styles.td, { flex: 1 }]}></Text>
                         <Text style={[styles.td, { flex: 5 }]}></Text>
                         <Text style={[styles.td, { flex: 2 }]}></Text>
-                        <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>{parseFloat(totalDebit).toFixed(3)}</Text>
-                        <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>{parseFloat(totalDebit).toFixed(3)}</Text>
+                        <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>{parseFloat(totalDebit).toFixed(2)}</Text>
+                        <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>{parseFloat(totalCredit).toFixed(2)}</Text>
 
                     </View>
 
-                    <View style={{ width: "100%", marginTop: 8 }}>
+                    {/* <View style={{ width: "100%", marginTop: 8 }}>
                         <View
                             style={{
                                 alignSelf: "flex-end",
@@ -697,27 +699,24 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
 
                             }}
                         >
-                            {/* Total Debit */}
                             <View style={{ flexDirection: "row", marginBottom: 4 }}>
                                 <Text style={[styles.companyText, { width: 80 }]}>
                                     Total Debit
                                 </Text>
                                 <Text style={styles.companyText1}>
-                                    : {parseFloat(totalDebit || 0).toFixed(3)}
+                                    : {parseFloat(totalDebit || 0).toFixed(2)}
                                 </Text>
                             </View>
 
-                            {/* Total Credit */}
                             <View style={{ flexDirection: "row", marginBottom: 4 }}>
                                 <Text style={[styles.companyText, { width: 80 }]}>
                                     Total Credit
                                 </Text>
                                 <Text style={styles.companyText1}>
-                                    : {parseFloat(totalCredit || 0).toFixed(3)}
+                                    : {parseFloat(totalCredit || 0).toFixed(2)}
                                 </Text>
                             </View>
 
-                            {/* Closing Balance */}
                             <View style={{ flexDirection: "row", }}>
                                 <Text
                                     style={[
@@ -727,14 +726,48 @@ const LedgerReportPrintFormat = ({ ledgerData, startDate, endDate, branchData, p
                                 >
                                     Closing Balance
                                 </Text>
-                                <Text style={[styles.companyText1, { fontWeight: "bold" }]}>
-                                    : {(parseFloat(totalDebit) - parseFloat(totalCredit)).toFixed(3)}
+                                <Text style={[styles.companyText1, { fontWeight: "bold" , textAlign : "right"}]}>
+                                    : {(parseFloat(totalDebit) - parseFloat(totalCredit)).toFixed(2)}
                                 </Text>
                             </View>
                         </View>
+                    </View> */}
+                    <View style={{ width: "100%", marginTop: 8 }}>
+                        <View style={{ alignSelf: "flex-end", width: 220 }}>
+
+                            {/* Total Debit */}
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                                <Text style={styles.companyText}>Total Debit</Text>
+                                <Text style={styles.companyText1}>
+                                    {parseFloat(totalDebit || 0).toFixed(2)}
+                                </Text>
+                            </View>
+
+                            {/* Total Credit */}
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                                <Text style={styles.companyText}>Total Credit</Text>
+                                <Text style={styles.companyText1}>
+                                    {parseFloat(totalCredit || 0).toFixed(2)}
+                                </Text>
+                            </View>
+
+                            {/* Closing Balance */}
+                            <View style={{
+                                flexDirection: "row", justifyContent: "space-between", borderTop: "1 solid #000",
+
+                            }}>
+                                <Text style={[styles.companyText, { fontWeight: "bold", marginTop: 4 }]}>
+                                    Closing Balance
+                                </Text>
+                                <Text style={[styles.companyText1, { fontWeight: "bold", marginTop: 4 }]}>
+                                    {(parseFloat(totalDebit) - parseFloat(totalCredit)).toFixed(2)}
+                                </Text>
+                            </View>
+
+                        </View>
                     </View>
 
-    
+
 
 
 

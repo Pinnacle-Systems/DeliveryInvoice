@@ -199,11 +199,11 @@ const DeliveryInvoiceFormReport = ({
                   </th>
 
                   <th className=" px-3  font-medium text-[13px]  text-gray-900  text-center w-32">
-                    <div>DC No</div>
+                    <div>Invoice No</div>
                   </th>
           
                   <th className=" px-3  font-medium text-[13px]  text-gray-900  text-center w-32">
-                    <div>Dc Date</div>
+                    <div>Invoice Date</div>
                   </th>
         
 

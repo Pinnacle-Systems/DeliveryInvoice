@@ -31,7 +31,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
     const [paymentMode, setPaymentMode] = useState('');
     const [paymentRefNo, setPaymentRefNo] = useState('');
     const [partyId, setPartyId] = useState("");
-    const [paymentType, setPaymentType] = useState(PaymentType[0].value);
+    const [paymentType, setPaymentType] = useState("INVOICE");
     const [paidAmount, setPaidAmount] = useState('');
     const [discount, setDiscount] = useState('')
     const [balanceAmount, setBalanceAmount] = useState('');
@@ -46,17 +46,17 @@ const PaymentForm = ({ id, setId, onClose }) => {
 
 
     const dispatch = useDispatch()
-    const { data: allData, isLoading, isFetching } = useGetPaymentQuery({ params: { branchId, finYearId }, searchParams: searchValue });
+    // const { data: allData, isLoading, isFetching } = useGetPaymentQuery({ params: { branchId, finYearId }, searchParams: searchValue });
 
-    const getNextDocId = useCallback(() => {
+    // const getNextDocId = useCallback(() => {
 
-        if (id || isLoading || isFetching) return
-        if (allData?.nextDocId) {
-            setDocId(allData.nextDocId)
-        }
-    }, [allData, isLoading, isFetching, id])
+    //     if (id || isLoading || isFetching) return
+    //     if (allData?.nextDocId) {
+    //         setDocId(allData.nextDocId)
+    //     }
+    // }, [allData, isLoading, isFetching, id])
 
-    useEffect(getNextDocId, [getNextDocId])
+    // useEffect(getNextDocId, [getNextDocId])
 
 
     const { data: singleData } = useGetPaymentByIdQuery(id, { skip: !id });
@@ -70,17 +70,15 @@ const PaymentForm = ({ id, setId, onClose }) => {
 
     const syncFormWithDb = useCallback(
         (data) => {
-            if (id) setReadOnly(true);
-            else setReadOnly(false);
-            if (data?.docId) {
-                setDocId(data.docId);
-            }
+            // if (id) setReadOnly(true);
+            // else setReadOnly(false);
+            setDocId(data?.docId ? data?.docId : "New");
             if (data?.createdAt) setDate(moment.utc(data?.createdAt).format("YYYY-MM-DD"));
             setPaidAmount(data?.paidAmount || '');
             setDiscount(data?.discount || 0)
             setSupplierId(data?.partyId || '')
             setPaymentMode(data?.paymentMode || '');
-            setPaymentType(data?.paymentType || '')
+            setPaymentType(data?.paymentType || 'INVOICE')
             setPaymentRefNo(data?.paymentRefNo || '');
             setTotalPayAmount(PartyData?.data?.soa ? data?.totalPaymentPurchaseBill : data?.totalPaymentSalesBill)
             setPartyId(data?.partyId || '');
@@ -120,13 +118,15 @@ const PaymentForm = ({ id, setId, onClose }) => {
         paymentType,
         finYearId,
         userId,
-        totalBillAmount
+        totalBillAmount,
+        totalAmount: parseFloat(paidAmount) + parseFloat(discount)
+
     }
     const validateData = (data) => {
-        return data?.supplierId && data?.paidAmount
+        return data?.supplierId && data?.paidAmount && data?.paymentType && data?.paymentMode
     }
 
-    const handleSubmitCustom = async (callback, data, text ,nextProcess ) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             let returnData = await callback(data).unwrap();
             if (returnData.statusCode === 0) {
@@ -183,9 +183,9 @@ const PaymentForm = ({ id, setId, onClose }) => {
             return
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated",nextProcess)
+            handleSubmitCustom(updateData, data, "Updated", nextProcess)
         } else {
-            handleSubmitCustom(addData, data, "Added",nextProcess)
+            handleSubmitCustom(addData, data, "Added", nextProcess)
         }
     }
 
@@ -240,6 +240,13 @@ const PaymentForm = ({ id, setId, onClose }) => {
         setDiscount(value)
 
     }
+    const inputRef = useRef(null);
+    const customerRef = useRef(null)
+    const customerDate = useRef(null)
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
 
     return (
         <>
@@ -260,7 +267,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                     /> */}
                     <div className="w-full  mx-auto rounded-md shadow-lg px-2 overflow-y-auto">
                         <div className="flex justify-between items-center mb-1">
-                            <h1 className="text-2xl font-bold text-gray-800">Payment Form</h1>
+                            <h1 className="text-2xl font-bold text-gray-800">Payment</h1>
                             <button
                                 onClick={() => {
                                     // onNew()
@@ -286,21 +293,21 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 Payment Form
                             </h2> */}
                             <div className="grid grid-cols-2 items-center justify-center gap-6">
-                                <div className="mb-4">
-                                    <label className="block text-gray-600  font-medium mb-2">Transaction No</label>
+                                <div className="mb-2">
+                                    <label className="block text-gray-600  font-medium mb-1">Payment  No</label>
                                     <input
                                         type="text"
                                         value={docId}
-                                        className="w-full px-3 py-1 border border-gray-300 rounded-lg text-emerald-700 bg-gray-50 text-sm"
+                                        className="w-full px-3 py-1 border border-gray-300 rounded-lg bg-gray-50 text-sm"
                                         readOnly
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label htmlFor="paymentType" className="block text-gray-600 font-medium mb-2">
-                                        Payment Type
+                                <div className="mb-2">
+                                    <label htmlFor="paymentType" className="block text-gray-600 font-medium mb-1">
+                                        Payment Type <span className="text-red-500">*</span>
                                     </label>
                                     <select
-                                        id="paymentType"
+                                        // id="paymentType"
                                         value={paymentType}
                                         onChange={(e) => setPaymentType(e.target.value)}
                                         className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-emerald-500"
@@ -315,11 +322,16 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 </div>
                             </div>
 
-                            <div className="mb-5">
-                                <div className="mb-4">
+                            <div className="mb-3">
+                                <div className="mb-2">
+                                    <label htmlFor="paymentType" className="block text-gray-600 font-medium ">
+                                        Customer <span className="text-red-500">*</span>
+                                    </label>
                                     <DropdownInputNew
-                                        name="Customer"
-                                        className="text-sm"
+                                        // name="Customer"
+                                        ref={inputRef}
+
+                                        className="block text-gray-600 font-medium mb-2"
                                         options={dropDownListObject(
                                             id
                                                 ? supplierData
@@ -337,8 +349,12 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                     />
                                 </div>
                                 <div className="mb-4">
+                                    <label htmlFor="paymentType" className="block text-gray-600 font-medium ">
+                                        Payment Mode <span className="text-red-500">*</span>
+                                    </label>
                                     <DropdownInputNew
-                                        name="Payment Mode"
+
+                                        // name="Payment Mode"
                                         className="text-sm"
                                         options={paymentModes}
                                         value={paymentMode}
@@ -349,7 +365,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6 mb-5">
+                            <div className="grid grid-cols-2 gap-6 mb-3">
                                 <div>
                                     <label className="block text-gray-600 font-medium mb-2">Date</label>
                                     <input
@@ -368,7 +384,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                         //   ? Number(totalBillAmount) - Number(PartyData?.data?.totalDiscount || 0)
                                         //   : (Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0))
                                         // }
-                                        value={(Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0))}
+                                        value={(Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0)).toFixed(3)}
                                         onChange={(e) => setTotalBillAmount(e.target.value)}
                                         className="w-full px-3 py-1 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
                                         placeholder="0"
@@ -376,7 +392,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6 mb-5">
+                            <div className="grid grid-cols-2 gap-6 mb-3">
 
                                 <div>
                                     <label className="block text-gray-600 font-medium mb-2">Reference No</label>
@@ -389,7 +405,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-600 font-medium mb-2">Paid Amount</label>
+                                    <label className="block text-gray-600 font-medium mb-2">Paid Amount<span className="text-red-500">*</span> </label>
                                     <input
                                         type="text"
                                         value={paidAmount}
@@ -407,7 +423,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                     <input
                                         type="text"
                                         // value={id? Number(totalBillAmount)-Number(PartyData?.data?.totalDiscount)-Number(paidAmount):((Number(totalBillAmount) - Number(paidAmount) - Number(discount)- (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
-                                        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
+                                        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(3)}
                                         onChange={(e) => setBalanceAmount(e.target.value)}
                                         className={`w-full px-3 py-1 border border-gray-300 rounded-lg ${(Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
                                             } focus:outline-none focus:ring-emerald-500 font-semibold`}
@@ -416,13 +432,13 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 </div>
                             </div>
 
-                            {paidAmount && (
-                                <div className="mb-5">
-                                    <p className="text-sm text-gray-700">
-                                        Amount in words: <span className="text-green-700 font-semibold">{toWords(parseInt(paidAmount))}</span>
-                                    </p>
-                                </div>
-                            )}
+                            {/* {paidAmount && ( */}
+                            <div className="mb-5">
+                                <p className="text-sm text-gray-700">
+                                    Amount in words: <span className="text-green-700 font-semibold">{toWords(parseInt(paidAmount ? paidAmount : 0))}</span>
+                                </p>
+                            </div>
+                            {/* )} */}
 
                             <div className="absolute top-40 right-0 w-58 max-w-xs">
                                 <input
@@ -430,6 +446,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                     placeholder="Enter discount"
                                     value={discount}
                                     onChange={handleChange1}
+                                    onFocus={(e) => e.target.select()}
                                     className="w-full py-2 px-4 rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 />
                                 <span className="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold py-1 px-2 rounded-bl-md">
@@ -480,7 +497,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                           <FaEye className="w-4 h-4 mr-2" />
                           Preview
                         </button> */}
-                            <button className="bg-slate-600 text-white px-4 py-1 rounded-md hover:bg-slate-700 flex items-center text-sm"
+                            {/* <button className="bg-slate-600 text-white px-4 py-1 rounded-md hover:bg-slate-700 flex items-center text-sm"
                                 onClick={() => {
                                     // handlePrint()
                                     // setPrintModalOpen(true)
@@ -488,7 +505,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                             >
                                 <FiPrinter className="w-4 h-4 mr-2" />
                                 Invoice
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

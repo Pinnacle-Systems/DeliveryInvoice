@@ -62,7 +62,7 @@ export const paymentTypes = [
 ]
 
 export const paymentModes = [
-    { show: "Check", value: "Check" },
+    { show: "Cheque", value: "Cheque" },
     { show: "Online", value: "Online" },
     { show: "Upi", value: "Upi" },
     { show: "Cash", value: "Cash" },
@@ -129,7 +129,7 @@ export const salesTypes = [
     { show: "RETAIL", value: "RETAIL" },
 ]
 export const PaymentType = [
-    { show: "Advance Payment", value: "ADVANCE" },
     { show: "Invoice Payment", value: "INVOICE" },
+    { show: "Advance Payment", value: "ADVANCE" },
 ]
 

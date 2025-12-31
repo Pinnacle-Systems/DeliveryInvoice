@@ -38,7 +38,7 @@ const Home = () => {
       >
         <LogoutConfirm setLogout={setLogout} />
       </Modal>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-screen bg-white">
         <div>
           {isSuperAdmin ? (
             <>
@@ -65,7 +65,7 @@ const Home = () => {
 
                 </div>
 
-                <div className="mt-[30px]  p-3 bg-gray-100  :tab" >
+                <div className="mt-[30px]  p-3   :tab" >
 
                   <ActiveTabList />
 
