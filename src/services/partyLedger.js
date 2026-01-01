@@ -378,7 +378,7 @@ WITH opening AS (
     LEFT JOIN (
         SELECT partyId, SUM(totalAmount) AS totalPaid
         FROM Payment
-        WHERE createdAt <  '${startDateFormatted}' 
+        WHERE cvv <  '${startDateFormatted}' 
         GROUP BY partyId
     ) pmt ON pmt.partyId = p.id
     WHERE p.id = ${partyId} 
@@ -413,8 +413,8 @@ txns AS (
         totalAmount AS credit
     FROM Payment
     WHERE partyId = ${partyId} 
-      AND createdAt >=  '${startDateFormatted}' 
-      AND createdAt <  DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
+      AND cvv >=  '${startDateFormatted}' 
+      AND cvv <  DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
 )
 
 -- 🔹 OPENING BALANCE ROW
@@ -553,7 +553,7 @@ LEFT JOIN (
         partyId,
         SUM(totalAmount) AS paidAmount
     FROM Payment
-    WHERE createdAt < DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
+    WHERE cvv < DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
     GROUP BY partyId
 ) pay ON p.id = pay.partyId
 

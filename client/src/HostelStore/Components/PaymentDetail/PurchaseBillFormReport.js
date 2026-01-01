@@ -539,7 +539,7 @@ const PayemntFormReport = ({
 
 
                       <td className="py-1.5 text-left">
-                        {getDateFromDateTimeToDisplay(dataObj.createdAt)}
+                        {getDateFromDateTimeToDisplay(dataObj.cvv)}
                       </td>
 
 

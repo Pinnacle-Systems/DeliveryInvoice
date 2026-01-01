@@ -37,7 +37,7 @@ async function getNextDocId(branchId, shortCode, startTime, endTime,) {
 
 function manualFilterSearchData(searchBillDate, searchMobileNo, searchType, searchDueDate, data) {
     return data.filter(item =>
-        (searchBillDate ? String(getDateFromDateTime(item.createdAt)).includes(searchBillDate) : true)
+        (searchBillDate ? String(getDateFromDateTime(item.cvv)).includes(searchBillDate) : true)
         && (searchDueDate ? String(getDateFromDateTime(item.cvv)).includes(searchDueDate) : true)
 
         && (searchMobileNo ? String(item.contactMobile).includes(searchMobileNo) : true)
