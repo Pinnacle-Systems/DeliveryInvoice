@@ -534,7 +534,6 @@ const DeliveryItems = ({
                 <div className="relative w-full max-h-[265px] overflow-y-auto mb-0">
                     <table className="w-full border-collapse table-fixed">
 
-                        {/* ================= TABLE HEADER ================= */}
                         <thead className="bg-gray-200 text-gray-900">
                             <tr>
                                 <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px]">
@@ -769,7 +768,7 @@ const DeliveryItems = ({
                                     </td>
 
 
-                                    <td className="flex justify-center items-center">
+                                    <td className="flex justify-center items-center py-0.5">
                                         <button
                                             onClick={() => addNewRow(index)}
                                             onKeyDown={(e) => {
@@ -778,7 +777,7 @@ const DeliveryItems = ({
                                                     addNewRow(index);
                                                 }
                                             }}
-                                            className="bg-blue-50 rounded p-1"
+                                            className="bg-blue-50 rounded py-0.5"
                                         >
                                             +
                                         </button>
