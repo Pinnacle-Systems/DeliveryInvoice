@@ -383,7 +383,7 @@ const InvoiceForm = ({
                     if (nextprocess == "close") {
                         onClose()
                     }
-                    if (nextprocess == "New") {
+                    if (nextprocess == "new") {
                         syncFormWithDb(undefined)
                     }
                 }}

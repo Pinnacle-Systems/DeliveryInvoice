@@ -271,10 +271,11 @@ const ChallanForm = ({
                 isOpen={printModalOpen}
                 onClose={() => {
                     setPrintModalOpen(false)
+                    console.log(nextprocess,"nextprocess")
                     if (nextprocess == "close") {
                         onClose()
                     }
-                    if(nextprocess == "New"){
+                    else if(nextprocess == "new"){
                         syncFormWithDb(undefined)
                     }
                 }}
