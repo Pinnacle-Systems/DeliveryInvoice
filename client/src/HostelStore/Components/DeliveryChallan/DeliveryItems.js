@@ -131,7 +131,7 @@ const DeliveryItems = ({
                 return acc;
             }, {});
         } else {
-            const prevRow = deliveryItems[index - 1];
+            const prevRow = deliveryItems[index];
             prevObject = COPY_FIELDS.reduce((acc, key) => {
                 acc[key] = prevRow[key] || "";
                 return acc;
