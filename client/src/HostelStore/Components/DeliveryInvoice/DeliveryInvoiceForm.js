@@ -369,7 +369,7 @@ const InvoiceForm = ({
         <>
             <Modal
                 isOpen={isPrintOpen}
-                onClose={() => setIsPrintOpen(false)}
+                // onClose={() => setIsPrintOpen(false)}
                 widthClass={"px-2 h-[25%] w-[40%]"} >
 
                 <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
