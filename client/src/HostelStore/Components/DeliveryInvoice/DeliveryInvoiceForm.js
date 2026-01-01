@@ -818,10 +818,10 @@ const InvoiceForm = ({
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
                         <TextAreaNew
-                            name="Terms & Condition"
+                            name="Terms & Conditions"
                             placeholder="Addres"
-                            value={remarks}
-                            setValue={setRemarks}
+                            value={termsandcondtions}
+                            setValue={setTermsAndConditions}
                         />
                     </div>
 
