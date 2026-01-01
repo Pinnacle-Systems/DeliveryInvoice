@@ -83,7 +83,9 @@ const PaymentForm = ({ id, setId, onClose }) => {
             setTotalPayAmount(PartyData?.data?.soa ? data?.totalPaymentPurchaseBill : data?.totalPaymentSalesBill)
             setPartyId(data?.partyId || '');
             setTotalBillAmount(data?.totalBillAmount || '')
+            setCvv(data?.cvv  ?moment.utc(data?.cvv).format("YYYY-MM-DD") : "")
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
+            
         }, [id])
 
 
