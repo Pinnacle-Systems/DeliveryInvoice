@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -157,7 +157,8 @@ const InvoiceForm = ({
         setTransporter(data?.transporter ? data?.transporter : "")
         setVechileNo(data?.vehicleNo ? data?.vehicleNo : '')
         setTaxTemplateId(data?.taxPercent ? data?.taxPercent : '')
-
+        setDiscountType(data?.discountType ? data?.discountType : "")
+        setDiscountValue(data?.discountValue  ? data?.discountValue : "")
 
 
         setSupplierId(data?.supplierId ? data?.supplierId : "");
@@ -299,7 +300,7 @@ const InvoiceForm = ({
         id,
         remarks, dcDate, dcNo,
         invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: netAmount, transportMode, transporter, vehicleNo, taxTemplateId,
-        termsandcondtions
+        termsandcondtions ,discountValue ,discountType
 
 
     }
@@ -312,7 +313,7 @@ const InvoiceForm = ({
 
 
 
-        return data.supplierId && data?.taxTemplateId
+        return data.supplierId
 
             && isGridDatasValid(data?.invoiceItems, false, mandatoryFields)
             && data?.invoiceItems?.length !== 0
@@ -502,7 +503,7 @@ const InvoiceForm = ({
                         <div className="grid grid-cols-6 gap-2">
 
 
-                            <div className="col-span-3"
+                            <div className="col-span-2"
 
                             >
 
@@ -545,9 +546,16 @@ const InvoiceForm = ({
 
 
                             />
-                            <DropdownInputNew name="Tax Percentage" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly}
+                            <div className="col-span-2">
+                                <TextAreaNew
+                                    name="Address"
+                                    placeholder="Addres"
+                                    value={findFromList(supplierId, supplierList?.data, "address")}
+                                />
+                            </div>
+                            {/* <DropdownInputNew name="Tax Type" options={dropDownListObject(taxTypeList ? taxTypeList?.data : [], "name", "id")} value={taxTemplateId} setValue={setTaxTemplateId} required={true} readOnly={readOnly}
                                 ref={customerRef}
-                            />
+                            /> */}
 
 
 
@@ -643,12 +651,12 @@ const InvoiceForm = ({
                 <fieldset className=''>
 
                     <InvoiceItems invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} styleList={styleList}
-                        styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList}
-                    />
+                        styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList} customerRef={customerRef}
+                    /> 
 
                 </fieldset>
 
-                <div className="grid grid-cols-5 gap-3">
+                {/* <div className="grid grid-cols-5 gap-3">
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm">
                         <h2 className="font-medium text-slate-700 mb-2">
@@ -718,12 +726,7 @@ const InvoiceForm = ({
                         />
                     </div>
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm">
-                        {/* <div className="flex justify-between mr-6">
-                            <h2 className="text-md text-slate-700 " >Total Qty</h2>
-                            <span className="text-sm text-slate-700" >
-                                {totalQty.toFixed(3)} PCS
-                            </span>
-                        </div> */}
+
                         <h2 className="font-medium text-slate-700 mb-2 text-base ">
                             Tax Details
                         </h2>
@@ -755,12 +758,6 @@ const InvoiceForm = ({
 
 
                     <div className="border border-slate-200 bg-white rounded-md shadow-sm p-5 space-y-2">
-                        {/* <div className="flex justify-between mr-6">
-                            <h2 className="text-md text-slate-700 " >Total Qty</h2>
-                            <span className="text-sm text-slate-700" >
-                                {totalQty.toFixed(3)} PCS
-                            </span>
-                        </div> */}
 
                         <div className="flex justify-between text-sm ">
                             <span className="text-md text-slate-700" >Taxable Amount</span>
@@ -774,7 +771,7 @@ const InvoiceForm = ({
 
                         </div>
                         <div className="flex justify-between border-t pt-2 font-semibold">
-                            <span  className="font-medium text-slate-700 mb-2 text-base">Net Amount</span>
+                            <span className="font-medium text-slate-700 mb-2 text-base ">Net Amount</span>
                             <span className="" >{netAmount.toFixed(2)}</span>
                         </div>
                     </div>
@@ -782,10 +779,81 @@ const InvoiceForm = ({
 
 
 
-                </div>
+                </div> */}
+                <div className="grid grid-cols-7 gap-3">
 
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-2">
+                        <div className="w-56">
+                            <TextInputNew1 name="Transporter"
+                                value={transporter} setValue={setTransporter} readOnly={readOnly} />
+
+                        </div>
+                        <div className="flex flex-col gap-1 w-32">
+                            <label className="block text-xs font-bold text-gray-600 ">
+                                Transport Mode
+                            </label>
+                            <select className="w-full text-xs border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                onChange={(e) => {
+                                    setTransportMode(e.target.value)
+                                }}
+                                value={transportMode}
+                            >
+                                <option value="">Select</option>
+                                <option value="Road">By Road</option>
+                                <option value="Rail">By Rail</option>
+                                <option value="Air">By Air</option>
+                                <option value="Ship">By Ship</option>
+                            </select>
+                        </div>
+                        <div className="">
+                            <TextInputNew1 name="Vehicle No"
+                                value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
+
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
+                        <TextAreaNew
+                            name="Terms & Condition"
+                            placeholder="Addres"
+                            value={remarks}
+                            setValue={setRemarks}
+                        />
+                    </div>
+
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
+                        <TextAreaNew
+                            name="Remarks"
+                            placeholder="Addres"
+                            value={remarks}
+                            setValue={setRemarks}
+                        />
+                    </div>
+
+
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
+                        <h2 className="font-bold text-slate-800 mb-2 text-base">
+                            Tax Summary
+                        </h2>
+
+                        <button className="text-sm bg-sky-500 hover:text-white font-semibold hover:bg-sky-800 transition p-1 ml-5 rounded"
+                            onClick={() => {
+
+                                setSummary(true)
+                            }}>
+                            View Tax Summary
+                        </button>
+                    </div>
+
+
+
+
+                </div>
                 <div className="flex flex-col md:flex-row gap-2 justify-between mt-4">
-                    {/* Left Buttons */}
                     <div className="flex gap-2 flex-wrap">
                         <button onClick={() => saveData("close")} className="bg-indigo-500 text-white px-4 py-1 rounded-md hover:bg-indigo-600 flex items-center text-sm">
                             <HiOutlineRefresh className="w-4 h-4 mr-2" />
@@ -796,35 +864,19 @@ const InvoiceForm = ({
                             Save & New
                         </button>
 
-                        {/* <button onClick={() => saveData("draft")} className="bg-indigo-500 text-white px-4 py-1 rounded-md hover:bg-indigo-600 flex items-center text-sm">
-                            <HiOutlineRefresh className="w-4 h-4 mr-2" />
-                            Draft Save
-                        </button> */}
                     </div>
 
-                    {/* Right Buttons */}
                     <div className="flex gap-2 flex-wrap">
-                        {/* <button className="bg-emerald-600 text-white px-4 py-1 rounded-md hover:bg-emerald-700 flex items-center text-sm">
-                                                               <FiShare2 className="w-4 h-4 mr-2" />
-                                                               Email
-                                                           </button> */}
+
                         <button className="bg-yellow-600 text-white px-4 py-1 rounded-md hover:bg-yellow-700 flex items-center text-sm"
                             onClick={() => setReadOnly(false)}
                         >
                             <FiEdit2 className="w-4 h-4 mr-2" />
                             Edit
                         </button>
-                        {/* <button className="bg-emerald-600 text-white px-4 py-1 rounded-md hover:bg-emerald-700 flex items-center text-sm"
-                          onClick={() => {
-                            setPrintModalOpen(true)
-                          }}
-                        >
-                          <FaEye className="w-4 h-4 mr-2" />
-                          Preview
-                        </button> */}
+
                         <button className="bg-slate-600 text-white px-4 py-1 rounded-md hover:bg-slate-700 flex items-center text-sm"
                             onClick={() => {
-                                // handlePrint()
                                 setPrintModalOpen(true)
                             }}
                         >

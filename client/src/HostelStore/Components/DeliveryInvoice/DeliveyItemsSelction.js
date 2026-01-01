@@ -12,8 +12,13 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
 
 
 
+  const filledPoItems = [
+    ...tempInvoiceItems,
+    ...Array(Math.max(0, 15 - tempInvoiceItems.length)).fill({}), // empty rows
+  ];
 
 
+  console.log(filledPoItems,"filledPoItems",invoiceItems)
 
 
 
@@ -183,7 +188,7 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
                                                     </th>
                                                     <th
 
-                                                        className={`w-11 px-4 py-2 text-center font-medium text-[13px] `}
+                                                        className={`w-20 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         No of Box
                                                     </th>
@@ -208,14 +213,14 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
 
                                             <tbody>
 
-                                                {tempInvoiceItems?.length === 0 ? (
+                                                {filledPoItems?.length === 0 ? (
                                                     <tr>
                                                         <td colSpan={9} className="px-4 py-4 text-center text-gray-500">
                                                             No data found
                                                         </td>
                                                     </tr>
                                                 ) : (
-                                                    tempInvoiceItems?.map((item, index) => (
+                                                    filledPoItems?.map((item, index) => (
                                                         <tr
                                                             key={index}
                                                             className={`hover:bg-gray-50 py-1 transition-colors border-b border-gray-200 text-[12px] ${index % 2 === 0 ? "bg-white" : "bg-gray-100"

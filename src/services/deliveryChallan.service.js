@@ -143,7 +143,13 @@ async function getDcItems(req) {
                     name: true
                 }
             },
-            DeliveryInvoiceItems: true
+            DeliveryInvoiceItems: true,
+            Hsn : {
+                select : {
+                    name : true ,
+                    tax : true
+                }
+            }
 
         }
     });
@@ -224,6 +230,12 @@ async function getOne(id) {
                     isInvoice: true,
                     active: true,
                     hsnId: true,
+                    Hsn: {
+                        select: {
+                            name: true,
+                            tax: true
+                        }
+                    },
                     DeliveryInvoiceItems: {
                         select: {
                             invoiceQty: true

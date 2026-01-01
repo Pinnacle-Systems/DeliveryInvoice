@@ -63,13 +63,13 @@ export default function Form() {
     }
 
     const validateData = (data) => {
-        if (data.name) {
+        if (data.name && data?.tax) {
             return true;
         }
         return false;
     }
 
-    const handleSubmitCustom = async (callback, data, text) => {
+    const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
             await callback(data)
             setId("")
@@ -79,12 +79,18 @@ export default function Form() {
                 icon: "success",
 
             });
+            if (nextProcess == "new") {
+                syncFormWithDb(undefined);
+                onNew();
+            } else {
+                setForm(false);
+            }
         } catch (error) {
             console.log("handle");
         }
     };
 
-    const saveData = () => {
+    const saveData = (nextProcess) => {
         if (!validateData(data)) {
             Swal.fire({
                 title: "Please fill all required fields...!",
@@ -93,13 +99,36 @@ export default function Form() {
             });
             return;
         }
+        let foundItem;
+        if (id) {
+            foundItem = allData?.data
+                ?.filter((i) => i.id !== id)
+                ?.some(
+                    (item) =>
+                        item.name?.trim().toLowerCase() === name?.trim().toLowerCase()
+                );
+        } else {
+            foundItem = allData?.data?.some(
+                (item) => item.name?.trim().toLowerCase() === name?.trim().toLowerCase()
+            );
+        }
+
+        if (foundItem) {
+            Swal.fire({
+                text: "The Hsn Code already exists.",
+                icon: "warning",
+                timer: 1500,
+                showConfirmButton: false,
+            });
+            return false;
+        }
         if (!window.confirm("Are you sure save the details ...?")) {
             return;
         }
         if (id) {
-            handleSubmitCustom(updateData, data, "Updated");
+            handleSubmitCustom(updateData, data, "Updated", nextProcess);
         } else {
-            handleSubmitCustom(addData, data, "Added");
+            handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     };
 
@@ -266,12 +295,29 @@ export default function Form() {
                                         {!readOnly && (
                                             <button
                                                 type="button"
-                                                onClick={saveData}
-                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
-                                          border border-green-600 flex items-center gap-1 text-xs"
+                                                onClick={() => {
+                                                    saveData("close");
+                                                }}
+                                                className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                                                 border border-blue-600 flex items-center gap-1 text-xs"
                                             >
                                                 <Check size={14} />
-                                                {id ? "Update" : "Save"}
+                                                {id ? "Update" : "Save & close"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {!readOnly && !id && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    saveData("new");
+                                                }}
+                                                className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                                                 border border-green-600 flex items-center gap-1 text-xs"
+                                            >
+                                                <Check size={14} />
+                                                {"Save & New"}
                                             </button>
                                         )}
                                     </div>
@@ -295,7 +341,7 @@ export default function Form() {
                                                     </div> */}
                                                     <div className='grid grid-cols-3 my-2 gap-5'>
                                                         <TextInputNew1 name="HSN Code" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-                                                        {/* <TextInputNew1 name="Tax Percentage" type="text" max={"100"} value={tax} setValue={setTax} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} /> */}
+                                                        <TextInputNew1 name="Tax Percentage" type="text" max={"100"} value={tax} setValue={setTax} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
 
                                                     </div>
                                                     <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />

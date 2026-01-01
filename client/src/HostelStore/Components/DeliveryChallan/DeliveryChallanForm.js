@@ -367,7 +367,7 @@ const ChallanForm = ({
                 </div>
 
             </div>
-            <div className="space-y-3  py-1">
+            <div className="space-y-2  py-1">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
 
 

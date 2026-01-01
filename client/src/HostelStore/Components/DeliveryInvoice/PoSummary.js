@@ -1,18 +1,108 @@
 import { Loader } from "../../../Basic/components"
 import useTaxDetailsHook from "../../../CustomHooks/TaxHookDetails"
 import { discountTypes } from "../../../Utils/DropdownData"
+import numberToWords from "number-to-words";
 
 const numberToText = require('number-to-text')
 
 const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountType, setDiscountType, discountValue, setDiscountValue, remarks, setRemarks }) => {
 
-        console.log(poItems, "poItems")
+    console.log(poItems, "poItems")
 
-    const { isLoading: isTaxHookDetailsLoading, ...taxDetails } = useTaxDetailsHook({ poItems, taxTypeId, discountType, discountValue })
 
-    if (isTaxHookDetailsLoading) return <Loader />
 
-        console.log(taxDetails,"taxDetails")
+    const totalAmount = poItems?.reduce((sum, item) => {
+        const qty = Number(item?.invoiceQty ?? 0);
+        const price = Number(item?.price ?? 0);
+        return sum + qty * price;
+    }, 0);
+
+    // 2️⃣ Discount Amount
+    let discountAmount = 0;
+
+    if (discountType == "Percentage") {
+        discountAmount = (totalAmount * Number(discountValue || 0)) / 100;
+    }
+    else if (discountType == "Flat") {
+        discountAmount = Number(discountValue || 0);
+    }
+
+
+    const gstSummary = {};
+
+    poItems.forEach(item => {
+        const amount = item.qty * item.price;
+        const tax = item?.Hsn?.tax
+        const halfGst = tax / 2;
+
+        if (!gstSummary[tax]) {
+            gstSummary[tax] = {
+                cgstRate: halfGst,
+                sgstRate: halfGst,
+                cgstAmount: 0,
+                sgstAmount: 0
+            };
+        }
+
+        gstSummary[tax].cgstAmount += amount * (halfGst / 100);
+        gstSummary[tax].sgstAmount += amount * (halfGst / 100);
+    });
+
+    
+    const result = poItems.reduce(
+        (acc, item) => {
+            const amount = item.qty * item.price;
+            const tax = item?.Hsn?.tax
+            const halfGst = tax / 2;
+
+            const cgstAmount = amount * (halfGst / 100);
+            const sgstAmount = amount * (halfGst / 100);
+            const itemTax = cgstAmount + sgstAmount;
+
+
+
+            // acc.items.push({
+            //   ...item,
+            //   amount,
+            //   cgstRate: halfGst,
+            //   sgstRate: halfGst,
+            //   cgstAmount,
+            //   sgstAmount,
+            //   itemTax
+            // });
+
+            acc.totalCgst += cgstAmount;
+            acc.totalSgst += sgstAmount;
+            acc.overallTax += itemTax;
+            acc.subTotal += amount;
+
+            return acc;
+        },
+        {
+            // items: [],
+            totalCgst: 0,
+            totalSgst: 0,
+            overallTax: 0,
+            subTotal: 0
+        }
+    );
+
+
+
+    console.log(result, "result");
+    console.log(gstSummary, "gstSummary")
+    const netAmount = Math.max(totalAmount - discountAmount, 0) + (parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst))
+    const roundedNetAmount = Math.round(netAmount);
+    const roundOff = Number((roundedNetAmount - netAmount).toFixed(2));
+    const overallAmount = parseFloat(parseFloat(netAmount) + parseFloat(roundOff)).toFixed(2)
+
+
+
+
+
+
+    console.log(roundedNetAmount, "roundedNetAmount", netAmount)
+    console.log(discountType, "roundOff", roundOff, netAmount, roundOff)
     return (
         <div className={`bg-gray-200 rounded z-50 w-[700px] `}>
             <table className="border border-gray-500 w-full text-xs text-start">
@@ -37,7 +127,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         <td className="border border-gray-500 py-1">Gross Amount</td>
                         <td className="border border-gray-500 text-right" colSpan={2}
                         >
-                            {parseFloat(taxDetails.grossAmount).toFixed(3)}
+                            {parseFloat(totalAmount).toFixed(2)}
                         </td>
                     </tr>
                     <tr>
@@ -46,7 +136,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         >
                             <select autoFocus name='type' disabled={readOnly} className='text-left w-full rounded h-8'
                                 value={discountType}
-                                onChange={(e) => { setDiscountType(e.target.value) }}
+                                onChange={(e) => { setDiscountType(e.target.value); setDiscountValue(0) }}
                             >
                                 <option value={""}>
                                     Select
@@ -68,12 +158,25 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                                 }}
                                 min={"0"}
                                 onFocus={(e) => e.target.select()}
-                                onChange={(e) => { setDiscountValue(e.target.value) }}
+                                onChange={(e) => {
+                                    if (discountType == "Percentage") {
+                                        if (e.target.value > 100) {
+                                            return
+                                        } else {
+                                            setDiscountValue(e.target.value)
+                                        }
+                                    } else {
+                                        setDiscountValue(e.target.value)
+
+                                    }
+
+                                }}
                             />
                         </td>
                         <td className="border border-gray-500"
                         >
-                            <input disabled type="text" name='value' className='h-7 w-full text-right' value={taxDetails.overAllDiscountAmount}
+                            <input disabled type="text" name='value' className='h-7 w-full text-right'
+                                value={discountAmount}
                             />
                         </td>
                     </tr>
@@ -83,7 +186,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         >
                             <input disabled type="text" name='value' className='h-7 w-full text-right'
                                 value={
-                                    parseFloat(taxDetails?.sgstAmount) + parseFloat(taxDetails?.cgstAmount)
+                                    parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst)
                                 }
                             />
                         </td>
@@ -93,8 +196,19 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         <td className="border border-gray-500" colSpan={2}
                         >
                             <input disabled type="text" name='value' className='h-7 w-full text-right'
+                            // value={
+                            //     parseFloat(taxDetails?.igstAmount) 
+                            // }
+                            />
+                        </td>
+                    </tr>
+                    <tr className='h-7'>
+                        <td className="border border-gray-500">Round Off</td>
+                        <td className="border border-gray-500" colSpan={2}
+                        >
+                            <input disabled type="text" name='value' className='h-7 w-full text-right'
                                 value={
-                                    parseFloat(taxDetails?.igstAmount) 
+                                    parseFloat(roundOff).toFixed(2)
                                 }
                             />
                         </td>
@@ -105,31 +219,23 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         >
                             <input disabled type="text" name='value' className='h-7 w-full text-right'
                                 value={
-                                    taxDetails?.netAmount
+                                    parseFloat(overallAmount).toFixed(2)
                                 }
                             />
                         </td>
                     </tr>
-                    <tr className='h-7'>
-                        <td className="border border-gray-500">Round Off</td>
-                        <td className="border border-gray-500" colSpan={2}
-                        >
-                            <input disabled type="text" name='value' className='h-7 w-full text-right'
-                                value={
-                                    parseFloat(taxDetails?.roundOffAmount).toFixed(2)
-                                }
-                            />
-                        </td>
-                    </tr>
+
                     <tr className='h-7'>
                         <td className="border border-gray-500">Amount in Words</td>
                         <td className="border border-gray-500" colSpan={2}
                         >
                             {/* <input disabled type="text" name='value' className='h-7 w-full text-right'
                                 value={
-                                    numberToText.convertToText(taxDetails?.netAmount, { language: "en-in" }) + " Only"
+                                    numberToText.convertToText(overallAmount, { language: "en-in" }) + " Only"
                                 }
                             /> */}
+                            {numberToWords.toWords(roundedNetAmount)} only
+
                         </td>
                     </tr>
                 </tbody>

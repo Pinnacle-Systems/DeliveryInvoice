@@ -5,16 +5,16 @@ import Swal from "sweetalert2";
 const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceItems, readOnly,
     styleItemList, colorList,
     yarnList, id,
-    uomList, }) => {
+    uomList, customerRef }) => {
 
     const [currentSelectedIndex, setCurrentSelectedIndex] = useState("")
     const [contextMenu, setContextMenu] = useState(null);
 
 
     useEffect(() => {
-        if (invoiceItems?.length >= 3) return
+        if (invoiceItems?.length >= 8) return
         setInvoiceItems(prev => {
-            let newArray = Array?.from({ length: 3 - prev?.length }, () => {
+            let newArray = Array?.from({ length: 8 - prev?.length }, () => {
                 return {
                     styleId: "",
                     styleItemId: "",
@@ -117,10 +117,11 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
     return (
 
         <>
-            <div className={` relative w-full overflow-y-auto p-3 max-h-[200px] overflow-auto`}>
-                <div className="flex justify-between items-center mb-2">
+            <div className={` border border-slate-200 relative w-full overflow-y-auto  max-h-[380px] overflow-auto`}>
+                <div className="flex justify-between items-center  p-1">
                     <h2 className="font-bold text-slate-700">List Of Items</h2>
                     <button className="font-bold text-slate-700 bord"
+                        ref={customerRef}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.preventDefault();
@@ -128,7 +129,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
                             }
                         }}
-                        // disabled={id}
+                        disabled={id}
                         onClick={() => {
                             if (!supplierId) {
                                 Swal.fire({
@@ -167,7 +168,9 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                             <th className="w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                 Item
                             </th>
-
+                            <th className="w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                Hsn
+                            </th>
                             <th className="w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                 Color
                             </th>
@@ -189,11 +192,11 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                             </th>
 
                             <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                Qty
+                                Qty <span className="text-red-500">*</span>
                             </th>
 
                             <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                Price
+                                Price <span className="text-red-500">*</span>
                             </th>
 
                             <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
@@ -226,10 +229,14 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 <td className="py-0.5 border border-gray-300 text-[11px] bg-gray-100">
                                     {row?.StyleItem?.name}
                                 </td>
-                                <td className="w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
+
+                                <td className="py-0.5 border border-gray-300 text-[11px] bg-gray-100">
+                                    {row?.Hsn?.name}
+                                </td>
+                                <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
                                     {row?.Color?.name}
                                 </td>
-                                <td className="w-16 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs bg-gray-100">
+                                <td className="p-0.5 w-16 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs bg-gray-100">
                                     {row.noOfBox}
                                 </td>
 
@@ -241,13 +248,13 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
 
 
-                                <td className="w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
+                                <td className="p-0.5 w-12 border border-gray-300 text-[11px]  bg-gray-100">
                                     {row?.Uom?.name}
                                 </td>
 
 
 
-                                <td className=" border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs bg-gray-100">
+                                <td className="p-0.5 border border-gray-300 text-right text-[11px]  px-2 text-xs bg-gray-100">
                                     <input
                                         className=" rounded  w-full  text-xs focus:outline-none text-right"
                                         type="number"
@@ -285,11 +292,11 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 </td>
 
 
-                                <td className="w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100  text-right">
+                                <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100  text-right">
                                     {row.balanceQty ? parseFloat(row.balanceQty).toFixed(3) : ""}
                                 </td>
 
-                                <td className=" border border-gray-300 bg-white text-right text-[11px] py-1.5 px-2 text-xs">
+                                <td className="p-0.5 border border-gray-300 bg-white text-right text-[11px] px-2 text-xs">
                                     <input
                                         className=" rounded px-1 ml-2 w-full  text-xs focus:outline-none text-right"
                                         type="number"
@@ -347,7 +354,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
                                     />
                                 </td>
-                                <td className=" border border-gray-300 bg-white text-right text-[11px] py-1.5 px-2 text-xs">
+                                <td className="p-0.5 border border-gray-300 bg-white text-right text-[11px]  px-2 text-xs">
                                     <input
                                         className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
                                         type="number"
@@ -384,14 +391,14 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                     />
                                 </td>
 
-                                <td className=" border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
+                                <td className="p-0.5 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
                                     {parseFloat(parseFloat(row.invoiceQty || 0) * parseFloat(row.price || 0)).toFixed(3)}
                                 </td>
 
 
 
 
-                        
+
 
 
 

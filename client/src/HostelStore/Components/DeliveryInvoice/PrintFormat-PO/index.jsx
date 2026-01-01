@@ -18,6 +18,7 @@ import { Loader } from "../../../../Basic/components";
 import numberToText from "number-to-text";
 import MsExports from "../../../../../src/assets/MSexports.png";
 import numberToWords from "number-to-words";
+import React from "react";
 // Font registration
 Font.register({
   family: "Roboto",
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     // justifyContent: "space-between",
     flexDirection: "row",
     padding: 7,
-    height : 130
+    height: 130
 
 
   },
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontWeight: "bold",
     textAlign: "center",
-    borderRight: "1 solid #000",
+    // borderRight: "1 solid #000",
     padding: 3,
   },
   td: {
@@ -273,7 +274,36 @@ const DeliveryInvoice = ({
 
   console.log(poItems, "poItems")
 
+  const gstSummary = {};
 
+  poItems?.filter(i => i.styleId)?.forEach(item => {
+    const amount = item.qty * item.price;
+    const tax = item?.Hsn?.tax
+    const halfGst = tax / 2;
+
+    if (!gstSummary[tax]) {
+      gstSummary[tax] = {
+        cgstRate: halfGst,
+        sgstRate: halfGst,
+        cgstAmount: 0,
+        sgstAmount: 0
+      };
+    }
+
+    gstSummary[tax].cgstAmount += amount * (halfGst / 100);
+    gstSummary[tax].sgstAmount += amount * (halfGst / 100);
+  });
+  const gstArray = Object.keys(gstSummary).map(tax => {
+    return {
+      taxRate: Number(tax),
+      cgstRate: gstSummary[tax].cgstRate,
+      sgstRate: gstSummary[tax].sgstRate,
+      cgstAmount: gstSummary[tax].cgstAmount,
+      sgstAmount: gstSummary[tax].sgstAmount,
+      totalTax: gstSummary[tax].cgstAmount + gstSummary[tax].sgstAmount
+    };
+  });
+  console.log(gstArray, "gstArray")
   const groupedPoItems = Object.values(
     poItems.reduce((acc, item) => {
       const key = [
@@ -408,7 +438,7 @@ const DeliveryInvoice = ({
                   marginBottom: 1,
                   textAlign: "left",
                   marginRight: 4,
-                  width : 170
+                  width: 170
                 }}>{branchData?.address}</Text>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -630,8 +660,8 @@ const DeliveryInvoice = ({
           <View style={styles.tableHeader}>
             <Text style={[styles.th, { flex: 1 }]}>S.No</Text>
             <Text style={[styles.th, { flex: 5 }]}>Style No</Text>
-            <Text style={[styles.th, { flex: 3 }]}>Item</Text>
-            <Text style={[styles.th, { flex: 2 }]}>Color</Text>
+            <Text style={[styles.th, { flex: 4 }]}>Item</Text>
+            <Text style={[styles.th, { flex: 4 }]}>Color</Text>
             <Text style={[styles.th, { flex: 1 }]}>Hsn</Text>
 
             <Text style={[styles.th, { flex: 1 }]}>Uom</Text>
@@ -647,10 +677,10 @@ const DeliveryInvoice = ({
               <Text style={[styles.td, { flex: 5, textAlign: "left" }]}>
                 {row?.Style?.name}
               </Text>
-              <Text style={[styles.td, { flex: 3 }]}>
+              <Text style={[styles.td, { flex: 4 }]}>
                 {row?.StyleItem?.name}
               </Text>
-              <Text style={[styles.td, { flex: 2 }]}>
+              <Text style={[styles.td, { flex: 4 }]}>
                 {row?.Color?.name}
               </Text>
               <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
@@ -690,14 +720,14 @@ const DeliveryInvoice = ({
             </Text>
 
             <Text style={[{
-              flex: 3, padding: 3,
+              flex: 4, padding: 3,
               fontSize: 8
             }]}>
               Total
 
             </Text>
             <Text style={[{
-              flex: 2, padding: 3,
+              flex: 4, padding: 3,
             }]}>
             </Text>
             <Text style={[{
@@ -793,51 +823,61 @@ const DeliveryInvoice = ({
 
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                borderTop: "1 solid #9ca3af",
-                borderRight: "1 solid #9ca3af",
-              }}
-            >
-              <Text style={{ flex: 2, fontSize: 8, padding: 3 }}>
-                CGST @{parseFloat(taxKey) / 2}%
-              </Text>
-              <Text
-                style={{
-                  flex: 1,
-                  textAlign: "right",
-                  fontSize: 8,
-                  padding: 3,
-                }}
-              >
-                {parseFloat(cgstAmount).toFixed(3)}
+            {gstArray?.map((item, index) => (
+              <React.Fragment key={index}>
+                {/* CGST Row */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderTopWidth: 1,
+                    borderTopColor: "#9ca3af",
+                    borderRightWidth: 1,
+                    borderRightColor: "#9ca3af",
+                  }}
+                >
+                  <Text style={{ flex: 2, fontSize: 8, padding: 3 }}>
+                    CGST @{item.cgstRate}%
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "right",
+                      fontSize: 8,
+                      padding: 3,
+                    }}
+                  >
+                    {item.cgstAmount.toFixed(2)}
+                  </Text>
+                </View>
 
-              </Text>
-            </View>
+                {/* SGST Row */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderTopWidth: 1,
+                    borderTopColor: "#9ca3af",
+                    borderRightWidth: 1,
+                    borderRightColor: "#9ca3af",
+                  }}
+                >
+                  <Text style={{ flex: 2, fontSize: 8, padding: 3 }}>
+                    SGST @{item.sgstRate}%
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      textAlign: "right",
+                      fontSize: 8,
+                      padding: 3,
+                    }}
+                  >
+                    {item.sgstAmount.toFixed(2)}
+                  </Text>
+                </View>
+              </React.Fragment>
+            ))}
 
-            <View
-              style={{
-                flexDirection: "row",
-                borderTop: "1 solid #9ca3af",
-                borderRight: "1 solid #9ca3af",
-              }}
-            >
-              <Text style={{ flex: 2, fontSize: 8, padding: 3 }}>
-                SGST @{parseFloat(taxKey) / 2}%
-              </Text>
-              <Text
-                style={{
-                  flex: 1,
-                  textAlign: "right",
-                  fontSize: 8,
-                  padding: 3,
-                }}
-              >
-                {parseFloat(sgstAmount).toFixed(3)}
 
-              </Text>
-            </View>
 
             <View
               style={{

@@ -132,6 +132,7 @@ async function getOne(id) {
                     active: true,
                     price: true,
                     invoiceQty: true,
+                    hsnId: true,
                     Style: {
                         select: {
                             name: true
@@ -160,6 +161,12 @@ async function getOne(id) {
                     DeliveryChallanItems: {
                         select: {
                             qty: true
+                        }
+                    },
+                    Hsn: {
+                        select: {
+                            name: true,
+                            tax: true
                         }
                     }
 
@@ -194,7 +201,7 @@ async function getSearch(req) {
 
 async function create(body) {
     const { finYearId, branchId, supplierId, netBillValue, transportMode, transporter, vehicleNo, taxTemplateId, remarks, invoiceItems,
-        termsandcondtions
+        termsandcondtions, discountType, discountValue
     } = await body
 
 
@@ -222,8 +229,10 @@ async function create(body) {
                     transporter: transporter ? transporter : "",
                     vehicleNo: vehicleNo ? vehicleNo : "",
                     remarks: remarks ? remarks : '',
-                    taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
+                    // taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
                     termsandcondtions: termsandcondtions ? termsandcondtions : "",
+                    discountType: discountType ? discountType : "",
+                    discountValue: discountValue ? parseFloat(discountValue) : undefined,
                     DeliveryInvoiceItems: invoiceItems?.length > 0
                         ? {
                             createMany: {
@@ -236,7 +245,8 @@ async function create(body) {
                                     invoiceQty: sub?.invoiceQty ? parseFloat(sub.invoiceQty) : undefined,
                                     price: sub?.price ? parseFloat(sub.price) : undefined,
                                     deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
-                                    deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined
+                                    deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
+                                    hsnId: sub?.hsnId ? sub?.hsnId : undefined,
 
                                 })),
                             },
@@ -278,7 +288,9 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { taxTemplateId, docId, supplierId, netBillValue, transportMode, transporter, vehicleNo, invoiceItems, remarks ,termsandcondtions } = await body
+    const { taxTemplateId, docId, supplierId, netBillValue, transportMode, transporter, vehicleNo, invoiceItems, remarks, termsandcondtions,
+        discountType, discountValue
+    } = await body
 
     const incomingIds = invoiceItems?.filter(i => i.id).map(i => parseInt(i.id));
 
@@ -299,9 +311,10 @@ async function update(id, body) {
             transporter: transporter ? transporter : "",
             vehicleNo: vehicleNo ? vehicleNo : "",
             remarks: remarks ? remarks : '',
-            taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
+            // taxPercent: taxTemplateId ? parseFloat(taxTemplateId) : "",
             termsandcondtions: termsandcondtions ? termsandcondtions : "",
-
+            discountType: discountType ? discountType : "",
+            discountValue: discountValue ? parseFloat(discountValue) : undefined,
             DeliveryInvoiceItems: {
                 deleteMany: {
                     ...(incomingIds.length > 0 && {
@@ -322,7 +335,8 @@ async function update(id, body) {
                             invoiceQty: sub?.invoiceQty ? parseFloat(sub.invoiceQty) : undefined,
                             price: sub?.price ? parseFloat(sub.price) : undefined,
                             deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
-                            deliveryChallanItemsId: sub?.deliveryChallanItemsId ? parseInt(sub?.deliveryChallanItemsId) : undefined
+                            deliveryChallanItemsId: sub?.deliveryChallanItemsId ? parseInt(sub?.deliveryChallanItemsId) : undefined,
+                            hsnId: sub?.hsnId ? sub?.hsnId : undefined,
 
 
                         },
@@ -339,7 +353,9 @@ async function update(id, body) {
                         invoiceQty: sub?.invoiceQty ? parseFloat(sub.invoiceQty) : undefined,
                         price: sub?.price ? parseFloat(sub.price) : undefined,
                         deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
-                        deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined
+                        deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
+                        hsnId: sub?.hsnId ? sub?.hsnId : undefined,
+
 
 
                     })),

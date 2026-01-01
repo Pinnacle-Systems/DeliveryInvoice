@@ -811,7 +811,10 @@ model DeliveryInvoice {
   termsandcondtions    String?
   DeliveryInvoiceItems DeliveryInvoiceItems[]
   Ledger               Ledger?
+  discountType         String?
+  discountValue        Float?
   taxPercent           Float?
+
 }
 
 model DeliveryInvoiceItems {
