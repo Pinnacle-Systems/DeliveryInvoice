@@ -83,9 +83,9 @@ const PaymentForm = ({ id, setId, onClose }) => {
             setTotalPayAmount(PartyData?.data?.soa ? data?.totalPaymentPurchaseBill : data?.totalPaymentSalesBill)
             setPartyId(data?.partyId || '');
             setTotalBillAmount(data?.totalBillAmount || '')
-            setCvv(data?.cvv  ?moment.utc(data?.cvv).format("YYYY-MM-DD") : "")
+            setCvv(data?.cvv ? moment.utc(data?.cvv).format("YYYY-MM-DD") : "")
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
-            
+
         }, [id])
 
 
@@ -125,7 +125,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
 
     }
     const validateData = (data) => {
-        return data?.supplierId && data?.paidAmount && data?.paymentType && data?.paymentMode
+        return data?.supplierId && data?.paidAmount && data?.paymentType && data?.paymentMode && data?.cvv
     }
 
     const handleSubmitCustom = async (callback, data, text, nextProcess) => {
@@ -369,7 +369,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
 
                             <div className="grid grid-cols-2 gap-6 mb-3">
                                 <div>
-                                    <label className="block text-gray-600 font-medium mb-2">Date</label>
+                                    <label className="block text-gray-600 font-medium mb-2">Date <span className="text-red-500">*</span> </label>
                                     <input
                                         type="date"
                                         value={cvv}
@@ -386,7 +386,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                         //   ? Number(totalBillAmount) - Number(PartyData?.data?.totalDiscount || 0)
                                         //   : (Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0))
                                         // }
-                                        value={(Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0)).toFixed(3)}
+                                        value={(Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0)).toFixed(2)}
                                         onChange={(e) => setTotalBillAmount(e.target.value)}
                                         className="w-full px-3 py-1 border border-gray-300 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
                                         placeholder="0"
@@ -425,7 +425,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                     <input
                                         type="text"
                                         // value={id? Number(totalBillAmount)-Number(PartyData?.data?.totalDiscount)-Number(paidAmount):((Number(totalBillAmount) - Number(paidAmount) - Number(discount)- (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
-                                        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(3)}
+                                        value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
                                         onChange={(e) => setBalanceAmount(e.target.value)}
                                         className={`w-full px-3 py-1 border border-gray-300 rounded-lg ${(Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
                                             } focus:outline-none focus:ring-emerald-500 font-semibold`}
