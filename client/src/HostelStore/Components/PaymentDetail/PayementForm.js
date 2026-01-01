@@ -7,7 +7,7 @@ import { useAddPaymentMutation, useDeletePaymentMutation, useGetPaymentByIdQuery
 import { useGetPartyByIdQuery, useGetPartyQuery } from "../../../redux/services/PartyMasterService";
 import moment from "moment";
 import { toast } from "react-toastify";
-import { DropdownInputNew } from "../../../Inputs";
+import { DropdownInputNew, TextInputNew } from "../../../Inputs";
 import { dropDownListObject } from "../../../Utils/contructObject";
 import { toWords } from "number-to-words";
 import { HiOutlineRefresh } from "react-icons/hi";
@@ -27,7 +27,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
     const [docId, setDocId] = useState("");
     const [formReport, setFormReport] = useState(false)
     const [readOnly, setReadOnly] = useState(false);
-    const [cvv, setCvv] = useState(today);
+    const [cvv, setCvv] = useState(moment.utc(new Date()).format("YYYY-MM-DD"));
     const [paymentMode, setPaymentMode] = useState('');
     const [paymentRefNo, setPaymentRefNo] = useState('');
     const [partyId, setPartyId] = useState("");
@@ -83,7 +83,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
             setTotalPayAmount(PartyData?.data?.soa ? data?.totalPaymentPurchaseBill : data?.totalPaymentSalesBill)
             setPartyId(data?.partyId || '');
             setTotalBillAmount(data?.totalBillAmount || '')
-            setCvv(data?.cvv ? moment.utc(data?.cvv).format("YYYY-MM-DD") : "")
+            setCvv(data?.cvv ? moment.utc(data?.cvv).format("YYYY-MM-DD") : moment.utc(new Date()).format("YYYY-MM-DD"))
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
         }, [id])
@@ -368,7 +368,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                             </div>
 
                             <div className="grid grid-cols-2 gap-6 mb-3">
-                                <div>
+                                {/* <div>
                                     <label className="block text-gray-600 font-medium mb-2">Date <span className="text-red-500">*</span> </label>
                                     <input
                                         type="date"
@@ -377,7 +377,14 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                         className="w-full px-3  border border-gray-300 rounded-lg focus:outline-none focus:ring-emerald-500"
                                         placeholder="Select Date"
                                     />
-                                </div>
+                                </div> */}
+                                <TextInputNew
+                                    name="Date"
+                                    value={cvv}
+                                    setValue={setCvv}
+                                    type="date"
+                                    required
+                                />
                                 <div>
                                     <label className="block text-gray-600 font-medium mb-2">Outstanding Amount</label>
                                     <input
