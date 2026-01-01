@@ -46,10 +46,10 @@ const DeliveryItems = ({
 
 
     useEffect(() => {
-        if (deliveryItems?.length >= 3) return
+        if (deliveryItems?.length >= 7) return
 
         setDeliveryItems(prev => {
-            let newArray = Array?.from({ length: 3 - prev?.length }, () => {
+            let newArray = Array?.from({ length: 7 - prev?.length }, () => {
                 return {
                     styleId: "",
                     styleItemId: "",
@@ -209,8 +209,8 @@ const DeliveryItems = ({
                     onCloseForm={() => setOpenModel(false)}
                 />
             </Modal>
-            <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm max-h-[200px] overflow-auto">
-                <div className="flex justify-between items-center mb-2">
+            <div className="border border-slate-200 px-1 py-1 bg-white rounded-md shadow-sm max-h-[480px] overflow-auto">
+                <div className="flex justify-between items-center ">
                     <h2 className="font-bold text-slate-700">List Of  DeliveryItems</h2>
                     <button className="font-bold text-slate-700 bord"
 
@@ -218,7 +218,7 @@ const DeliveryItems = ({
                     </button>
 
                 </div>
-                <div className={` relative w-full overflow-y-auto py-1`}>
+                {/* <div className={` relative w-full overflow-y-auto py-1`}>
                     <table className="w-full border-collapse table-fixed">
                         <thead className="bg-gray-200 text-gray-900">
                             <tr>
@@ -233,12 +233,7 @@ const DeliveryItems = ({
                                 >
                                     Style No<span className="text-red-500">*</span>
                                 </th>
-                                {/* <th
-
-                                    className={`w-28 px-4 py-2 text-center font-medium text-[13px] `}
-                                >
-                                    Hsn<span className="text-red-500">*</span>
-                                </th> */}
+                      
                                 <th
 
                                     className={`w-52 px-4 py-2 text-center font-medium text-[13px] `}
@@ -330,20 +325,7 @@ const DeliveryItems = ({
                                                 ))}
                                             </select>
 
-                                            {/* Plus button */}
-                                            {/* <button
-                                                disabled={readOnly}
-
-                                                type="button"
-                                                className="px-2 py-1 border rounded text-xs font-bold hover:bg-gray-200"
-                                                onClick={() => {
-                                                    // setComponenet("StyleMaster")
-                                                    setOpenModel(true);
-
-                                                }}
-                                            >
-                                                +
-                                            </button> */}
+                                      
                                         </div>
                                     </td>
 
@@ -480,43 +462,7 @@ const DeliveryItems = ({
                                             )}
                                         </select>
                                     </td>
-                                    {/* 
-
-                                    <td className=" border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
-                                        <input
-                                            className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={row?.qty}
-
-                                            disabled={!row.uomId || readOnly || !row.noOfBox}
-
-
-                                            onFocus={e => e.target.select()}
-
-                                            onKeyDown={(e) => {
-                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
-                                            }}
-
-                                            placeHolder="0.000"
-
-                                            onChange={(e) => {
-                                                const numVal = parseInt(e.target.value) || 0;
-                                                handleInputChange(numVal, index, "qty", row.totalInvoiceQty);
-
-
-                                            }}
-                                            onBlur={(e) => {
-                                                const val = e.target.value;
-                                                const formatted = e.target.value === "" ? "" : parseInt(e.target.value).toFixed(3);
-                                                e.target.value = formatted;
-                                                handleInputChange(val === "" ? 0 : formatted, index, "qty", row.totalInvoiceQty);
-                                            }}
-
-                                        />
-                                    </td> */}
-
+                         
                                     <td className="border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
                                         <input
                                             className="rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
@@ -584,7 +530,266 @@ const DeliveryItems = ({
                             )}
                         </tbody>
                     </table>
+                </div> */}
+                <div className="relative w-full max-h-[265px] overflow-y-auto ">
+                    <table className="w-full border-collapse table-fixed">
+
+                        {/* ================= TABLE HEADER ================= */}
+                        <thead className="bg-gray-200 text-gray-900">
+                            <tr>
+                                <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px]">
+                                    S.No
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-80 px-4 py-2 text-center font-medium text-[13px]">
+                                    Style No<span className="text-red-500">*</span>
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-52 px-4 py-2 text-center font-medium text-[13px]">
+                                    Item<span className="text-red-500">*</span>
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-9 px-4 py-2 text-center font-medium text-[13px]">
+                                    HSN
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-52 px-4 py-2 text-center font-medium text-[13px]">
+                                    Color<span className="text-red-500">*</span>
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-16 px-3 py-2 text-center font-medium text-[13px]">
+                                    No of Box
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px]">
+                                    UOM<span className="text-red-500">*</span>
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px]">
+                                    Qty<span className="text-red-500">*</span>
+                                </th>
+
+                                <th className="sticky top-0 z-10 bg-gray-200 w-8 px-3 py-2" />
+                            </tr>
+                        </thead>
+
+                        {/* ================= TABLE BODY ================= */}
+                        <tbody>
+                            {(deliveryItems || []).map((row, index) => (
+                                <tr
+                                    key={index}
+                                    className="border border-blue-gray-200 cursor-pointer"
+                                    onContextMenu={(e) => {
+                                        if (!readOnly) {
+                                            handleRightClick(e, index, "shiftTimeHrs");
+                                        }
+                                    }}
+                                >
+                                    <td className="w-12 border border-gray-300 text-[11px] text-center p-0.5">
+                                        {index + 1}
+                                    </td>
+
+                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                        <select
+                                            className="w-full rounded py-1 table-data-input"
+                                            value={row.styleId}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "styleId")}
+                                            disabled={readOnly}
+                                        >
+                                            <option value="" />
+                                            {(id ? styleList?.data : styleList?.data?.filter(i => i.active))?.map(item => (
+                                                <option key={item.id} value={item.id}>{item.name}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+
+                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                        <select
+                                            className="w-full rounded py-1 table-data-input"
+                                            value={row.styleItemId}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "styleItemId")}
+                                            disabled={!row.styleId || readOnly}
+                                        >
+                                            <option value="" />
+                                            {(id ? styleItemList?.data : styleItemList?.data?.filter(i => i.active))?.map(item => (
+                                                <option key={item.id} value={item.id}>{item.name}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+
+                                    <td className="py-0.5 border border-gray-300 text-[11px] text-right">
+                                        <select
+                                            onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "hsnId") } }}
+                                            tabIndex={"0"} className='text-left w-full rounded py-1 table-data-input'
+                                            value={row.styleItemId ? row.hsnId : ""}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "hsnId")}
+                                            onBlur={(e) => {
+                                                handleInputChange((e.target.value), index, "hsnId")
+                                            }
+                                            }
+                                            disabled={!row.styleId || readOnly}
+
+                                        >
+                                            <option >
+                                            </option>
+                                            {(id ? hsnList?.data : hsnList?.data?.filter(item => item.active))?.map((blend) =>
+                                                <option value={blend.id} key={blend.id}>
+                                                    {blend?.name}
+                                                </option>)}
+                                        </select>
+                                    </td>
+
+                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                        <select
+                                            className="w-full rounded py-1 table-data-input"
+                                            value={row.colorId}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "colorId")}
+                                            disabled={!row.styleItemId || readOnly}
+                                        >
+                                            <option value="" />
+                                            {(id ? colorList?.data : colorList?.data?.filter(i => i.active))?.map(item => (
+                                                <option key={item.id} value={item.id}>{item.name}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+
+
+                                    <td className=" border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
+                                        <input
+                                            className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={row?.noOfBox}
+                                            disabled={!row.colorId || readOnly}
+
+
+
+                                            onFocus={e => e.target.select()}
+
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                                            }}
+
+                                            placeHolder="0.000"
+
+                                            onChange={(e) => {
+                                                const numVal = parseFloat(e.target.value) || 0;
+                                                const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
+
+                                                handleInputChange(numVal, index, "noOfBox", row.requiredQty, balanceQty);
+
+
+                                            }}
+                                            onBlur={(e) => {
+                                                const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
+                                                const val = e.target.value;
+                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(3);
+                                                e.target.value = formatted;
+                                                handleInputChange(val === "" ? 0 : formatted, index, "noOfBox", row.requiredQty, balanceQty);
+                                            }}
+
+                                        />
+                                    </td>
+
+
+
+
+
+
+
+
+
+                                    <td className="w-12 border border-gray-300 text-[11px] py-0.5">
+                                        <select
+                                            onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "uomId") } }}
+                                            className='text-left w-full rounded py-1 table-data-input'
+                                            value={row.colorId? row.uomId : ""}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "uomId")}
+                                            onBlur={(e) => {
+                                                handleInputChange((e.target.value), index, "uomId")
+                                            }
+                                            }
+                                            disabled={!row.noOfBox || readOnly}
+
+                                        >
+
+                                            <option hidden>
+                                            </option>
+                                            {(id ? uomList?.data : uomList?.data?.filter(item => item.active))?.map((blend) =>
+                                                <option value={blend.id} key={blend.id}>
+                                                    {blend.name}
+                                                </option>
+                                            )}
+                                        </select>
+                                    </td>
+
+                                    <td className="border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
+                                        <input
+                                            className="rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={row?.qty}
+                                            disabled={!row.uomId || readOnly || !row.noOfBox}
+                                            onFocus={e => e.target.select()}
+                                            onKeyDown={(e) => {
+                                                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                                            }}
+                                            placeholder="0.000"
+
+                                            // Allow free typing
+                                            onChange={(e) => {
+                                                const val = e.target.value === "" ? "" : Number(e.target.value);
+                                                handleInputChange(val, index, "qty", row.totalInvoiceQty);
+                                            }}
+
+                                            // ✅ Enforce rule here
+                                            onBlur={(e) => {
+                                                let val = e.target.value === "" ? 0 : Number(e.target.value);
+                                                const invoiceQty = Number(row.totalInvoiceQty || 0);
+
+                                                if (id) {
+                                                    if (val < invoiceQty) {
+                                                        Swal.fire({
+                                                            icon: "error",
+                                                            text: `The Quantity must greater than or Equal to (${invoiceQty})`,
+                                                        });
+                                                        val = invoiceQty;
+                                                    }
+                                                }
+
+
+                                                const formatted = val.toFixed(3);
+
+                                                e.target.value = formatted;
+                                                handleInputChange(val, index, "qty", invoiceQty);
+                                            }}
+                                        />
+                                    </td>
+
+
+                                    <td className="flex justify-center items-center">
+                                        <button
+                                            onClick={() => addNewRow(index)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    addNewRow(index);
+                                                }
+                                            }}
+                                            className="bg-blue-50 rounded p-1"
+                                        >
+                                            +
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+
+                    </table>
                 </div>
+
                 {contextMenu && (
                     <div
                         style={{

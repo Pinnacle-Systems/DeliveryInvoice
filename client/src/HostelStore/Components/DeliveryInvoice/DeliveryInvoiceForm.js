@@ -278,9 +278,9 @@ const InvoiceForm = ({
                 //     toast.error(returnData?.message);
                 // }
                 setId(returnData?.data?.id)
-                
+
                 setIsPrintOpen(true)
-                console.log(returnData?.data?.id,"returnData?.data?.id")
+                console.log(returnData?.data?.id, "returnData?.data?.id")
             }
         } catch (error) {
             console.log("handle");
@@ -347,7 +347,7 @@ const InvoiceForm = ({
                 ...data,
                 invoiceItems: data.invoiceItems?.map(item => ({
                     ...item,
-                    deliveryChallanItemsId: item.id, 
+                    deliveryChallanItemsId: item.id,
                 })),
             }, "Added", nextProcess);
         }
@@ -502,7 +502,7 @@ const InvoiceForm = ({
                         <div className="grid grid-cols-6 gap-2">
 
 
-                            <div className="col-span-2"
+                            <div className="col-span-3"
 
                             >
 
@@ -525,7 +525,7 @@ const InvoiceForm = ({
 
                             </div>
 
-                            <div className="col-span-2">
+                            <div className="col-span-1">
                                 <TextInputNew
                                     name="Contact Person Name"
                                     placeholder="Contact name"
@@ -770,8 +770,11 @@ const InvoiceForm = ({
                             <span className="text-md text-slate-700">Toatl GST Amount</span>
                             <span className="text-sm text-slate-700 "> {totalGstAmount.toFixed(3)}</span>
                         </div>
+                        <div className="flex justify-between text-sm h-5 ">
+
+                        </div>
                         <div className="flex justify-between border-t pt-2 font-semibold">
-                            <span >Net Amount</span>
+                            <span  className="font-medium text-slate-700 mb-2 text-base">Net Amount</span>
                             <span className="" >{netAmount.toFixed(2)}</span>
                         </div>
                     </div>

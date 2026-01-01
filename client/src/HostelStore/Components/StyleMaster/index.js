@@ -458,14 +458,14 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                             <div className="grid grid-cols-2  gap-3  ">
 
                                                 <div className="">
-                                                    <TextInputNew1 name="Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
+                                                    <TextInputNew1 name="Style Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
 
                                                 </div>
                                                 <div className="">
-                                                    <TextInputNew1 name="code" type="text" value={code} setValue={setCode} readOnly={readOnly} />
+                                                    <TextInputNew1 name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} />
                                                 </div>
                                             </div>
-                                            <div className="">
+                                            <div className="mt-2">
                                                 <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} />
 
                                             </div>

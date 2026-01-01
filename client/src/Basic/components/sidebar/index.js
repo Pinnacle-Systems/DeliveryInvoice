@@ -188,7 +188,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMainDropdownOpen, setIsMainDropdownOpen 
           }
           setIsOpen(!isOpen);
         }}
-        className="fixed z-[99] top-[28.5%] left-0 bg-gradient-to-r from-gray-700 to-gray-600 text-white w-8 h-12 flex items-center justify-center rounded-r-xl shadow-xl cursor-pointer transition-all duration-300 hover:from-gray-800 hover:to-gray-700 hover:scale-105"
+        className="fixed z-[99] top-[33.5%] left-0 bg-gradient-to-r from-gray-700 to-gray-600 text-white w-8 h-12 flex items-center justify-center rounded-r-xl shadow-xl cursor-pointer transition-all duration-300 hover:from-gray-800 hover:to-gray-700 hover:scale-105"
       >
         {isOpen ? (
           <ArrowLeftCircle size={22} className="text-white transition-all duration-300" />
@@ -200,7 +200,7 @@ const Sidebar = ({ isOpen, setIsOpen, isMainDropdownOpen, setIsMainDropdownOpen 
 
       {isOpen && (
         <div
-          className={`fixed z-[999] top-[16.5%] left-[1.5rem] bg-[#343a40] text-white w-[72px] ${isMainDropdownOpen ? "h-[450px]" : "h-auto"
+          className={`fixed z-[999] top-[20.5%] left-[1.5rem] bg-[#343a40] text-white w-[72px] ${isMainDropdownOpen ? "h-[450px]" : "h-auto"
             } rounded-lg py-4 flex flex-col items-center shadow-xl transition-all duration-300`}
         >
           {/* Dashboard Link */}

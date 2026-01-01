@@ -21,19 +21,20 @@ import moment from "moment";
 import Modal from "../../../UiComponents/Modal";
 
 import { Loader } from '../../../Basic/components';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { findFromList, renameFile } from "../../../Utils/helper";
 import { Check, LayoutGrid, Paperclip, Plus, Power, Table } from "lucide-react";
 import { statusDropdown } from "../../../Utils/DropdownData";
 import ArtDesignReport from "./ArtDesignReport";
 import Swal from "sweetalert2";
 import { getImageUrlPath } from "../../../Constants";
+import { push } from "../../../redux/features/opentabs";
 
 
 const MODEL = "Party Master";
 
 
-export default function Form({ partyId }) {
+export default function Form({ partyId, onCloseForm }) {
 
     console.log(partyId, "[partyId")
     const [form, setForm] = useState(false);
@@ -106,7 +107,19 @@ export default function Form({ partyId }) {
         useGetCityQuery({ params });
 
 
+    // const openPartyModal = useSelector((state) => {
+    //     console.log(state?.partyMaster,"useSelector")
+    //     return (
+    //         state.party.openPartyModal
 
+    //     )
+    // });
+    // const lastTapName = useSelector((state) => state.party.lastTab);
+
+
+    const activeTab = useSelector(
+        (state) => state.openTabs.tabs.find((tab) => tab.active).name
+    );
     const { data: allData, isLoading, isFetching } = useGetPartyQuery({ params, searchParams: searchValue });
 
     const {
@@ -228,9 +241,12 @@ export default function Form({ partyId }) {
                 syncFormWithDb(undefined);
                 onNew();
             } else {
+                if (partyId) {
+                    onCloseForm()
+                }
                 setForm(false);
             }
-            // if(returnData?.data)
+
             Swal.fire({
                 title: text + "  " + "Successfully",
                 icon: "success",
@@ -241,7 +257,7 @@ export default function Form({ partyId }) {
         }
     };
     const today = new Date();
-    const Model = "Attachments"
+
 
 
     function addNewComments() {
@@ -417,6 +433,24 @@ export default function Form({ partyId }) {
     );
 
 
+
+    useEffect(() => {
+        if (!partyId) return
+        if (partyId == "new") {
+            onNew()
+        }
+        else {
+            setId(partyId);
+        }
+        setForm(true);
+        // if (openModelForAddress) {
+        //   setIsAddressExpanded(true);
+        // }
+    }, [partyId]);
+
+
+
+
     const columns = [
         {
             header: "S.No",
@@ -470,108 +504,740 @@ export default function Form({ partyId }) {
 
 
 
+    if (partyId) {
+        return (
+            <>
+
+                {/* {form === true && (
 
 
+                    <Modal
+                        isOpen={form}
+                        form={form}
+                        widthClass={"w-[90%] h-[93%]"}
+                        onClose={() => {
+                            setForm(false);
+
+                        }}
+                    > */}
+
+
+
+
+
+
+                <div className="h-full flex flex-col bg-gray-200 ">
+                    <div className="border-b py-2 px-4 mx-3 flex justify-between items-center sticky top-0 z-10 bg-white mt-3 ">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-md font-semibold text-gray-800">
+                                {id ? (!readOnly ? "Edit Customer/Supplier" : "Customer/Supplier Master") : "Add New Customer/Supplier"}
+                            </h2>
+
+                        </div>
+
+
+                        <div className="flex gap-2">
+
+                            <div className="flex gap-2">
+                                <div>
+                                    {readOnly && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setForm(false);
+                                                setSearchValue("");
+                                                setId(false);
+                                            }}
+                                            className="px-3 py-1 text-red-600 hover:bg-red-600 hover:text-white border border-red-600 text-xs rounded"
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex gap-2">
+                                    {!readOnly && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                saveData("close");
+                                            }}
+                                            className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
+                                                    border border-blue-600 flex items-center gap-1 text-xs"
+                                        >
+                                            <Check size={14} />
+                                            {id ? "Update" : "Save & close"}
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex gap-2">
+                                    {!readOnly && !id && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                saveData("new");
+                                            }}
+                                            className="px-3 py-1 hover:bg-green-600 hover:text-white rounded text-green-600 
+                                                    border border-green-600 flex items-center gap-1 text-xs"
+                                        >
+                                            <Check size={14} />
+                                            {"Save & New"}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-auto p-3">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+
+
+
+
+                            <div className="lg:col-span-4 space-y-3 ">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex flex-row items-center gap-2 ">
+                                            <div className="flex items-center gap-2 ">
+                                                <input
+                                                    type="radio"
+                                                    name="type"
+                                                    checked={isCustomer}
+                                                    onChange={() => handleChange('client')}
+                                                    readOnly={readOnly}
+                                                />
+                                                <label className="block text-xs font-bold text-gray-600 mt-1">Customer</label>
+                                            </div>
+                                            <div className="flex flex-row gap-2">
+
+                                                <input
+                                                    type="radio"
+                                                    name="type"
+                                                    checked={isSupplier}
+                                                    onChange={() => handleChange('supplier')}
+                                                    readOnly={readOnly}
+
+                                                />
+                                                <label className="block text-xs font-bold text-gray-600 mt-1">Supplier</label>
+                                            </div>
+                                            <div className="col-span-4 flex flex-row ">
+
+
+
+
+
+
+
+                                            </div>
+                                        </div>
+
+
+                                        <div className="col-span-2">
+                                            <TextInputNew1
+                                                name={isSupplier ? "Supplier Name" : "Customer Name"}
+                                                type="text"
+                                                value={name}
+                                                inputClass="h-8"
+                                                ref={countryNameRef}
+                                                setValue={setName}
+                                                required={true}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                onBlur={(e) => {
+                                                    if (aliasName) return;
+                                                    setAliasName(e.target.value);
+                                                }}
+
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <TextInputNew1
+                                                name="Alias Name"
+                                                type="text"
+                                                inputClass="h-8"
+                                                value={aliasName}
+                                                setValue={setAliasName}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+                                        </div>
+                                        <div className="col-span-1">
+                                            <TextInputNew1
+                                                name="Code"
+                                                type="text"
+                                                value={partyCode}
+
+                                                setValue={setPartyCode}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100 w-10"
+                                            />
+                                        </div>
+
+
+                                        <div className=" ml-2">
+                                            <ToggleButton
+                                                name="Status"
+                                                options={statusDropdown}
+                                                value={active}
+                                                setActive={setActive}
+                                                required={true}
+                                                readOnly={readOnly}
+                                                className="bg-gray-100 p-1 rounded-lg"
+                                                activeClass="bg-[#f1f1f0] shadow-sm text-blue-600"
+                                                inactiveClass="text-gray-500"
+                                            />
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+                            <div className="lg:col-span-4 space-y-3 ">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px] overflow-y-auto">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
+                                    <div className="space-y-2">
+
+
+                                        <div className="grid grid-cols-2 gap-2">
+
+                                            <div className="col-span-2">
+
+                                                <TextAreaNew name="Address"
+                                                    inputClass="h-10" value={address}
+                                                    setValue={setAddress} required={true}
+                                                    readOnly={readOnly} d
+                                                    isabled={(childRecord.current > 0)} />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <div className="grid grid-cols-5 gap-2">
+                                                    <div className="col-span-5">
+                                                        <TextInputNew1
+                                                            name="Land Mark"
+                                                            type="text"
+                                                            value={landMark}
+
+                                                            setValue={setlandMark}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                            <div className="col-span-2">
+
+                                                <div className=" grid grid-cols-5 gap-3">
+                                                    <div className="col-span-4">
+                                                        <DropdownInputNew
+                                                            name="City/State Name"
+                                                            options={dropDownListMergedObject(
+                                                                id
+                                                                    ? cityList?.data
+                                                                    : cityList?.data?.filter((item) => item.active),
+                                                                "name",
+                                                                "id"
+                                                            )}
+                                                            country={country}
+                                                            masterName="CITY MASTER"
+                                                            // lastTab={activeTab}
+                                                            value={city}
+                                                            setValue={setCity}
+                                                            required={true}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100"
+                                                        />
+                                                    </div>
+                                                    <TextInputNew1
+                                                        name="Pincode"
+                                                        type="number"
+                                                        value={pincode}
+                                                        required={true}
+
+                                                        setValue={setPincode}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+                                                        className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                    />
+
+
+                                                </div>
+
+                                            </div>
+
+                                            {/* <div className="">
+                                                        <TextInputNew
+                                                            name={"Contact Number"}
+                                                            value={contact}
+
+                                                            setValue={setContact}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+                                                    </div>
+                                                    <div className="">
+                                                        <TextInputNew1
+                                                            name={"Email"}
+                                                            type="text"
+                                                            value={email}
+
+                                                            setValue={setEmail}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+
+                                                    </div> */}
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div className="lg:col-span-4 space-y-3">
+                                <div className="bg-white p-3 rounded-md border border-gray-200  h-[260px]">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
+                                    <div className="space-y-2">
+
+
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="">
+
+                                                <TextInputNew1
+                                                    name="Contact Person Name"
+                                                    type="text"
+                                                    value={contactPersonName}
+
+                                                    setValue={setContactPersonName}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                />
+                                            </div>
+
+                                            <TextInputNew1
+                                                name="Designation"
+                                                type="text"
+                                                value={designation}
+
+                                                setValue={setDesignation}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100 w-10"
+                                            />
+                                            <TextInputNew1
+                                                name="Department"
+                                                type="text"
+                                                value={department}
+
+                                                setValue={setDepartment}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100 w-10"
+                                            />
+                                            <div className='col-span-1'>
+
+
+                                                <TextInputNew
+                                                    name="Email"
+                                                    type="text"
+                                                    value={contactPersonEmail}
+
+                                                    setValue={setContactPersonEmail}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                />
+                                            </div>
+                                            <div className='col-span-2'>
+
+                                                <TextInputNew
+                                                    name="Contact Number"
+                                                    value={contactNumber}
+                                                    setValue={setContactNumber}
+
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                />
+                                            </div>
+                                            {/* <div className='col-span-1'>
+                                                        <TextInputNew
+                                                            name="Alternative Contact Number"
+                                                            type="number"
+                                                            value={alterContactNumber}
+                                                            setValue={setAlterContactNumber}
+
+                                                            // readOnly={readOnly}
+                                                            // disabled={childRecord.current > 0}
+                                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                        />
+                                                    </div> */}
+
+
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div className="lg:col-span-4 space-y-3">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Business Details</h3>
+                                    <div className="space-y-2">
+
+                                        <div className="grid grid-cols-2 gap-2">
+
+
+                                            {/* <DropdownInput
+                                                    name="Currency"
+                                                    options={dropDownListObject(
+                                                        id
+                                                            ? currencyList?.data ?? []
+                                                            : currencyList?.data?.filter(
+                                                                (item) => item.active
+                                                            ) ?? [],
+                                                        "name",
+                                                        "id"
+                                                    )}
+                                                    // lastTab={activeTab}
+                                                    masterName="CURRENCY MASTER"
+                                                    value={currency}
+                                                    setValue={setCurrency}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                /> */}
+
+                                            {/* <DropdownInput
+                                                    name="PayTerm"
+                                                    options={dropDownListObject(
+                                                        id
+                                                            ? payTermList?.data
+                                                            : payTermList?.data?.filter((item) => item.active),
+                                                        "name",
+                                                        "id"
+                                                    )}
+                                                    value={payTermDay}
+                                                    setValue={setPayTermDay}
+                                                    // required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                /> */}
+                                            <TextInputNew
+                                                name="Pan No"
+                                                type="pan_no"
+                                                value={panNo}
+                                                setValue={setPanNo}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+                                            <TextInputNew
+                                                name="GST No"
+                                                type="text"
+                                                value={gstNo}
+                                                setValue={setGstNo}
+                                                readOnly={readOnly}
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+                                            <TextInputNew
+                                                name="MSME CERTFICATE  No"
+                                                type="text"
+                                                value={msmeNo}
+                                                setValue={setMsmeNo}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+                                            <TextInputNew
+                                                name="CIN No"
+                                                type="text"
+                                                value={cinNo}
+                                                setValue={setCinNo}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100"
+                                            />
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div className="lg:col-span-4 space-y-3">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Bank  Details</h3>
+                                    <div className="space-y-2">
+
+
+                                        <TextInputNew1
+                                            name="Bank Name"
+                                            type="text"
+                                            value={bankname}
+
+                                            setValue={setBankName}
+                                            readOnly={readOnly}
+                                            disabled={childRecord.current > 0}
+                                            className="focus:ring-2 focus:ring-blue-100 w-10"
+                                        />
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="col-span-2">
+                                                <TextInputNew1
+                                                    name="Branch Name"
+                                                    type="text"
+                                                    value={bankBranchName}
+
+                                                    setValue={setBankBranchName}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100 w-10"
+                                                />
+                                            </div>
+
+                                            <TextInputNew
+                                                name="Account Number"
+                                                type="text"
+                                                value={accountNumber}
+
+                                                setValue={setAccountNumber}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100 w-10"
+                                            />
+                                            <TextInputNew
+                                                name="IFSC CODE"
+                                                type="text"
+                                                value={ifscCode}
+
+                                                setValue={setIfscCode}
+                                                readOnly={readOnly}
+                                                disabled={childRecord.current > 0}
+                                                className="focus:ring-2 focus:ring-blue-100 w-10"
+                                            />
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div className="lg:col-span-4 space-y-3">
+                                <div className="bg-white p-3 rounded-md border border-gray-200  h-[240px]">
+                                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Attachments</h3>
+
+
+
+                                    <div className="max-h-[200px] overflow-auto">
+                                        <div className="grid grid-cols-1 gap-3  border-collapse bg-[#F1F1F0]   shadow-sm overflow-auto">
+                                            <table className="bg-gray-200 text-gray-800 text-sm table-auto w-full">
+                                                <thead className=" py-2  font-medium  top-o sticky">
+                                                    <tr>
+                                                        <th className="py-2  text-xs  w-10 text-center border-r border-white/50">S.No</th>
+                                                        {/* <th className="py-2  font-medium  w-24 text-center border-r border-white/50">Date</th> */}
+                                                        {/* <th className="py-1 px-3 w-32 text-left border border-gray-400">User</th> */}
+                                                        <th className="py-2  text-xs w-60 center border-white/50"> Name</th>
+                                                        <th className="py-2  text-xs center w-60 border-r border-white/50">File</th>
+                                                        <th className="py-2  text-xs  w-10 text-center">
+                                                            Actions
+                                                        </th>
+
+                                                    </tr>
+                                                </thead>
+
+
+                                                <tbody>
+                                                    {attachments?.map((item, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className={`hover:bg-gray-50 transition-colors border-b   border-gray-200 text-[12px] ${index % 2 === 0 ? "bg-white" : "bg-gray-100"
+                                                                }`}
+                                                        >
+                                                            <td className="border-r border-white/50 center h-8 text-center "
+                                                            >
+                                                                {index + 1}
+                                                            </td>
+
+
+                                                            <td className=" border-r border-white/50' h-8 ">
+                                                                <input
+                                                                    type="text"
+                                                                    className="text-left rounded py-1 px-2 w-full  focus:outline-none focus:ring focus:border-blue-300"
+                                                                    value={item?.name}
+                                                                    onChange={(e) =>
+                                                                        handleInputChange(e.target.value, index, "name")
+                                                                    }
+
+                                                                />
+                                                            </td>
+                                                            <td className="border-r border-white/50 h-8">
+                                                                <div className="flex items-center gap-2">
+
+                                                                    {/* Hidden File Input */}
+                                                                    {!readOnly && !item.filePath && (
+                                                                        <>
+                                                                            <input
+                                                                                type="file"
+                                                                                id={`file-upload-${index}`}
+                                                                                className="hidden"
+                                                                                onChange={(e) => {
+                                                                                    if (e.target.files[0]) {
+                                                                                        handleInputChange(
+                                                                                            renameFile(e.target.files[0]),
+                                                                                            index,
+                                                                                            "filePath"
+                                                                                        );
+                                                                                    }
+                                                                                }}
+                                                                            />
+
+                                                                            {/* Attach Icon */}
+                                                                            <label
+                                                                                htmlFor={`file-upload-${index}`}
+                                                                                className="cursor-pointer flex items-center justify-center p-1 bg-gray-100 rounded hover:bg-gray-200"
+                                                                                title="Attach file"
+                                                                            >
+                                                                                📎
+                                                                            </label>
+                                                                        </>
+                                                                    )}
+
+                                                                    {/* Show File + Actions */}
+                                                                    {item.filePath && (
+                                                                        <>
+                                                                            <span className="truncate max-w-[120px]">
+                                                                                {item.filePath?.name ?? item.filePath}
+                                                                            </span>
+
+                                                                            <button
+                                                                                onClick={() => openPreview(item.filePath)}
+                                                                                className="text-blue-600 text-xs hover:underline"
+                                                                            >
+                                                                                View
+                                                                            </button>
+
+                                                                            {!readOnly && (
+                                                                                <button
+                                                                                    onClick={() => handleInputChange('', index, "filePath")}
+                                                                                    className="text-red-600 text-xs"
+                                                                                    title="Remove file"
+                                                                                >
+                                                                                    ✕
+                                                                                </button>
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+
+
+                                                            <td className="w-[30px] border-gray-200 h-8">
+                                                                <div className="flex items-center justify-center gap-1">
+                                                                    {/* Add Button */}
+                                                                    <button
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === "Enter") {
+                                                                                e.preventDefault();
+                                                                                addNewComments();
+                                                                            }
+                                                                        }}
+                                                                        onClick={addNewComments}
+                                                                        className="flex items-center px-1 bg-blue-50 rounded"
+                                                                    >
+                                                                        <Plus size={18} className="text-blue-800" />
+                                                                    </button>
+
+                                                                    {/* Delete Button */}
+                                                                    <button
+                                                                        className="flex items-center px-1 bg-red-50 rounded"
+                                                                        onClick={() => deleteRow(index)}
+                                                                    >
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            className="h-4 w-4 text-red-800"
+                                                                            viewBox="0 0 20 20"
+                                                                            fill="currentColor"
+                                                                        >
+                                                                            <path
+                                                                                fillRule="evenodd"
+                                                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                                                clipRule="evenodd"
+                                                                            />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+
+
+
+
+                                                        </tr>
+                                                    ))}
+
+
+                                                </tbody>
+                                            </table>
+
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                {/* 
+                    </Modal>
+                )} */}
+            </>
+        )
+    }
 
 
 
 
     return (
-        // <div
-        //     onKeyDown={handleKeyDown}
-        //     className="md:items-start md:justify-items-center grid h-full bg-theme"
-        // >
 
-        //     <div className="flex flex-col frame w-full h-full">
-        //         <FormHeader
-        //             onNew={onNew}
-        //             onClose={() => {
-        //                 setForm(false);
-        //                 setSearchValue("");
-        //             }}
-        //             model={MODEL}
-        //             saveData={saveData}
-        //             setReadOnly={setReadOnly}
-        //             deleteData={deleteData}
-
-        //         />
-        //         <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-x-2">
-        //             <div className="col-span-3 grid md:grid-cols-2 border h-[520px] overflow-auto">
-        //                 <div className='col-span-3 grid md:grid-cols-2 border'>
-        //                     <div className='mr-1 md:ml-2'>
-
-        //                         <fieldset className='frame my-1 flex'>
-        //                             <legend className='sub-heading'>Official Details</legend>
-        //                             <div className='flex flex-col justify-start gap-4 mt- flex-1'>
-        //                                 <TextInput name="Party Code" type="text" value={code} setValue={setCode} readOnly={readOnly}  disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Party Name" type="text" value={name} 
-        //                                 setValue={setName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)}
-        //                                   onBlur={(e) => {
-        //                                       if(aliasName) return
-        //                                       setAliasName(e.target.value)
-        //                                     }
-        //                                 } />
-        //                                 <TextInput name="Alias Name" type="text"  value={aliasName} setValue={setAliasName} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextArea name="Address" value={address} setValue={setAddress} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <DropdownInput name="City/State Name" options={dropDownListMergedObject(id ? cityList.data : cityList.data.filter(item => item.active), "name", "id")} value={city} setValue={setCity} required={true} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Pan No" type="pan_no" value={panNo} setValue={setPanNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Pincode" type="number" value={pincode} setValue={setPincode} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <CheckBox name="Supplier" readOnly={readOnly} value={isSupplier} setValue={setIsSupplier} />
-        //                                 <CheckBox name="Customer" readOnly={readOnly} value={isCustomer} setValue={setIsCustomer} />
-        //                             </div>
-        //                         </fieldset>
-        //                         <fieldset className='frame my-1'>
-        //                             <legend className='sub-heading'>Opening payment</legend>
-        //                             <div className='grid grid-cols-1 gap-2 my-2'>
-        //                                {isCustomer && <TextInput name="Customer Opening Amount" type="text" value={coa} setValue={setCoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />} 
-        //                                {isSupplier && <TextInput name="Supplier Opening Amount" type="text" value={soa} setValue={setSoa} readOnly={readOnly} disabled={(childRecord.current > 0)} />} 
-        //                                                                   </div>
-        //                         </fieldset>
-        //                     </div>
-        //                     <div className='mr-1'>
-        //                         <fieldset className='frame my-1'>
-        //                             <legend className='sub-heading'>Contact Details</legend>
-        //                             <div className='grid grid-cols-1 gap-2 my-2'>
-        //                                 <TextInput name="Email Id" type="text" value={email} setValue={setEmail} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Website" type="text" value={website} setValue={setWebsite} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Contact Person Name" type="text" value={contactPersonName} setValue={setContactPersonName} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Contact Mobile" type="text" value={contactMobile} setValue={setContactMobile} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="GST No" type="text" value={gstNo} setValue={setGstNo} readOnly={readOnly} />
-
-        //                                 <TextInput name="Cost Code" type="text" value={costCode} setValue={setCostCode} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                             </div>
-        //                         </fieldset>
-        //                         <fieldset className='frame my-1'>
-        //                             <legend className='sub-heading'>Party Info</legend>
-        //                             <div className='grid grid-cols-1 gap-2 my-2'>
-        //                                 <TextInput name="Tin No" type="text" value={tinNo} setValue={setTinNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <DateInput name="CST Date" value={cstDate} setValue={setCstDate} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="CST No" type="text" value={cstNo} setValue={setCstNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Cin No" type="text" value={cinNo} setValue={setCinNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <TextInput name="Fax No" type="text" value={faxNo} setValue={setFaxNo} readOnly={readOnly} disabled={(childRecord.current > 0)} />
-        //                                 <CheckBox name="Active" readOnly={readOnly} value={active} setValue={setActive} />
-        //                             </div>
-        //                         </fieldset>
-
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //             <div className="frame hidden md:block overflow-x-hidden">
-        //                 <FormReport
-        //                     searchValue={searchValue}
-        //                     setSearchValue={setSearchValue}
-        //                     setId={setId}
-        //                     tableHeaders={tableHeaders}
-        //                     tableDataNames={tableDataNames}
-        //                     data={allData?.data}
-        //                     loading={
-        //                         isLoading || isFetching
-        //                     }
-        //                 />
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
         <>
 
 
@@ -1023,7 +1689,7 @@ export default function Form({ partyId }) {
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
-                                                    <div className='w-64'>
+                                                    <div className='col-span-2'>
 
                                                         <TextInputNew
                                                             name="Contact Number"
@@ -1217,15 +1883,15 @@ export default function Form({ partyId }) {
                                             <div className="max-h-[200px] overflow-auto">
                                                 <div className="grid grid-cols-1 gap-3  border-collapse bg-[#F1F1F0]   shadow-sm overflow-auto">
                                                     <table className="bg-gray-200 text-gray-800 text-sm table-auto w-full">
-                                                        <thead className=" py-2  font-medium ">
+                                                        <thead className=" py-2  font-medium  top-o sticky">
                                                             <tr>
-                                                                <th className="py-2  font-medium  w-10 text-center border-r border-white/50">S.No</th>
+                                                                <th className="py-2  text-xs  w-10 text-center border-r border-white/50">S.No</th>
                                                                 {/* <th className="py-2  font-medium  w-24 text-center border-r border-white/50">Date</th> */}
                                                                 {/* <th className="py-1 px-3 w-32 text-left border border-gray-400">User</th> */}
-                                                                <th className="py-2  font-medium  w-60 center border-white/50"> Name</th>
-                                                                <th className="py-2  font-medium center w-60 border-r border-white/50">File</th>
-                                                                <th className="py-2  font-medium  w-10 text-center">
-                                                                    actions
+                                                                <th className="py-2  text-xs w-60 center border-white/50"> Name</th>
+                                                                <th className="py-2  text-xs center w-60 border-r border-white/50">File</th>
+                                                                <th className="py-2  text-xs  w-10 text-center">
+                                                                    Actions
                                                                 </th>
 
                                                             </tr>
@@ -1243,7 +1909,7 @@ export default function Form({ partyId }) {
                                                                     >
                                                                         {index + 1}
                                                                     </td>
-                                                     
+
 
                                                                     <td className=" border-r border-white/50' h-8 ">
                                                                         <input

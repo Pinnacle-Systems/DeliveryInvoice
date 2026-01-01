@@ -387,7 +387,7 @@ export default function Form() {
                           </div>
                           <div className="mb-3 w-[48%]">
                             <TextInputNew1
-                              name="code"
+                              name="Code"
                               type="text"
                               value={aliasName}
                               setValue={setAliasName}

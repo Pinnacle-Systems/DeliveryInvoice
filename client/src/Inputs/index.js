@@ -1226,7 +1226,6 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
     };
 
     const handleDelete = (id, e) => {
-      e.stopPropagation();
       onDeleteItem?.(id);
     };
 
@@ -1238,7 +1237,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
         <Modal
           isOpen={openModel}
           onClose={() => setOpenModel(false)}
-          widthClass="w-[90%] h-[95%]"
+          widthClass="w-[90%] h-[90%]"
         >
           <DynamicRenderer
             componentName={component}
@@ -1404,7 +1403,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
                     <div>
                       <div className="font-medium">{item.name}</div>
                     </div>
-                    {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
                         onClick={(e) => handleEdit(item?.id, e)}
@@ -1414,12 +1413,12 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
                       </button>
                       <button
                         className="text-red-600 hover:text-red-800 p-1"
-                        onClick={(e) => handleDelete(item?.id)}
+                        onClick={(e) => handleDelete(item?.id,e)}
                         title="Delete supplier"
                       >
                         <FaTrash className="text-sm" />
                       </button>
-                    </div> */}
+                    </div>
                   </div>
                 ))
               ) : (
@@ -1816,7 +1815,7 @@ export const TextAreaNew = ({
   readOnly,
   required = false,
   disabled = false,
-  rows = 1,
+  rows = 2,
   cols = 30,
   tabIndex = null,
   label = null,

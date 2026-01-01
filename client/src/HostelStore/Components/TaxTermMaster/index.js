@@ -189,7 +189,7 @@ export default function Form() {
     },
 
     {
-      header: "Tax Term",
+      header: "Tax Type",
       accessor: (item) => item?.name,
       //   cellClass: () => "font-medium  text-gray-900",
       className: "font-medium text-gray-900 text-center uppercase w-72",
@@ -380,7 +380,7 @@ export default function Form() {
                           <div className="grid grid-cols-2 my-2">
                             <div className="w-[50%">
                               <TextInputNew
-                                name="Name"
+                                name="Tax Type"
                                 type="text"
                                 value={name}
                                 setValue={setName}

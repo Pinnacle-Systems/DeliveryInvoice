@@ -286,12 +286,7 @@ export default function Form() {
 
     <>
       {purchaseOrderForm ? (
-        // <PurchaseOrderForm
-        //   onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} id={id} setId={setId} readOnly={readOnly} setReadOnly={setReadOnly} allData={allData}
-        //   docId={docId} setDocId={setDocId} setTempPoItems={setTempPoItems} tempPoItems={tempPoItems} poItems={poItems} setPoItems={setPoItems} onNew={onNew} taxTypeList={taxTypeList}
-        //     supplierDetails={supplierDetails} branchList={branchList} hsnData={hsnData}
-        //   yarnList={yarnList} uomList={uomList}  colorList={colorList}  termsData={termsData} 
-        // />
+
         <ChallanForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={supplierList}
           branchList={branchList} docId={docId} params={params} id={id} setId={setId} setDocId={setDocId} readOnly={readOnly} setReadOnly={setReadOnly}
         />

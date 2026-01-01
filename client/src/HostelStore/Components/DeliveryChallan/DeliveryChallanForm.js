@@ -14,7 +14,7 @@ import { useGetStyleItemMasterQuery } from "../../../redux/services/StyleItemMas
 import { useGetUomQuery } from "../../../redux/services/UomMasterService";
 import { useAddDeliveryChallanMutation, useGetDeliveryChallanByIdQuery, useUpdateDeliveryChallanMutation } from "../../../redux/services/DeliveryChallanService";
 import Swal from "sweetalert2";
-import { useGetPartyByIdQuery } from "../../../redux/services/PartyMasterService";
+import { useDeletePartyMutation, useGetPartyByIdQuery } from "../../../redux/services/PartyMasterService";
 import { useGetColorMasterQuery } from "../../../redux/services/ColorMasterService";
 import Modal from "../../../UiComponents/Modal";
 import { PDFViewer } from "@react-pdf/renderer";
@@ -76,6 +76,7 @@ const ChallanForm = ({
     const [addData] = useAddDeliveryChallanMutation();
     const [updateData] = useUpdateDeliveryChallanMutation();
 
+    const [removeData] = useDeletePartyMutation();
 
 
     const {
@@ -127,6 +128,34 @@ const ChallanForm = ({
     }, [id]);
 
 
+    async function onDeleteItem(itemId) {
+        if (!window.confirm("Are you sure to delete The Customer...?")) {
+            return;
+        }
+        try {
+            let deldata = await removeData(itemId).unwrap();
+            if (deldata?.statusCode == 1) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Child record Exists",
+                    text: deldata.data?.message || "Data cannot be deleted!",
+                });
+                return;
+            }
+            setId("");
+            Swal.fire({
+                title: "Deleted Successfully",
+                icon: "success",
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Submission error",
+                text: error.data?.message || "Something went wrong!",
+            });
+        }
+
+    }
 
 
     useEffect(() => {
@@ -159,7 +188,7 @@ const ChallanForm = ({
                     showConfirmButton: false,
                     timer: 2000
                 });
-                console.log(returnData?.data,"returnData")
+                console.log(returnData?.data, "returnData")
                 setId(returnData?.data?.id)
                 setIsPrintOpen(true)
                 // if (nextProcess == "new") {
@@ -169,7 +198,7 @@ const ChallanForm = ({
                 // if (nextProcess == "close") {
                 //     syncFormWithDb(undefined);
                 // }
-          
+
 
 
             }
@@ -264,18 +293,18 @@ const ChallanForm = ({
                 widthClass={"px-2 h-[25%] w-[40%]"} >
 
                 <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
-                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb}  onNew={onNew}
+                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew}
                     id={id} />
             </Modal>
             <Modal
                 isOpen={printModalOpen}
                 onClose={() => {
                     setPrintModalOpen(false)
-                    console.log(nextprocess,"nextprocess")
+                    console.log(nextprocess, "nextprocess")
                     if (nextprocess == "close") {
                         onClose()
                     }
-                    else if(nextprocess == "new"){
+                    else if (nextprocess == "new") {
                         syncFormWithDb(undefined)
                     }
                 }}
@@ -338,18 +367,21 @@ const ChallanForm = ({
                 </div>
 
             </div>
-            <div className="space-y-3  py-3">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div className="space-y-3  py-1">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
 
 
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-1">
+                    <div className="border border-slate-200  bg-white rounded-md shadow-sm col-span-2 p-2">
                         <h2 className="font-medium text-slate-700 mb-2">
                             Basic Details
                         </h2>
-                        <div className="grid grid-cols-2 gap-1">
+                        <div className="grid grid-cols-1 gap-1">
                             <ReusableInputNew label="Delivery Challan No" readOnly value={docId} />
-                            <ReusableInputNew label="Delivery Challan Date" value={date} type={"date"} required={true} readOnly={true} disabled={readOnly} />
+                            <div className="">
+                                <ReusableInputNew label="Delivery Challan Date" value={date} type={"date"} required={true} readOnly={true} disabled={readOnly} />
+
+                            </div>
 
 
 
@@ -357,91 +389,104 @@ const ChallanForm = ({
 
                     </div>
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-3">
-                        <h2 className="font-medium text-slate-700 mb-2">
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-10">
+                        <h2 className="font-medium text-slate-700 mb-1">
                             Delivery Challan Details
                         </h2>
-                        <div className="grid grid-cols-5 gap-2">
+                        <div className="grid grid-cols-5 ">
 
 
-                            <div className="col-span-2"
+                            <div className="col-span-5 flex flex-row gap-2">
+                                <div className="w-2/4"
 
-                            >
+                                >
 
-                                <ReusableSearchableInputNewCustomer
-                                    label="Customer Name"
-                                    component="PartyMaster"
-                                    placeholder="Search Customer Name"
-                                    optionList={allSuppliers}
-                                    setSearchTerm={(value) => { setSupplierId(value) }}
-                                    searchTerm={supplierId}
-                                    show={"isCustomer"}
-                                    required={true}
-                                    disabled={readOnly}
-                                    ref={inputRef}
-                                    nextRef={customerRef}
-                                    id={id}
-                                />
+                                    <ReusableSearchableInputNewCustomer
+                                        label="Customer Name"
+                                        component="PartyMaster"
+                                        placeholder="Search Customer Name"
+                                        optionList={allSuppliers}
+                                        setSearchTerm={(value) => { setSupplierId(value) }}
+                                        searchTerm={supplierId}
+                                        show={"isCustomer"}
+                                        required={true}
+                                        disabled={readOnly}
+                                        ref={inputRef}
+                                        nextRef={customerRef}
+                                        id={id}
+                                        onDeleteItem={onDeleteItem}
+                                    />
 
 
+
+
+                                </div>
+
+                                <div className="w-60">
+                                    <TextInputNew
+                                        name="Contact Person Name"
+                                        placeholder="Contact name"
+                                        value={findFromList(supplierId, supplierList?.data, "contactPersonName")}
+                                        disabled={true}
+                                    />
+                                </div>
+                                <div className="w-36">
+                                    <TextInputNew
+                                        name="Contact Number"
+                                        placeholder="Contact name"
+                                        value={findFromList(supplierId, supplierList?.data, "contactNumber")}
+
+                                        disabled={true}
+
+
+                                    />
+
+                                </div>
+                                <div className="w-1/2">
+                                    <TextAreaNew
+                                        name="Address"
+                                        placeholder="Addres"
+                                        value={findFromList(supplierId, supplierList?.data, "address")}
+                                    />
+                                </div>
+
+                            </div>
+                            <div className="col-span-5 flex flex-row gap-1">
+                                <div className="w-40">
+                                    <TextInputNew name="Customer Dc No"
+                                        value={dcNo} setValue={setDcNo} readOnly={readOnly}
+                                        ref={customerRef} nextRef={customerDate}
+                                    />
+
+                                </div>
+
+                                <div className="w-32">
+                                    <DateInputNew
+                                        name="Customer Dc Date"
+                                        value={dcDate}
+                                        setValue={setDcDate}
+                                        type={"date"}
+                                        // required={true}
+                                        // ref={dateRef}
+                                        // nextRef={inputPartyRef}
+
+                                        readOnly={readOnly}
+                                    />
+                                </div>
 
 
                             </div>
 
-                            <div className="col-span-2">
-                                <TextInputNew
-                                    name="Contact Person Name"
-                                    placeholder="Contact name"
-                                    value={findFromList(supplierId, supplierList?.data, "contactPersonName")}
-                                    disabled={true}
-                                />
-                            </div>
-
-
-                            <div>
-                                <TextInputNew
-                                    name="Contact Number"
-                                    placeholder="Contact name"
-                                    value={findFromList(supplierId, supplierList?.data, "contactNumber")}
-
-                                    disabled={true}
-
-
-                                />
-
-                            </div>
-
-                            <div className="col-span-2">
-                                <TextAreaNew
-                                    name="Address"
-                                    placeholder="Addres"
-                                    value={findFromList(supplierId, supplierList?.data, "address")}
-                                />
-                            </div>
-
-                            <div className="col-span-1">
-                                <TextInputNew name="Customer Dc No"
-                                    value={dcNo} setValue={setDcNo} readOnly={readOnly}
-                                    ref={customerRef} nextRef={customerDate}
-                                />
-
-                            </div>
 
 
 
-                            <div className="col-span-1">
-                                <DateInputNew
-                                    name="Customer Dc Date"
-                                    value={dcDate}
-                                    setValue={setDcDate}
-                                    type={"date"}
-                                    // required={true}
-                                    // ref={dateRef}
-                                    // nextRef={inputPartyRef}
 
-                                    readOnly={readOnly}
-                                />
-                            </div>
+
+
+
+
+
+
 
 
                         </div>
@@ -467,11 +512,43 @@ const ChallanForm = ({
                 </fieldset>
 
 
+                <div className="flex flex-row gap-2 border border-slate-200 p-1 bg-white rounded-md shadow-sm">
+                    <div className="w-36">
+                        <TextInputNew1 name="Vehicle No"
+                            value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
+                    </div>
+                    <div className="w-80">
+                        <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} readOnly={readOnly} />
+
+                    </div>
+                    <div className="w-96">
+                        <TextAreaNew
+                            name="Remarks"
+                            placeholder="Addres"
+                            value={remarks}
+                            setValue={setRemarks}
+                        />
+                    </div>
+                    <div className="w-[450px]">
+
+                    </div>
+
+                    <div className="  bg-white rounded-md shadow-sm flex justify-between gap-10 mt-5">
+                        <h2 className="font-medium text-slate-700 mb-2 text-base">
+                            Total Qty
+                        </h2>
+
+                        <span className="text-md font-semibold text-slate-800 ">
+                            {deliveryItems?.reduce((sum, next) => {
+                                return sum + (Number(next?.qty) || 0);
+                            }, 0).toFixed(3)} PCS
+                        </span>
+                    </div>
+                </div>
 
 
 
-
-                <div className="grid grid-cols-5 gap-3">
+                {/* <div className="grid grid-cols-5 gap-3">
 
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm  col-span-2">
@@ -517,14 +594,14 @@ const ChallanForm = ({
                         </span>
                     </div>
 
-                </div>
+                </div> */}
 
 
 
 
 
 
-                <div className="flex flex-col md:flex-row gap-2 justify-between mt-4">
+                <div className="flex flex-col md:flex-row gap-2 justify-between ">
                     {/* Left Buttons */}
                     <div className="flex gap-2 flex-wrap">
                         <button onClick={() => saveData("close")} className="bg-indigo-500 text-white px-4 py-1 rounded-md hover:bg-indigo-600 flex items-center text-sm">
