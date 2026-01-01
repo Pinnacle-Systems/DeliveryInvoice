@@ -521,7 +521,7 @@ const ChallanForm = ({
                         <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} readOnly={readOnly} />
 
                     </div>
-                    <div className="w-96">
+                    <div className="w-[600px]">
                         <TextAreaNew
                             name="Remarks"
                             placeholder="Addres"
@@ -529,7 +529,7 @@ const ChallanForm = ({
                             setValue={setRemarks}
                         />
                     </div>
-                    <div className="w-[450px]">
+                    <div className="w-[230px]">
 
                     </div>
 
