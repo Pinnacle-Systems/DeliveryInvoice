@@ -762,35 +762,7 @@ const DeliveryInvoice = ({
           </View>
 
 
-          {/* <View
-            style={{
-              flexDirection: "row",
-              borderBottom: "1 solid #9ca3af",
-            }}
-          >
-            <Text
-              style={{
-                flex: 10.5,
-                textAlign: "center",
-                fontSize: 8,
-                fontWeight: "bold",
-                padding: 3,
-              }}
-            >
-              TOTAL
-            </Text>
-            <Text
-              style={{
-                flex: 1,
-                textAlign: "right",
-                fontSize: 8,
-                padding: 3,
-                borderLeft: "1 solid #9ca3af",
-              }}
-            >
-              {parseFloat(taxDetails.taxableAmount).toFixed(2)}
-            </Text>
-          </View> */}
+
 
 
           <View
