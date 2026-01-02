@@ -23,7 +23,8 @@ import {
   ColorMaster,
   TaxTermMaster,
   TaxTemplate,
-  HsnMaster
+  HsnMaster,
+  BranchTypeMaster
 } from "../../../HostelStore/Components";
 
 
@@ -78,7 +79,9 @@ const ActiveTabList = () => {
     "INVOICE": <DeliveryInvoice />,
     "COLOR MASTER": <ColorMaster />,
     "TAX TYPE MASTER": <TaxTermMaster />,
-    "HSN MASTER" : <HsnMaster />
+    "HSN MASTER": <HsnMaster />,
+    "BRANCH TYPE MASTER": <BranchTypeMaster />,
+
 
 
   };

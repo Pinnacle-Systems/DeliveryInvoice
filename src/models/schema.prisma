@@ -342,17 +342,17 @@ model Party {
   contactPersonName    String?
   gstNo                String?
   costCode             String?
-  active               Boolean           @default(true)
-  contactMobile        BigInt            @default(0)
-  Company              Company           @relation(fields: [companyId], references: [id])
-  companyId            Int
-  yarn                 Boolean           @default(false)
-  fabric               Boolean           @default(false)
-  accessoryGroup       Boolean           @default(false)
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  createdBy            User              @relation("createdBy", fields: [createdById], references: [id])
-  createdById          Int
+  active               Boolean?           @default(true)
+  contactMobile        BigInt?            @default(0)
+  Company              Company?           @relation(fields: [companyId], references: [id])
+  companyId            Int?
+  yarn                 Boolean?           @default(false)
+  fabric               Boolean?           @default(false)
+  accessoryGroup       Boolean?           @default(false)
+  createdAt            DateTime?          @default(now())
+  updatedAt            DateTime?          @updatedAt
+  createdBy            User?              @relation("createdBy", fields: [createdById], references: [id])
+  createdById          Int?
   updatedBy            User?             @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById          Int?
   isSupplier           Boolean?          @default(false)
@@ -377,6 +377,7 @@ model Party {
   msmeNo               String?
   companyAlterNumber   String?
   partyCode            String?
+  parentId             String?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
@@ -990,4 +991,10 @@ model Hsn {
   tax                  String?
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
+}
+model BranchType {
+  id           Int           @id @default(autoincrement())
+  name         String?
+  active       Boolean?      @default(false)
+  aliasName    String?
 }

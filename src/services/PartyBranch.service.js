@@ -60,10 +60,10 @@ async function create(body) {
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
         bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, partyId } = await body
-    const data = await prisma.partyBranch.create(
+    const data = await prisma.party.create(
         {
             data: {
-                partyId: partyId ? parseInt(partyId) : undefined,
+                // partyId: partyId ? parseInt(partyId) : undefined,
                 name,
                 code,
                 aliasName,
@@ -77,7 +77,7 @@ async function create(body) {
                 cinNo, faxNo, email, website, contactPersonName,
                 gstNo, currencyId: currencyId ? parseInt(currencyId) : undefined, costCode,
                 createdById: userId ? parseInt(userId) : undefined,
-                // companyId: parseInt(companyId),
+                companyId: parseInt(companyId),
                 active: active ? JSON.parse(active) : false,
                 coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
                 contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
@@ -96,7 +96,7 @@ async function create(body) {
                 companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
                 partyCode: partyCode ? partyCode : "",
 
-                Branchattachments: JSON.parse(attachments)?.length > 0
+                attachments: JSON.parse(attachments)?.length > 0
                     ? {
                         createMany: {
                             data: JSON.parse(attachments).map((sub) => ({

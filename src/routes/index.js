@@ -43,6 +43,7 @@ export { default as taxTerm } from "./taxTerm.route.js"
 export { default as taxTemplate } from "./taxTemplate.route.js"
 export { default as hsn } from "./hsn.route.js"
 export { default as partyBranch } from "./partyBranch.route.js"
+export { default as branchType } from "./BranchType.route.js"
 
 
 

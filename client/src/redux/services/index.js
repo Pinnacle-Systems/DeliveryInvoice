@@ -31,6 +31,7 @@ export {default as ColorMasterApi} from "./ColorMasterService"
 export { default as TaxTermMasterApi } from './TaxTermMasterServices'
 export { default as TaxTemplateApi } from './TaxTemplateServices'
 export { default as HsnMasterApi } from './HsnMasterServices'
+export { default as branchTypeMasterApi } from './BranchTypeMaster'
 
 
 

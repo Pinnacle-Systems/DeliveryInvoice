@@ -1193,6 +1193,8 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
       const handleClickOutside = (event) => {
         if (containerRef.current && !containerRef.current.contains(event.target)) {
           setIsDropdownOpen(false);
+          setIsListShow(false)
+
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
@@ -1509,21 +1511,27 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
 
       // 👉 Party itself (No Branch / Head Office)
       options.push({
+        id: party.id,
         partyId: party.id,
         branchId: null,
-        label: `${party.name} | ${party?.City?.name}`,
+        label: `${party.name} ${""} - ${""} ${party?.City?.name}`,
         value: `P-${party.id}`,
-        isCustomer : party?.isCustomer
+        isCustomer: party?.isCustomer,
+        name: party.name
       });
 
       // 👉 Party Branches (if any)
       if (party?.PartyBranch?.length) {
         party.PartyBranch.forEach(branch => {
           options.push({
+            id: branch.id,
+
             partyId: party.id,
             branchId: branch.id,
-            label: ` ${branch.name} | ${branch?.City?.name}`,
-            value: `P-${party.id}-B-${branch.branchId}`
+            label: ` ${branch.name} ${""} - ${""} ${branch?.City?.name}`,
+            value: `P-${party.id}-B-${branch.branchId}`,
+            name: branch.name
+
           });
         });
       }
@@ -1564,6 +1572,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
       const handleClickOutside = (event) => {
         if (containerRef.current && !containerRef.current.contains(event.target)) {
           setIsDropdownOpen(false);
+          setIsListShow(false)
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
@@ -1575,12 +1584,12 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     useEffect(() => {
       if (!partyList?.data) return;
 
-      // if (!search.trim()) {
-      //   setFilteredPages(partyList?.data?.filter(i => i.isCustomer));
-      //   return;
-      // }
+      if (!search.trim()) {
+        setFilteredPages(dropdownOptions);
+        return;
+      }
 
-      const filtered = partyList?.data?.filter((item) =>
+      const filtered = dropdownOptions.filter((item) =>
         item?.name?.toLowerCase().includes(search.toLowerCase())
       );
 
@@ -1627,6 +1636,8 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     const handleDelete = (id, e) => {
       onDeleteItem?.(id);
     };
+
+    console.log(searchTerm, "searchTerm", isListShow)
 
     /* ---------------------------------- JSX ---------------------------------- */
 
@@ -1687,8 +1698,8 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                   placeholder={placeholder}
                   value={findFromList(
                     searchTerm,
-                    partyList?.data?.filter(i => i.isCustomer),
-                    "name"
+                    dropdownOptions,
+                    "label"
                   )}
                   onFocus={() => {
                     setIsListShow(true);
@@ -1771,7 +1782,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
           {isDropdownOpen && (
             <div className="border border-slate-200 rounded-md shadow-md bg-white mt-1 max-h-40 overflow-y-auto z-20 absolute w-full">
               {filteredPages?.length > 0 ? (
-                dropdownOptions?.map((item) => (
+                filteredPages?.map((item) => (
                   <div
                     key={item.id}
                     tabIndex={0}
@@ -1800,7 +1811,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                     }}
                   >
                     <div>
-                      <div className="font-medium">{item.name}</div>
+                      <div className="font-medium">{item.label}</div>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button

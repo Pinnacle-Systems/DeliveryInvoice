@@ -38,6 +38,7 @@ export const TAX_TEMPLATE_API = 'taxTemplate'
 export const TAX_TERM_API = 'taxTerm'
 export const HSN_API = "hsn"
 export const PARTY_BRANCH_API = "partyBranch"
+export const BRANCH_TYPE_MASTER = "branchType"
 
 
 

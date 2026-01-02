@@ -10,7 +10,8 @@ import {
   ColorMasterApi,
   TaxTermMasterApi,
   TaxTemplateApi,
-  HsnMasterApi
+  HsnMasterApi,
+  branchTypeMasterApi
 } from "./services"
 import paymentApi from "./services/PaymentService";
 import StyleMasterApi from "./services/StyleMasterService";
@@ -57,7 +58,8 @@ const commonReducers = {
   salesReturn: salesReturnApi.reducer,
   uomMaster: uomMasterApi.reducer,
   hsnMaster: HsnMasterApi.reducer,
-  partyBranchMaster : partyBranchMasterApi.reducer,
+  partyBranchMaster: partyBranchMasterApi.reducer,
+  branchTypeMaster: branchTypeMasterApi.reducer,
 
 }
 const commonMiddleware = [countryMasterApi.middleware,
@@ -95,7 +97,8 @@ ColorMasterApi.middleware,
 TaxTermMasterApi.middleware,
 TaxTemplateApi.middleware,
 HsnMasterApi.middleware,
-partyBranchMasterApi.middleware
+partyBranchMasterApi.middleware,
+branchTypeMasterApi.middleware
 ];
 
 
