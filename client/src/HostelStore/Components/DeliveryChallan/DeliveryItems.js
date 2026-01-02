@@ -531,7 +531,7 @@ const DeliveryItems = ({
                         </tbody>
                     </table>
                 </div> */}
-                <div className="relative w-full max-h-[265px] overflow-y-auto mb-0">
+                <div className="relative w-full max-h-[228px] overflow-y-auto mb-0">
                     <table className="w-full border-collapse table-fixed">
 
                         <thead className="bg-gray-200 text-gray-900">
@@ -572,12 +572,11 @@ const DeliveryItems = ({
                             </tr>
                         </thead>
 
-                        {/* ================= TABLE BODY ================= */}
                         <tbody>
                             {(deliveryItems || []).map((row, index) => (
                                 <tr
                                     key={index}
-                                    className="border border-blue-gray-200 cursor-pointer"
+                                    className="border border-blue-gray-200 py-0.5 cursor-pointer"
                                     onContextMenu={(e) => {
                                         if (!readOnly) {
                                             handleRightClick(e, index, "shiftTimeHrs");
