@@ -46,10 +46,10 @@ const DeliveryItems = ({
 
 
     useEffect(() => {
-        if (deliveryItems?.length >= 7) return
+        if (deliveryItems?.length >= 6) return
 
         setDeliveryItems(prev => {
-            let newArray = Array?.from({ length: 7 - prev?.length }, () => {
+            let newArray = Array?.from({ length: 6 - prev?.length }, () => {
                 return {
                     styleId: "",
                     styleItemId: "",

@@ -12,9 +12,9 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
 
     useEffect(() => {
-        if (invoiceItems?.length >= 8) return
+        if (invoiceItems?.length >= 6) return
         setInvoiceItems(prev => {
-            let newArray = Array?.from({ length: 8 - prev?.length }, () => {
+            let newArray = Array?.from({ length: 6 - prev?.length }, () => {
                 return {
                     styleId: "",
                     styleItemId: "",

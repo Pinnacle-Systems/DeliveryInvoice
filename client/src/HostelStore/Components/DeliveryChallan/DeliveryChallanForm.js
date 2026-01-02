@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextArea, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, ReusableSearchableInputNewCustomerwithBranches, TextArea, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -401,7 +401,23 @@ const ChallanForm = ({
 
                                 >
 
-                                    <ReusableSearchableInputNewCustomer
+                                    {/* <ReusableSearchableInputNewCustomer
+                                        label="Customer Name"
+                                        component="PartyMaster"
+                                        placeholder="Search Customer Name"
+                                        optionList={allSuppliers}
+                                        setSearchTerm={(value) => { setSupplierId(value) }}
+                                        searchTerm={supplierId}
+                                        show={"isCustomer"}
+                                        required={true}
+                                        disabled={readOnly}
+                                        ref={inputRef}
+                                        nextRef={customerRef}
+                                        id={id}
+                                        onDeleteItem={onDeleteItem}
+                                    /> */}
+
+                                    <ReusableSearchableInputNewCustomerwithBranches
                                         label="Customer Name"
                                         component="PartyMaster"
                                         placeholder="Search Customer Name"
