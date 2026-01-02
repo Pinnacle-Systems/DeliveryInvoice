@@ -148,9 +148,9 @@ export default function Form() {
     if (id) {
       foundItem = allData?.data
         ?.filter((i) => i.id != id)
-        ?.some((item) => item.name === name);
+        ?.some((item) => item.name == name && item.countryId == country);
     } else {
-      foundItem = allData?.data?.some((item) => item.name === name);
+      foundItem = allData?.data?.some((item) => item.name == name && item.countryId == country );
     }
     if (foundItem) {
       Swal.fire({

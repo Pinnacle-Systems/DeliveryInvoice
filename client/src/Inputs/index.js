@@ -228,7 +228,7 @@ export const validatePincode = (data) => {
   return data.toString().length === 6;
 }
 
-export const DropdownWithSearch = ({ options, value, setValue, readOnly ,required }) => {
+export const DropdownWithSearch = ({ options, value, setValue, readOnly, required }) => {
   const [currentIndex, setCurrentIndex] = useState("");
   useEffect(() => setCurrentIndex(new Date()), [])
   useEffect(() => {
@@ -1134,6 +1134,35 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
       params: { companyId, userId },
     });
 
+    const dropdownOptions = partyList?.data?.flatMap(party => {
+      const options = [];
+
+      // 👉 Party itself (No Branch / Head Office)
+      options.push({
+        partyId: party.id,
+        branchId: null,
+        label: `${party.name} | ${party?.City?.name}`,
+        value: `P-${party.id}`
+      });
+
+      // 👉 Party Branches (if any)
+      if (party?.PartyBranch?.length) {
+        party.PartyBranch.forEach(branch => {
+          options.push({
+            partyId: party.id,
+            branchId: branch.id,
+            label: ` ${branch.name} | ${branch?.City?.name}`,
+            value: `P-${party.id}-B-${branch.branchId}`
+          });
+        });
+      }
+
+      return options;
+    });
+
+
+    console.log(dropdownOptions, "dropdownOptions")
+
     /* ---------------------------------- STATE --------------------------------- */
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -1413,7 +1442,7 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
                       </button>
                       <button
                         className="text-red-600 hover:text-red-800 p-1"
-                        onClick={(e) => handleDelete(item?.id,e)}
+                        onClick={(e) => handleDelete(item?.id, e)}
                         title="Delete supplier"
                       >
                         <FaTrash className="text-sm" />

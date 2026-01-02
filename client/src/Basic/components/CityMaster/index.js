@@ -100,7 +100,7 @@ export default function Form() {
   };
 
   const validateData = (data) => {
-    if (data.name && data.code && data?.state) {
+    if (data.name  && data?.state) {
       return true;
     }
     return false;
@@ -136,13 +136,15 @@ export default function Form() {
         ?.filter((i) => i.id !== id)
         ?.some(
           (item) =>
-            item.name?.trim().toLowerCase() === name?.trim().toLowerCase()
+            item.name?.trim().toLowerCase() == name?.trim().toLowerCase() && item.stateId == state
         );
     } else {
       foundItem = allData?.data?.some(
-        (item) => item.name?.trim().toLowerCase() === name?.trim().toLowerCase()
+        (item) => item.name?.trim().toLowerCase() == name?.trim().toLowerCase() && item.stateId == state
       );
     }
+
+    console.log(allData?.data,"alldata")
 
     if (foundItem) {
       Swal.fire({
@@ -426,7 +428,6 @@ export default function Form() {
                           type="text"
                           value={code}
                           setValue={setCode}
-                          required={true}
                           readOnly={readOnly}
                           disabled={childRecord.current > 0}
                         />

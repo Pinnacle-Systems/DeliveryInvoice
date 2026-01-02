@@ -29,6 +29,7 @@ import ArtDesignReport from "./ArtDesignReport";
 import Swal from "sweetalert2";
 import { getImageUrlPath } from "../../../Constants";
 import { push } from "../../../redux/features/opentabs";
+import AddBranch from "./AddBranch";
 
 
 const MODEL = "Party Master";
@@ -87,7 +88,8 @@ export default function Form({ partyId, onCloseForm }) {
     const [searchValue, setSearchValue] = useState("");
     const [msmeNo, setMsmeNo] = useState("")
     const [companyAlterNumber, setCompanyAlterNumber] = useState('')
-
+    const [branchModelOpen, setBranchModelOpen] = useState(false);
+    const [branchForm, setBranchForm] = useState(false)
 
     const childRecord = useRef(0);
     const dispatch = useDispatch()
@@ -194,7 +196,7 @@ export default function Form({ partyId, onCloseForm }) {
     }
 
     const validateData = (data) => {
-        return data.name && data?.active && data?.address && data?.cityId && data?.pincode && (data?.isCustomer || data?.isSupplier)
+        return data.name && data?.active && data?.address && data?.cityId && data?.pincode && (data?.isCustomer || data?.isSupplier) && data?.gstNo
 
     }
 
@@ -315,6 +317,24 @@ export default function Form({ partyId, onCloseForm }) {
             });
             return
         }
+
+        let foundItem;
+        if (id) {
+            foundItem = allData?.data
+                ?.filter((i) => i.id != id)
+                ?.some((item) => item.name == name && item.gstNo == gstNo);
+        } else {
+            foundItem = allData?.data?.some((item) => item.name == name && item.gstNo == gstNo);
+        }
+        if (foundItem) {
+            Swal.fire({
+                text: `The ${isSupplier ? "Supplier" : "Customer"} name is already  exists `,
+                icon: "warning",
+            });
+            return false;
+        }
+
+
         if (!window.confirm("Are you sure save the details ...?")) {
             return;
         }
@@ -329,7 +349,7 @@ export default function Form({ partyId, onCloseForm }) {
 
     const deleteData = async (id) => {
         if (id) {
-            if (!window.confirm("Are you sure to delete...?")) {
+            if (!window.confirm("Are you sure to delete.   ..?")) {
                 return;
             }
             try {
@@ -508,18 +528,7 @@ export default function Form({ partyId, onCloseForm }) {
         return (
             <>
 
-                {/* {form === true && (
 
-
-                    <Modal
-                        isOpen={form}
-                        form={form}
-                        widthClass={"w-[90%] h-[93%]"}
-                        onClose={() => {
-                            setForm(false);
-
-                        }}
-                    > */}
 
 
 
@@ -539,6 +548,42 @@ export default function Form({ partyId, onCloseForm }) {
                         <div className="flex gap-2">
 
                             <div className="flex gap-2">
+                                <div className="  ">
+                                    <button
+                                        onClick={() => {
+                                            if (name) {
+                                                // setBranchModelOpen(true)
+                                                // setBranchForm(false)
+                                            }
+
+                                            else {
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: `Enter ${isSupplier ? "Supplier Details" : "Customer Details"} `,
+                                                    showConfirmButton: false,
+                                                    timer: 2000
+                                                });
+                                            }
+
+                                        }}
+                                        readOnly={readOnly}
+                                        className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                        Add Branch
+                                    </button>
+                                </div>
                                 <div>
                                     {readOnly && (
                                         <button
@@ -967,6 +1012,7 @@ export default function Form({ partyId, onCloseForm }) {
                                                 value={gstNo}
                                                 setValue={setGstNo}
                                                 readOnly={readOnly}
+                                                required={true}
                                                 className="focus:ring-2 focus:ring-blue-100"
                                             />
                                             <TextInputNew
@@ -1358,7 +1404,41 @@ export default function Form({ partyId, onCloseForm }) {
 
 
                                 <div className="flex gap-2">
+                                    <div className="  ">
+                                        <button
+                                            onClick={() => {
+                                                if (id) {
+                                                    setBranchModelOpen(true)
+                                                    // setBranchForm(false)
+                                                }
 
+                                                else {
+                                                    Swal.fire({
+                                                        icon: 'warning',
+                                                        title: `Save the ${isSupplier ? "Supplier Details" : "Customer Details"} `,
+                                                        showConfirmButton: false,
+                                                    });
+                                                }
+
+                                            }}
+                                            readOnly={readOnly}
+                                            className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-4 w-4"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                            Add Branch
+                                        </button>
+                                    </div>
                                     <div className="flex gap-2">
                                         <div>
                                             {readOnly && (
@@ -1788,6 +1868,7 @@ export default function Form({ partyId, onCloseForm }) {
                                                         value={gstNo}
                                                         setValue={setGstNo}
                                                         readOnly={readOnly}
+                                                        required={true}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
                                                     <TextInputNew
@@ -2065,6 +2146,29 @@ export default function Form({ partyId, onCloseForm }) {
                     setSearchValue={setSearchValue}
                 />
             </Modal>
+            <Modal
+                isOpen={branchModelOpen}
+                form={form}
+                widthClass={"w-[90%] h-[89%]"}
+                setBranchModelOpen={setBranchModelOpen}
+                onClose={() => {
+                    setBranchModelOpen(false)
+                }}
+            >
+
+
+
+                <AddBranch
+                    cityList={cityList}
+                    setReadOnly={setReadOnly} partyId={id}
+                    branchForm={branchForm} setBranchForm={setBranchForm}
+
+                />
+
+
+
+            </Modal>
         </>
+
     );
 }

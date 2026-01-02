@@ -52,6 +52,7 @@ model Company {
   OpeningStock    OpeningStock[]
   TaxTerm         TaxTerm[]
   TaxTemplate     TaxTemplate[]
+  PartyBranch     PartyBranch[]
 }
 
 model Subscription {
@@ -149,6 +150,8 @@ model User {
   DeliveryChallanUpdatedBy DeliveryChallan[] @relation(name: "updatedBy")
   DeliveryInvoiceCreatedBy DeliveryInvoice[] @relation(name: "createdBy")
   DeliveryInvoiceUpdatedBy DeliveryInvoice[] @relation(name: "updatedBy")
+  partyBranchCreatedBy     PartyBranch[]     @relation(name: "createdBy")
+  partyBranchUpdatedBy     PartyBranch[]     @relation(name: "updatedBy")
 }
 
 model Employee {
@@ -201,13 +204,13 @@ model Employee {
 }
 
 model FinYear {
-  id               Int               @id @default(autoincrement())
-  from             DateTime
-  to               DateTime
-  Company          Company?          @relation(fields: [companyId], references: [id])
-  companyId        Int?
-  active           Boolean           @default(true)
-  DeliveryChallan  DeliveryChallan[]
+  id              Int               @id @default(autoincrement())
+  from            DateTime
+  to              DateTime
+  Company         Company?          @relation(fields: [companyId], references: [id])
+  companyId       Int?
+  active          Boolean           @default(true)
+  DeliveryChallan DeliveryChallan[]
   DeliveryInvoice DeliveryInvoice[]
 }
 
@@ -244,15 +247,16 @@ model State {
 }
 
 model City {
-  id              Int        @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   name            String
   code            String
-  state           State      @relation(fields: [stateId], references: [id])
+  state           State         @relation(fields: [stateId], references: [id])
   stateId         Int
-  active          Boolean    @default(true)
-  doctorLocalCity Employee[] @relation(name: "localCity")
-  doctorPermCity  Employee[] @relation(name: "permCity")
+  active          Boolean       @default(true)
+  doctorLocalCity Employee[]    @relation(name: "localCity")
+  doctorPermCity  Employee[]    @relation(name: "permCity")
   Party           Party[]
+  PartyBranch     PartyBranch[]
 }
 
 model Department {
@@ -379,6 +383,64 @@ model Party {
   DeliveryInvoice      DeliveryInvoice[]
   ledgers              Ledger[]
   attachments          attachments[]
+  PartyBranch          PartyBranch[]
+}
+
+model PartyBranch {
+  id                 Int                 @id @default(autoincrement())
+  Party              Party?              @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  partyId            Int?
+  name               String
+  code               String?
+  aliasName          String?
+  displayName        String?
+  address            String?
+  City               City?               @relation(fields: [cityId], references: [id])
+  cityId             Int?
+  pincode            Int?
+  panNo              String?
+  tinNo              String?
+  cstNo              String?
+  cstDate            DateTime?           @db.Date
+  cinNo              String?
+  faxNo              String?
+  email              String?
+  website            String?
+  contactPersonName  String?
+  gstNo              String?
+  costCode           String?
+  active             Boolean?             @default(true)
+  contactMobile      BigInt?              @default(0)
+  Company            Company?             @relation(fields: [companyId], references: [id])
+  companyId          Int?
+  yarn               Boolean?             @default(false)
+  fabric             Boolean?             @default(false)
+  accessoryGroup     Boolean?             @default(false)
+  createdAt          DateTime?            @default(now())
+  updatedAt          DateTime?            @updatedAt
+  createdBy          User?                @relation("createdBy", fields: [createdById], references: [id])
+  createdById        Int?
+  updatedBy          User?               @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById        Int?
+  isSupplier         Boolean?            @default(false)
+  isCustomer         Boolean?            @default(false)
+  landMark           String?
+  contact            String?
+  designation        String?
+  department         String?
+  contactPersonEmail String?
+  contactNumber      String?
+  alterContactNumber String?
+  bankname           String?
+  bankBranchName     String?
+  accountNumber      String?
+  ifscCode           String?
+  coa                BigInt?
+  soa                BigInt?
+  msmeNo             String?
+  companyAlterNumber String?
+  partyCode          String?
+  Branchattachments  Branchattachments[]
 }
 
 model attachments {
@@ -389,6 +451,16 @@ model attachments {
   name     String?
   fileName String?
   filePath String?
+}
+
+model Branchattachments {
+  id            Int          @id @default(autoincrement())
+  PartyBranch   PartyBranch? @relation(fields: [partyBranchId], references: [id], onDelete: Cascade)
+  partyBranchId Int?
+  date          DateTime?
+  name          String?
+  fileName      String?
+  filePath      String?
 }
 
 model ProductBrand {
@@ -814,7 +886,6 @@ model DeliveryInvoice {
   discountType         String?
   discountValue        Float?
   taxPercent           Float?
-
 }
 
 model DeliveryInvoiceItems {

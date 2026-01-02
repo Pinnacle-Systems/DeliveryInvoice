@@ -16,6 +16,7 @@ import paymentApi from "./services/PaymentService";
 import StyleMasterApi from "./services/StyleMasterService";
 import DeliveryChallanApi from "./services/DeliveryChallanService";
 import StyleItemMasterApi from "./services/StyleItemMasterService";
+import partyBranchMasterApi from "./services/PartyBranchMasterService";
 
 const commonReducers = {
   openTabs,
@@ -55,7 +56,8 @@ const commonReducers = {
   purchaseReturn: purchaseReturnApi.reducer,
   salesReturn: salesReturnApi.reducer,
   uomMaster: uomMasterApi.reducer,
-  hsnMaster: HsnMasterApi.reducer
+  hsnMaster: HsnMasterApi.reducer,
+  partyBranchMaster : partyBranchMasterApi.reducer,
 
 }
 const commonMiddleware = [countryMasterApi.middleware,
@@ -92,7 +94,8 @@ DeliveryInvoiceApi.middleware,
 ColorMasterApi.middleware,
 TaxTermMasterApi.middleware,
 TaxTemplateApi.middleware,
-HsnMasterApi.middleware
+HsnMasterApi.middleware,
+partyBranchMasterApi.middleware
 ];
 
 
