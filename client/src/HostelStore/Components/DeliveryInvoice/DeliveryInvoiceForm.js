@@ -158,7 +158,7 @@ const InvoiceForm = ({
         setVechileNo(data?.vehicleNo ? data?.vehicleNo : '')
         setTaxTemplateId(data?.taxPercent ? data?.taxPercent : '')
         setDiscountType(data?.discountType ? data?.discountType : "")
-        setDiscountValue(data?.discountValue  ? data?.discountValue : "")
+        setDiscountValue(data?.discountValue ? data?.discountValue : "")
 
 
         setSupplierId(data?.supplierId ? data?.supplierId : "");
@@ -199,48 +199,72 @@ const InvoiceForm = ({
 
 
 
+    const totalAmount = invoiceItems?.reduce((sum, item) => {
+        const qty = Number(item?.invoiceQty ?? 0);
+        const price = Number(item?.price ?? 0);
+        return sum + qty * price;
+    }, 0);
 
+    // 2️⃣ Discount Amount
+    let discountAmount = 0;
 
-    const taxKey = findFromList(taxTemplateId, taxTypeList?.data, "name")           // GST %
-    const totalQty = invoiceItems?.reduce(
-        (sum, item) => sum + Number(item?.invoiceQty || 0),
-        0
-    );
-
-    const taxableAmount = invoiceItems?.reduce(
-        (sum, item) =>
-            sum +
-            Number(item?.invoiceQty || 0) * Number(item?.price || 0),
-        0
-    );
-
-    // GST %
-    const gstPercent = Number(taxKey || 0);
-    const halfGST = gstPercent / 2;
-
-    // Party-based tax
-    const isInterState = false;
-
-    let cgst = 0;
-    let sgst = 0;
-    let igst = 0;
-
-    if (isInterState) {
-        igst = (taxableAmount * gstPercent) / 100;
-    } else {
-        cgst = (taxableAmount * halfGST) / 100;
-        sgst = (taxableAmount * halfGST) / 100;
+    if (discountType == "Percentage") {
+        discountAmount = (totalAmount * Number(discountValue || 0)) / 100;
     }
+    else if (discountType == "Flat") {
+        discountAmount = Number(discountValue || 0);
+    }
+    const result = invoiceItems?.filter(i => i.styleId)?.reduce(
+        (acc, item) => {
+            const amount = item.invoiceQty * item.price;
+            const tax = item?.Hsn?.tax
+            const halfGst = tax / 2;
 
-    // gross & net
-    const totalGstAmount = cgst + sgst + igst
-    const grossAmount = taxableAmount + cgst + sgst + igst;
-    const netAmount = Math.round(grossAmount);
+
+            console.log(tax, "tax", amount)
+
+            const cgstAmount = amount * (halfGst / 100);
+            const sgstAmount = amount * (halfGst / 100);
+            const itemTax = cgstAmount + sgstAmount;
 
 
-    console.log(id, "id")
 
-    console.log(invoiceItems, "invoiceItems")
+            // acc.items.push({
+            //   ...item,
+            //   amount,
+            //   cgstRate: halfGst,
+            //   sgstRate: halfGst,
+            //   cgstAmount,
+            //   sgstAmount,
+            //   itemTax
+            // });
+
+            acc.totalCgst += cgstAmount;
+            acc.totalSgst += sgstAmount;
+            acc.overallTax += itemTax;
+            acc.subTotal += amount;
+
+            return acc;
+        },
+        {
+            // items: [],
+            totalCgst: 0,
+            totalSgst: 0,
+            overallTax: 0,
+            subTotal: 0
+        }
+    );
+
+
+    console.log(result, "result");
+    const netAmount = Math.max(totalAmount - discountAmount, 0) + (parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst))
+    const roundedNetAmount = Math.round(netAmount);
+    const roundOff = Number((roundedNetAmount - netAmount).toFixed(2));
+    const overallAmount = parseFloat(parseFloat(netAmount) + parseFloat(roundOff)).toFixed(2)
+
+    console.log(overallAmount,"overallAmount")
+
+
 
     const handleSubmitCustom = async (callback, data, text, nextProcess) => {
         try {
@@ -289,18 +313,14 @@ const InvoiceForm = ({
     };
 
 
-    let netBillValue = invoiceItems?.reduce(
-        (sum, item) => sum + item.qty * item.price,
-        0
-    );
 
     let data = {
 
         supplierId, deliveryType, deliveryToId, branchId, finYearId, companyId,
         id,
         remarks, dcDate, dcNo,
-        invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: netAmount, transportMode, transporter, vehicleNo, taxTemplateId,
-        termsandcondtions ,discountValue ,discountType
+        invoiceItems: invoiceItems?.filter(po => po.styleId), netBillValue: overallAmount, transportMode, transporter, vehicleNo, taxTemplateId,
+        termsandcondtions, discountValue, discountType
 
 
     }
@@ -652,7 +672,7 @@ const InvoiceForm = ({
 
                     <InvoiceItems invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} styleList={styleList}
                         styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList} customerRef={customerRef}
-                    /> 
+                    />
 
                 </fieldset>
 

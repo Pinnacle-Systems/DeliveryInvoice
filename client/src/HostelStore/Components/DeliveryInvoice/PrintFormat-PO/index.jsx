@@ -293,6 +293,7 @@ const DeliveryInvoice = ({
     gstSummary[tax].cgstAmount += amount * (halfGst / 100);
     gstSummary[tax].sgstAmount += amount * (halfGst / 100);
   });
+
   const gstArray = Object.keys(gstSummary).map(tax => {
     return {
       taxRate: Number(tax),
@@ -303,7 +304,10 @@ const DeliveryInvoice = ({
       totalTax: gstSummary[tax].cgstAmount + gstSummary[tax].sgstAmount
     };
   });
-  console.log(gstArray, "gstArray")
+
+
+
+
   const groupedPoItems = Object.values(
     poItems.reduce((acc, item) => {
       const key = [
@@ -342,37 +346,78 @@ const DeliveryInvoice = ({
   console.log(filledPoItems, "filledPoItems")
 
 
-  const taxKey = tax           // GST %
-  // const isInterState = party?.isOutsideState == true;
-  const isInterState = false;
+  // const totalAmount = filledPoItems?.reduce((sum, item) => {
+  //   const qty = Number(item.invoiceQty || 0);
+  //   const price = Number(item.price || 0);
+  //   return sum + qty * price;
+  // }, 0);
 
-  const totalAmount = filledPoItems?.reduce((sum, item) => {
-    const qty = Number(item.invoiceQty || 0);
-    const price = Number(item.price || 0);
+  const totalAmount = poItems?.reduce((sum, item) => {
+    const qty = Number(item?.invoiceQty ?? 0);
+    const price = Number(item?.price ?? 0);
     return sum + qty * price;
   }, 0);
 
+  // 2️⃣ Discount Amount
+  let discountAmount = 0;
 
-  const gstPercent = Number(taxKey) || 0;
-  const halfGST = gstPercent / 2;
-
-  let cgstAmount = 0;
-  let sgstAmount = 0;
-  let igstAmount = 0;
-
-  if (isInterState) {
-    igstAmount = (totalAmount * gstPercent) / 100;
-  } else {
-    cgstAmount = (totalAmount * halfGST) / 100;
-    sgstAmount = (totalAmount * halfGST) / 100;
+  if (discountType == "Percentage") {
+    discountAmount = (totalAmount * Number(discountValue || 0)) / 100;
   }
+  else if (discountType == "Flat") {
+    discountAmount = Number(discountValue || 0);
+  }
+  const result = poItems?.filter(i => i.styleId)?.reduce(
+    (acc, item) => {
+      const amount = item.invoiceQty * item.price;
+      const tax = item?.Hsn?.tax
+      const halfGst = tax / 2;
 
-  // gross before rounding
-  const grossAmount = totalAmount + cgstAmount + sgstAmount + igstAmount;
 
-  // rounding logic
-  const roundedNetAmount = Math.round(grossAmount);
-  const roundOffAmount = +(roundedNetAmount - grossAmount).toFixed(2);
+      console.log(tax, "tax", amount)
+
+      const cgstAmount = amount * (halfGst / 100);
+      const sgstAmount = amount * (halfGst / 100);
+      const itemTax = cgstAmount + sgstAmount;
+
+
+
+      // acc.items.push({
+      //   ...item,
+      //   amount,
+      //   cgstRate: halfGst,
+      //   sgstRate: halfGst,
+      //   cgstAmount,
+      //   sgstAmount,
+      //   itemTax
+      // });
+
+      acc.totalCgst += cgstAmount;
+      acc.totalSgst += sgstAmount;
+      acc.overallTax += itemTax;
+      acc.subTotal += amount;
+
+      return acc;
+    },
+    {
+      // items: [],
+      totalCgst: 0,
+      totalSgst: 0,
+      overallTax: 0,
+      subTotal: 0
+    }
+  );
+
+
+  console.log(result, "result");
+  console.log(gstSummary, "gstSummary")
+  const netAmount = Math.max(totalAmount - discountAmount, 0) + (parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst))
+  const roundedNetAmount = Math.round(netAmount);
+  const roundOff = Number((roundedNetAmount - netAmount).toFixed(2));
+  const overallAmount = parseFloat(parseFloat(netAmount) + parseFloat(roundOff)).toFixed(2)
+
+
+  console.log(overallAmount, "overallAmount", discountAmount)
 
 
 
@@ -869,7 +914,7 @@ const DeliveryInvoice = ({
                   padding: 3,
                 }}
               >
-                {parseFloat(igstAmount).toFixed(3)}
+                {/* {parseFloat(igstAmount).toFixed(3)} */}
 
               </Text>
             </View>
@@ -891,7 +936,7 @@ const DeliveryInvoice = ({
                   padding: 3,
                 }}
               >
-                {roundOffAmount}
+                {parseFloat(roundOff).toFixed(2)}
 
               </Text>
             </View>
@@ -899,7 +944,7 @@ const DeliveryInvoice = ({
             <View style={{ flexDirection: "row", borderTop: "1 solid #9ca3af", backgroundColor: "#946657", color: "#FFFF", padding: 2 }}>
               <Text style={{ flex: 1, fontSize: 10, paddingTop: 3 }}>Net Amount in Rs</Text>
               <Text style={{ flex: 1, textAlign: "right", fontSize: 10, padding: 3 }}>
-                {parseFloat(roundedNetAmount).toFixed(3)}
+                {parseFloat(overallAmount).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -938,7 +983,11 @@ const DeliveryInvoice = ({
                     language: "en-in",
                     separator: "",
                   })} */}
-                  {numberToWords.toWords(roundedNetAmount)}
+                  {/* {numberToWords.toWords(overallAmount ? overallAmount : 0)} */}
+                  {numberToWords.toWords(
+                    Number.isFinite(overallAmount) ? Math.round(overallAmount) : 0
+                  )
+                  }
                   {" "}
                   Only
                 </Text>
