@@ -124,7 +124,7 @@ label {
   }
 
   .table-data-input {
-    @apply bg-transparent focus:bg-yellow-200;
+    @apply  focus:bg-yellow-200;
   }
 
   .table-data {

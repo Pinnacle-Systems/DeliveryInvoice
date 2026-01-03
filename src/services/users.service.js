@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { findDateInRange, generateSubscriptionCode, exclude } from '../utils/helper.js';
 import { sendMail } from '../utils/mailer.js';
+import { getSubscriptionDetails } from '../utils/subscriptionCall.js';
 
 const prisma = new PrismaClient()
 
@@ -23,6 +24,8 @@ const xprisma = prisma.$extends({
 
 async function login(req) {
     const { username, password } = req.body
+     const returnData = await getSubscriptionDetails()
+    if (returnData) return returnData
     const data = await xprisma.user.findUnique({
         where: {
             username: username

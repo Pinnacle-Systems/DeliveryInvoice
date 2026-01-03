@@ -589,7 +589,7 @@ const DeliveryItems = ({
 
                                     <td className="py-0.5 border border-gray-300 text-[11px]">
                                         <select
-                                            className="w-full rounded py-0.5"
+                                            className="w-full rounded py-0.5  table-data-input"
                                             value={row.styleId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "styleId")}
                                             disabled={readOnly}
@@ -603,7 +603,7 @@ const DeliveryItems = ({
 
                                     <td className="py-0.5 border border-gray-300 text-[11px]">
                                         <select
-                                            className="w-full rounded py-0.5  "
+                                            className="w-full rounded py-0.5  table-data-input "
                                             value={row.styleItemId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "styleItemId")}
                                             disabled={!row.styleId || readOnly}
@@ -618,7 +618,7 @@ const DeliveryItems = ({
                                     <td className="py-0.5 border border-gray-300 text-[11px] text-right">
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "hsnId") } }}
-                                            tabIndex={"0"} className='text-left w-full rounded py-0.5 '
+                                            tabIndex={"0"} className='text-left w-full rounded py-0.5 table-data-input'
                                             value={row.styleItemId ? row.hsnId : ""}
                                             onChange={(e) => handleInputChange(e.target.value, index, "hsnId")}
                                             onBlur={(e) => {
@@ -639,7 +639,7 @@ const DeliveryItems = ({
 
                                     <td className="py-0.5 border border-gray-300 text-[11px]">
                                         <select
-                                            className="w-full rounded py-0.5 "
+                                            className="w-full rounded py-0.5 table-data-input"
                                             value={row.colorId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "colorId")}
                                             disabled={!row.styleItemId || readOnly}
@@ -654,7 +654,7 @@ const DeliveryItems = ({
 
                                     <td className=" border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs">
                                         <input
-                                            className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
+                                            className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right "
                                             type="number"
                                             step="0.01"
                                             min="0"
@@ -701,7 +701,7 @@ const DeliveryItems = ({
                                     <td className="w-12 border border-gray-300 text-[11px] py-0.5">
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "uomId") } }}
-                                            className='text-left w-full rounded py-0.5'
+                                            className='text-left w-full rounded py-0.5 table-data-input'
                                             value={row.colorId? row.uomId : ""}
                                             onChange={(e) => handleInputChange(e.target.value, index, "uomId")}
                                             onBlur={(e) => {
