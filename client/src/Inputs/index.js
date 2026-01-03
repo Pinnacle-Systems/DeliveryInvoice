@@ -1134,34 +1134,6 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
       params: { companyId, userId },
     });
 
-    const dropdownOptions = partyList?.data?.flatMap(party => {
-      const options = [];
-
-      // 👉 Party itself (No Branch / Head Office)
-      options.push({
-        partyId: party.id,
-        branchId: null,
-        label: `${party.name} | ${party?.City?.name}`,
-        value: `P-${party.id}`
-      });
-
-      // 👉 Party Branches (if any)
-      if (party?.PartyBranch?.length) {
-        party.PartyBranch.forEach(branch => {
-          options.push({
-            partyId: party.id,
-            branchId: branch.id,
-            label: ` ${branch.name} | ${branch?.City?.name}`,
-            value: `P-${party.id}-B-${branch.branchId}`
-          });
-        });
-      }
-
-      return options;
-    });
-
-
-    console.log(dropdownOptions, "dropdownOptions")
 
     /* ---------------------------------- STATE --------------------------------- */
 
@@ -1471,7 +1443,6 @@ export const ReusableSearchableInputNewCustomer = forwardRef(
     );
   }
 );
-
 export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
   (
     {
@@ -1503,44 +1474,10 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     );
 
     const { data: partyList } = useGetPartyQuery({
-      params: { companyId, userId },
+      params: { companyId, userId ,isAddessCombined : true },
     });
 
-    const dropdownOptions = partyList?.data?.flatMap(party => {
-      const options = [];
-
-      // 👉 Party itself (No Branch / Head Office)
-      options.push({
-        id: party.id,
-        partyId: party.id,
-        branchId: null,
-        label: `${party.name} ${""} - ${""} ${party?.City?.name}`,
-        value: `P-${party.id}`,
-        isCustomer: party?.isCustomer,
-        name: party.name
-      });
-
-      // 👉 Party Branches (if any)
-      if (party?.PartyBranch?.length) {
-        party.PartyBranch.forEach(branch => {
-          options.push({
-            id: branch.id,
-
-            partyId: party.id,
-            branchId: branch.id,
-            label: ` ${branch.name} ${""} - ${""} ${branch?.City?.name}`,
-            value: `P-${party.id}-B-${branch.branchId}`,
-            name: branch.name
-
-          });
-        });
-      }
-
-      return options;
-    });
-
-
-    console.log(dropdownOptions, "dropdownOptions")
+      console.log(partyList,"partyList")
 
     /* ---------------------------------- STATE --------------------------------- */
 
@@ -1559,7 +1496,6 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
 
 
 
-    const filtered = partyList?.data?.filter(i => i.isCustomer)
 
     /* ---------------------------- OUTSIDE CLICK ---------------------------- */
     // useEffect(() => {
@@ -1573,6 +1509,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
         if (containerRef.current && !containerRef.current.contains(event.target)) {
           setIsDropdownOpen(false);
           setIsListShow(false)
+
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
@@ -1585,11 +1522,12 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
       if (!partyList?.data) return;
 
       if (!search.trim()) {
-        setFilteredPages(dropdownOptions);
+        setFilteredPages(partyList?.data);
         return;
       }
 
-      const filtered = dropdownOptions.filter((item) =>
+      const filtered = partyList?.data?.filter((item) =>
+
         item?.name?.toLowerCase().includes(search.toLowerCase())
       );
 
@@ -1636,8 +1574,6 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     const handleDelete = (id, e) => {
       onDeleteItem?.(id);
     };
-
-    console.log(searchTerm, "searchTerm", isListShow)
 
     /* ---------------------------------- JSX ---------------------------------- */
 
@@ -1698,8 +1634,8 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                   placeholder={placeholder}
                   value={findFromList(
                     searchTerm,
-                    dropdownOptions,
-                    "label"
+                    partyList?.data?.filter(i => i.isCustomer),
+                    "name"
                   )}
                   onFocus={() => {
                     setIsListShow(true);
@@ -1811,7 +1747,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                     }}
                   >
                     <div>
-                      <div className="font-medium">{item.label}</div>
+                      <div className="font-medium">{item.name}</div>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button

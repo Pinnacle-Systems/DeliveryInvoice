@@ -6,11 +6,14 @@ const prisma = new PrismaClient()
 
 
 async function get(req) {
-    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport } = req.query
+    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent ,isAddessCombined} = req.query
+    console.log(isAddessCombined,"isAddessCombined")
     // if (isPartyLedgerReport) {
     //     const data = await getPartyLedgerReport(partyId, startDate, endDate)
     //     return { statusCode: 0, data };
     // }
+
+    let data;
     if (isPartyLedgerReport) {
         const data = await getPartyLedgerReport(partyId, startDate, endDate)
         return { statusCode: 0, data };
@@ -28,7 +31,7 @@ async function get(req) {
         const data = await getPartyPurchaseOverAllReport(searchValue)
         return { statusCode: 0, data };
     }
-    const data = await prisma.party.findMany({
+    data = await prisma.party.findMany({
         where: {
             companyId: companyId ? parseInt(companyId) : undefined,
             active: active ? Boolean(active) : undefined,
@@ -78,6 +81,16 @@ async function get(req) {
         }
 
     });
+
+    if (isParent) {
+        data = data?.filter(i => !i.parentId || !i.branchTypeId)
+    }
+    if (isAddessCombined) {
+        data = data?.filter(i => i.isCustomer).map(i => ({
+            ...i,
+            name: `${i.name} ${" "} / ${" "} ${i.City?.name ?? ""}`
+        }))
+    }
     return { statusCode: 0, data };
 }
 
@@ -353,12 +366,24 @@ async function update(id, body) {
     return { statusCode: 0, data };
 };
 
+// async function remove(id) {
+//     const data = await prisma.party.delete({
+//         where: {
+//             id: parseInt(id)
+//         },
+//     })
+//     return { statusCode: 0, data };
+// }
+
 async function remove(id) {
-    const data = await prisma.party.delete({
+    const data = await prisma.party.deleteMany({
         where: {
-            id: parseInt(id)
-        },
-    })
+            OR: [
+                { id: parseInt(id) },
+                { parentId: id }
+            ]
+        }
+    });
     return { statusCode: 0, data };
 }
 

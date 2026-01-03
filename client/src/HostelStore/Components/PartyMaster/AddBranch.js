@@ -1,19 +1,22 @@
 import { Check, Eye, Paperclip, Plus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaInfoCircle, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { DropdownInputNew, DropdownWithSearch, ReusableTable, TextArea, TextAreaNew, TextInputNew, TextInputNew1, ToggleButton } from "../../../Inputs";
 import { statusDropdown } from "../../../Utils/DropdownData";
-import { dropDownListMergedObject } from "../../../Utils/contructObject";
+import { dropDownListMergedObject, dropDownListObject } from "../../../Utils/contructObject";
 import { getImageUrlPath } from "../../../Constants";
 import { renameFile } from "../../../Utils/helper";
-import { useAddPartyBranchMutation, useDeletePartyBranchMutation, useGetPartyBranchByIdQuery, useGetPartyBranchQuery, useUpdatePartyBranchMutation } from "../../../redux/services/PartyBranchMasterService";
+import partyBranchMasterApi, { useAddPartyBranchMutation, useDeletePartyBranchMutation, useGetPartyBranchByIdQuery, useGetPartyBranchQuery, useUpdatePartyBranchMutation } from "../../../redux/services/PartyBranchMasterService";
 import moment from "moment";
+import { useGetbranchTypeQuery } from "../../../redux/services/BranchTypeMaster";
+import { useAddPartyMutation, useDeletePartyMutation, useGetPartyByIdQuery, useUpdatePartyMutation } from "../../../redux/services/PartyMasterService";
+import { useDispatch } from "react-redux";
 
 
 
-const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, readOnly, setReadOnly,
-  branchForm, setBranchForm, branchState, refetch, branchContactPersonEmail, setBranchContactPersonEmail,
+const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setReadOnly,
+  branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer,
 }) => {
 
   // const {
@@ -86,8 +89,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
   const [contactMobile, setContactMobile] = useState('');
   const [cstDate, setCstDate] = useState("");
   const [email, setEmail] = useState("");
-  const [isSupplier, setIsSupplier] = useState(false);
-  const [isCustomer, setIsCustomer] = useState(true);
+
   const [active, setActive] = useState(true);
   const [view, setView] = useState("all");
   const [isClient, setClient] = useState();
@@ -125,7 +127,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
   const [branchAccountNumber, setBranchAccountNumber] = useState("");
   const [branchIfscCode, setBranchIfscCode] = useState("");
 
-  const [branchType, setBranchType] = useState("");
+  const [branchTypeId, setBranchTypeId] = useState("");
 
   const [branchContactPersonContact, setBranchContactPersonContact] = useState("");
   const [branchContactPersonAlterContact, setBranchContactPersonAlterContact] = useState("");
@@ -133,12 +135,16 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
     current: 0
   }
 
+  console.log(branchTypeData, "branchTypeData")
 
   const [isBranchcontact, setIsBranchcontact] = useState(false)
   const [branchId, setBranchId] = useState("")
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [contactForm, setContactForm] = useState(false)
   const today = new Date();
+
+  const dispatch = useDispatch();
+
 
   function handleInputChange(value, index, field) {
 
@@ -178,18 +184,24 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
   });
 
 
+  // const {
+  //   data: singleBranchData,
+  //   isFetching: isSingleFetching,
+  //   isLoading: isSingleLoading,
+  // } = useGetPartyBranchByIdQuery(branchId, { skip: !branchId });
+
   const {
     data: singleBranchData,
     isFetching: isSingleFetching,
     isLoading: isSingleLoading,
   } = useGetPartyBranchByIdQuery(branchId, { skip: !branchId });
 
-  console.log(branchId, "branchId")
+  console.log(allData, "allData",branchId)
+
 
   const [addData] = useAddPartyBranchMutation();
-  const [updateData] = useUpdatePartyBranchMutation()
-  const [removeData] = useDeletePartyBranchMutation()
-
+  const [updateData] = useUpdatePartyBranchMutation();
+  const [removeData] = useDeletePartyBranchMutation();
 
 
 
@@ -221,8 +233,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
       setWebsite(data?.website ? data?.website : "");
       setEmail(data?.email ? data?.email : "");
       setCity(data?.cityId ? data?.cityId : "");
-      setIsSupplier((data?.isSupplier ? data.isSupplier : false));
-      setIsCustomer((data?.isCustomer ? data.isCustomer : true));
+
       setActive(id ? (data?.active ? data.active : false) : true);
       setContactMobile((data?.contactMobile ? data.contactMobile : ''));
       setlandMark(data?.landMark ? data?.landMark : '')
@@ -240,6 +251,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
       setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
       setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
       setPartyCode(data?.partyCode ? data?.partyCode : "")
+      setBranchTypeId(data?.branchTypeId ? data?.branchTypeId : "")
 
     },
 
@@ -259,7 +271,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
     active, coa: coa ? coa : "", soa,
     id,
     landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-    bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, partyId
+    bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, partyId, branchTypeId, companyId
   };
 
   console.log(data, "data")
@@ -291,6 +303,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
       } else {
         returnData = await callback(formData).unwrap();
       }
+      dispatch(partyBranchMasterApi.util.invalidateTags(["partyBranchMaster"]));
       // dispatch({
       //   type: `accessoryItemMaster/invalidateTags`,
       //   payload: ['AccessoryItemMaster'],
@@ -305,13 +318,15 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
       // });
       if (nextProcess == "new") {
         syncFormWithDb(undefined);
-        // onNew();
+        onNew();
       } else {
         if (partyId) {
           // onCloseForm()
         }
-        setForm(false);
+        setBranchForm(true);
       }
+      // setBranchId('')
+      // setBranchForm(true)
 
       Swal.fire({
         title: text + "  " + "Successfully",
@@ -350,7 +365,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
 
   const validateData = (data) => {
 
-    if (data.branchAddress && data?.branchCode && data?.branchContact && data?.branchName) {
+    if (data.name && data?.branchTypeId && data?.address && data?.cityId && data?.pincode) {
 
 
       return true
@@ -359,25 +374,41 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
     return false
   };
 
-  const saveData = () => {
+  const saveData = (nextProcess) => {
 
-    // if (!validateData(data)) {
-    //     toast.error("Please fill all required fields...!", {
-    //         position: "top-center",
-    //     });
-    //     return;
-    // }
+    if (!validateData(data)) {
+      Swal.fire({
+        title: 'Please fill all required fields...!',
+        icon: 'error',
+      });
+      return
+    }
+    let foundItem;
+    if (branchId) {
+      foundItem = allData?.data
+        ?.filter((i) => i.id != branchId)
+        ?.some((item) => item.name == name);
+    } else {
+      foundItem = allData?.data?.some((item) => item.name == name);
+    }
+    if (foundItem) {
+      Swal.fire({
+        text: `The Branch name is already  exists `,
+        icon: "warning",
+      });
+      return false;
+    }
     //     handleSubmitCustom(updateData, data, "Updated");
     // } else {
     if (!window.confirm("Are you sure save the details ...?")) {
       return;
     }
     if (branchId) {
-      handleSubmitCustom(updateData, data, "Updated");
+      handleSubmitCustom(updateData, data, "Updated", nextProcess);
     }
     else {
 
-      handleSubmitCustom(addData, data, "Added");
+      handleSubmitCustom(addData, data, "Added", nextProcess);
 
     }
     // else{
@@ -393,13 +424,13 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
     },
 
     {
-      header: 'BranchName',
+      header: 'Branch Name',
       accessor: (item) => item.name,
       className: "font-medium text-gray-900 text-left uppercase w-96",
     },
 
     {
-      header: 'BranchAddress',
+      header: 'Branch Address',
       accessor: (item) => item.address,
       className: "font-medium text-gray-900 text-left uppercase w-2/4",
     },
@@ -443,7 +474,13 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
     setBranchId('')
     syncFormWithDb(undefined);
   };
+    const countryNameRef = useRef(null);
 
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
 
   return (
 
@@ -551,7 +588,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
 
                 }
                 <div className="flex gap-2">
-                  {!readOnly && !id && (
+                  {!readOnly && !branchId && (
                     <button
                       type="button"
                       onClick={() => {
@@ -576,11 +613,40 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
 
 
                 <div className="lg:col-span-4 space-y-3">
-                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[290px]">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                     <div className="grid grid-cols-2 gap-2">
 
 
+                      {/* <DropdownWithSearch
+                        options={branchTypeData?.data}
+                        labelField={"name"}
+                        required={true}
+
+                        label={"Branch Category"}
+                        value={branchType}
+                        setValue={setBranchType}
+                      /> */}
+
+                      <DropdownInputNew
+                        name="Branch Category"
+                        options={dropDownListObject(
+                          id
+                            ? branchTypeData?.data
+                            : branchTypeData?.data?.filter(
+                              (item) => item.active
+                            ),
+                          "name",
+                          "id" || []
+                        )}
+                        value={branchTypeId}
+                        ref={countryNameRef}
+                        openOnFocus={true}
+                        setValue={(value) => setBranchTypeId(value)}
+                        required={true}
+                        readOnly={readOnly}
+                        disabled={childRecord.current > 0}
+                      />
 
                       <div className="col-span-2">
                         <TextInputNew1
@@ -659,7 +725,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
 
                 </div>
                 <div className="lg:col-span-4 space-y-3 ">
-                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px] overflow-y-auto">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[290px] overflow-y-auto">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                     <div className="space-y-2">
 
@@ -773,7 +839,7 @@ const AddBranch = ({ singleData, partyId, setPartyId, cityList, branchInfo, read
 
                 <div className="lg:col-span-4 space-y-3">
 
-                  <div className="bg-white p-3 rounded-md border border-gray-200  h-[260px]">
+                  <div className="bg-white p-3 rounded-md border border-gray-200  h-[290px]">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
                     <div className="space-y-2">
 

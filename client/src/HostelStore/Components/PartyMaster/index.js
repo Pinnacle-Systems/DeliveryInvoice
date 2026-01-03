@@ -30,14 +30,13 @@ import Swal from "sweetalert2";
 import { getImageUrlPath } from "../../../Constants";
 import { push } from "../../../redux/features/opentabs";
 import AddBranch from "./AddBranch";
+import { useGetbranchTypeQuery } from "../../../redux/services/BranchTypeMaster";
 
-
-const MODEL = "Party Master";
 
 
 export default function Form({ partyId, onCloseForm }) {
 
-    console.log(partyId, "[partyId")
+    console.log(partyId, "partyId")
     const [form, setForm] = useState(false);
 
     const [readOnly, setReadOnly] = useState(false);
@@ -103,10 +102,12 @@ export default function Form({ partyId, onCloseForm }) {
         sessionStorage.getItem("sessionId") + "userId"
     )
     const params = {
-        companyId
+        companyId,
+        isParent: true
     };
     const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =
         useGetCityQuery({ params });
+    const { data: branchTypeData } = useGetbranchTypeQuery({});
 
 
     // const openPartyModal = useSelector((state) => {
@@ -330,6 +331,9 @@ export default function Form({ partyId, onCloseForm }) {
             Swal.fire({
                 text: `The ${isSupplier ? "Supplier" : "Customer"} name is already  exists `,
                 icon: "warning",
+                customClass: {
+                    popup: 'swal-custom-height'
+                }
             });
             return false;
         }
@@ -551,17 +555,16 @@ export default function Form({ partyId, onCloseForm }) {
                                 <div className="  ">
                                     <button
                                         onClick={() => {
-                                            if (name) {
-                                                // setBranchModelOpen(true)
-                                                // setBranchForm(false)
+                                            if (id) {
+                                                setBranchModelOpen(true)
+                                                setBranchForm(false)
                                             }
 
                                             else {
                                                 Swal.fire({
                                                     icon: 'warning',
-                                                    title: `Enter ${isSupplier ? "Supplier Details" : "Customer Details"} `,
+                                                    title: `Save the ${isSupplier ? "Supplier Details" : "Customer Details"} `,
                                                     showConfirmButton: false,
-                                                    timer: 2000
                                                 });
                                             }
 
@@ -643,39 +646,32 @@ export default function Form({ partyId, onCloseForm }) {
                                 <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
                                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="flex flex-row items-center gap-2 ">
-                                            <div className="flex items-center gap-2 ">
+                                        <div className="flex flex-row items-center gap-4">
+                                            <div className="flex items-center gap-2">
                                                 <input
-                                                    type="radio"
-                                                    name="type"
+                                                    type="checkbox"
                                                     checked={isCustomer}
-                                                    onChange={() => handleChange('client')}
-                                                    readOnly={readOnly}
+                                                    onChange={(e) => setIsCustomer(e.target.checked)}
+                                                    disabled={readOnly}
                                                 />
-                                                <label className="block text-xs font-bold text-gray-600 mt-1">Customer</label>
+                                                <label className="block text-xs font-bold text-gray-600">
+                                                    Customer
+                                                </label>
                                             </div>
-                                            <div className="flex flex-row gap-2">
 
+                                            <div className="flex items-center gap-2">
                                                 <input
-                                                    type="radio"
-                                                    name="type"
+                                                    type="checkbox"
                                                     checked={isSupplier}
-                                                    onChange={() => handleChange('supplier')}
-                                                    readOnly={readOnly}
-
+                                                    onChange={(e) =>  setIsSupplier(e.target.checked)}
+                                                    disabled={readOnly}
                                                 />
-                                                <label className="block text-xs font-bold text-gray-600 mt-1">Supplier</label>
-                                            </div>
-                                            <div className="col-span-4 flex flex-row ">
-
-
-
-
-
-
-
+                                                <label className="block text-xs font-bold text-gray-600">
+                                                    Supplier
+                                                </label>
                                             </div>
                                         </div>
+
 
 
                                         <div className="col-span-2">
@@ -1409,7 +1405,7 @@ export default function Form({ partyId, onCloseForm }) {
                                             onClick={() => {
                                                 if (id) {
                                                     setBranchModelOpen(true)
-                                                    // setBranchForm(false)
+                                                    setBranchForm(false)
                                                 }
 
                                                 else {
@@ -1499,44 +1495,37 @@ export default function Form({ partyId, onCloseForm }) {
                                         <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <div className="flex flex-row items-center gap-2 ">
-                                                    <div className="flex items-center gap-2 ">
+                                                <div className="flex flex-row items-center gap-4">
+                                                    <div className="flex items-center gap-2">
                                                         <input
-                                                            type="radio"
-                                                            name="type"
+                                                            type="checkbox"
                                                             checked={isCustomer}
-                                                            onChange={() => handleChange('client')}
-                                                            readOnly={readOnly}
+                                                            onChange={(e) => setIsCustomer(e.target.checked)}
+                                                            disabled={readOnly}
                                                         />
-                                                        <label className="block text-xs font-bold text-gray-600 mt-1">Customer</label>
+                                                        <label className="block text-xs font-bold text-gray-600">
+                                                            Customer
+                                                        </label>
                                                     </div>
-                                                    <div className="flex flex-row gap-2">
 
+                                                    <div className="flex items-center gap-2">
                                                         <input
-                                                            type="radio"
-                                                            name="type"
+                                                            type="checkbox"
                                                             checked={isSupplier}
-                                                            onChange={() => handleChange('supplier')}
-                                                            readOnly={readOnly}
-
+                                                            onChange={(e) => setIsSupplier(e.target.checked)}
+                                                            disabled={readOnly}
                                                         />
-                                                        <label className="block text-xs font-bold text-gray-600 mt-1">Supplier</label>
-                                                    </div>
-                                                    <div className="col-span-4 flex flex-row ">
-
-
-
-
-
-
-
+                                                        <label className="block text-xs font-bold text-gray-600">
+                                                            Supplier
+                                                        </label>
                                                     </div>
                                                 </div>
 
 
+
                                                 <div className="col-span-2">
                                                     <TextInputNew1
-                                                        name={isSupplier ? "Supplier Name" : "Customer Name"}
+                                                        name={"name"}
                                                         type="text"
                                                         value={name}
                                                         inputClass="h-8"
@@ -2161,7 +2150,8 @@ export default function Form({ partyId, onCloseForm }) {
                 <AddBranch
                     cityList={cityList}
                     setReadOnly={setReadOnly} partyId={id}
-                    branchForm={branchForm} setBranchForm={setBranchForm}
+                    branchForm={branchForm} setBranchForm={setBranchForm} branchTypeData={branchTypeData}
+                    companyId={companyId} readOnly={readOnly} isCustomer={isCustomer} isSupplier={isSupplier}
 
                 />
 

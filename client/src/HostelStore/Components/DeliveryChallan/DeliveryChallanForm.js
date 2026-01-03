@@ -401,22 +401,6 @@ const ChallanForm = ({
 
                                 >
 
-                                    {/* <ReusableSearchableInputNewCustomer
-                                        label="Customer Name"
-                                        component="PartyMaster"
-                                        placeholder="Search Customer Name"
-                                        optionList={allSuppliers}
-                                        setSearchTerm={(value) => { setSupplierId(value) }}
-                                        searchTerm={supplierId}
-                                        show={"isCustomer"}
-                                        required={true}
-                                        disabled={readOnly}
-                                        ref={inputRef}
-                                        nextRef={customerRef}
-                                        id={id}
-                                        onDeleteItem={onDeleteItem}
-                                    /> */}
-
                                     <ReusableSearchableInputNewCustomerwithBranches
                                         label="Customer Name"
                                         component="PartyMaster"
@@ -432,6 +416,22 @@ const ChallanForm = ({
                                         id={id}
                                         onDeleteItem={onDeleteItem}
                                     />
+{/* 
+                                    <ReusableSearchableInputNewCustomerwithBranches
+                                        label="Customer Name"
+                                        component="PartyMaster"
+                                        placeholder="Search Customer Name"
+                                        optionList={allSuppliers}
+                                        setSearchTerm={(value) => { setSupplierId(value) }}
+                                        searchTerm={supplierId}
+                                        show={"isCustomer"}
+                                        required={true}
+                                        disabled={readOnly}
+                                        ref={inputRef}
+                                        nextRef={customerRef}
+                                        id={id}
+                                        onDeleteItem={onDeleteItem}
+                                    /> */}
 
 
 

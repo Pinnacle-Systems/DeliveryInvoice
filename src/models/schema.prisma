@@ -342,16 +342,16 @@ model Party {
   contactPersonName    String?
   gstNo                String?
   costCode             String?
-  active               Boolean?           @default(true)
-  contactMobile        BigInt?            @default(0)
-  Company              Company?           @relation(fields: [companyId], references: [id])
+  active               Boolean?          @default(true)
+  contactMobile        BigInt?           @default(0)
+  Company              Company?          @relation(fields: [companyId], references: [id])
   companyId            Int?
-  yarn                 Boolean?           @default(false)
-  fabric               Boolean?           @default(false)
-  accessoryGroup       Boolean?           @default(false)
-  createdAt            DateTime?          @default(now())
-  updatedAt            DateTime?          @updatedAt
-  createdBy            User?              @relation("createdBy", fields: [createdById], references: [id])
+  yarn                 Boolean?          @default(false)
+  fabric               Boolean?          @default(false)
+  accessoryGroup       Boolean?          @default(false)
+  createdAt            DateTime?         @default(now())
+  updatedAt            DateTime?         @updatedAt
+  createdBy            User?             @relation("createdBy", fields: [createdById], references: [id])
   createdById          Int?
   updatedBy            User?             @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById          Int?
@@ -378,6 +378,8 @@ model Party {
   companyAlterNumber   String?
   partyCode            String?
   parentId             String?
+  BranchType           BranchType?       @relation(fields: [branchTypeId], references: [id])
+  branchTypeId           Int?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
@@ -410,16 +412,16 @@ model PartyBranch {
   contactPersonName  String?
   gstNo              String?
   costCode           String?
-  active             Boolean?             @default(true)
-  contactMobile      BigInt?              @default(0)
-  Company            Company?             @relation(fields: [companyId], references: [id])
+  active             Boolean?            @default(true)
+  contactMobile      BigInt?             @default(0)
+  Company            Company?            @relation(fields: [companyId], references: [id])
   companyId          Int?
-  yarn               Boolean?             @default(false)
-  fabric             Boolean?             @default(false)
-  accessoryGroup     Boolean?             @default(false)
-  createdAt          DateTime?            @default(now())
-  updatedAt          DateTime?            @updatedAt
-  createdBy          User?                @relation("createdBy", fields: [createdById], references: [id])
+  yarn               Boolean?            @default(false)
+  fabric             Boolean?            @default(false)
+  accessoryGroup     Boolean?            @default(false)
+  createdAt          DateTime?           @default(now())
+  updatedAt          DateTime?           @updatedAt
+  createdBy          User?               @relation("createdBy", fields: [createdById], references: [id])
   createdById        Int?
   updatedBy          User?               @relation("updatedBy", fields: [updatedById], references: [id])
   updatedById        Int?
@@ -992,9 +994,11 @@ model Hsn {
   DeliveryChallanItems DeliveryChallanItems[]
   DeliveryInvoiceItems DeliveryInvoiceItems[]
 }
+
 model BranchType {
-  id           Int           @id @default(autoincrement())
-  name         String?
-  active       Boolean?      @default(false)
-  aliasName    String?
+  id        Int      @id @default(autoincrement())
+  name      String?
+  active    Boolean? @default(false)
+  aliasName String?
+  Party     Party[]
 }

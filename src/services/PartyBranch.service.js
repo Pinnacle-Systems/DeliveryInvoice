@@ -5,12 +5,12 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { companyId, active, partyId } = req.query
-    const data = await prisma.partyBranch.findMany({
+    const data = await prisma.party.findMany({
 
 
         where: {
             active: active ? Boolean(active) : undefined,
-            partyId: parseInt(partyId)
+            parentId: partyId
         }
     });
 
@@ -19,17 +19,59 @@ async function get(req) {
 
 
 async function getOne(id) {
-    const childRecord = 0;
-    const data = await prisma.partyBranch.findUnique({
+    const data = await prisma.party.findUnique({
         where: {
             id: parseInt(id)
         },
-        include : {
-            Branchattachments : true
+        include: {
+            attachments: true,
+            City: {
+                select: {
+                    name: true,
+                    state: true
+                }
+            },
+            PurchaseBillSupplier: {
+                select: {
+                    ourPrice: true,
+                    supplierId: true
+                }
+            },
+            SalesBillSupplier: {
+                select: {
+                    netBillValue: true,
+                    supplierId: true,
+                    isOn: true
+                }
+            },
+            Payment: {
+                select: {
+                    paidAmount: true,
+                    partyId: true,
+                    paymentType: true,
+                    discount: true
+                }
+            },
+            ledgers: true,
+
         }
-    })
-    if (!data) return NoRecordFound("counts");
-    return { statusCode: 0, data: { ...data, ...{ childRecord } } };
+    });
+
+    if (!data) return NoRecordFound("party");
+
+
+
+
+    return {
+        statusCode: 0,
+        data: {
+            ...data,
+
+
+
+
+        }
+    };
 }
 
 async function getSearch(req) {
@@ -59,7 +101,7 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, partyId } = await body
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, branchTypeId, partyId } = await body
     const data = await prisma.party.create(
         {
             data: {
@@ -69,7 +111,8 @@ async function create(body) {
                 aliasName,
                 displayName,
                 address,
-
+                isSupplier: isSupplier ? JSON.parse(isSupplier) : false,
+                isCustomer: isCustomer ? JSON.parse(isCustomer) : false,
 
                 cityId: cityId ? parseInt(cityId) : undefined,
                 pincode: pincode ? parseInt(pincode) : undefined,
@@ -95,7 +138,8 @@ async function create(body) {
                 msmeNo: msmeNo ? msmeNo : undefined,
                 companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
                 partyCode: partyCode ? partyCode : "",
-
+                branchTypeId: branchTypeId ? parseInt(branchTypeId) : undefined,
+                parentId: partyId ? partyId : undefined,
                 attachments: JSON.parse(attachments)?.length > 0
                     ? {
                         createMany: {
@@ -116,12 +160,13 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, code, aliasName, displayName, address, isSupplier, isCustomer,
+    const { name, code, aliasName, displayName, address, isSupplier, isCustomer, currencyId,
         cityId, pincode, panNo, tinNo, cstNo, cstDate,
-        cinNo, faxNo, email, website, contactPersonName, contactMobile,
+        cinNo, faxNo, email, website, contactPersonName, contactMobile, costCode,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode } = await body
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode,
+        branchTypeId, partyId } = await body
 
 
     const parseAttachments = JSON.parse(attachments || "[]");
@@ -130,46 +175,55 @@ async function update(id, body) {
     const incomingIds = parseAttachments?.filter(i => i.id).map(i => parseInt(i.id));
 
 
-    const dataFound = await prisma.PartyBranch.findUnique({
+    const dataFound = await prisma.party.findUnique({
         where: {
             id: parseInt(id)
         }
     })
     if (!dataFound) return NoRecordFound("partyBranch");
-    const data = await prisma.partyBranch.update({
+    const data = await prisma.party.update({
         where: {
             id: parseInt(id),
         },
         data: {
-            name, code, aliasName, displayName, address,
+            name,
+            code,
+            aliasName,
+            displayName,
+            address,
+
             isSupplier: isSupplier ? JSON.parse(isSupplier) : false,
             isCustomer: isCustomer ? JSON.parse(isCustomer) : false,
-            cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
+            cityId: cityId ? parseInt(cityId) : undefined,
+            pincode: pincode ? parseInt(pincode) : undefined,
             panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
             cinNo, faxNo, email, website, contactPersonName,
-            gstNo,
+            gstNo, currencyId: currencyId ? parseInt(currencyId) : undefined, costCode,
             createdById: userId ? parseInt(userId) : undefined,
-            // companyId: parseInt(companyId),
+            companyId: parseInt(companyId),
             active: active ? JSON.parse(active) : false,
-            contactMobile: contactMobile ? parseInt(contactMobile) : undefined, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
-            landMark: landMark ? landMark : "",
+            coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
+            contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
+            landMark: landMark ? landMark : undefined,
             contact: contact ? contact : undefined,
             designation: designation ? designation : undefined,
             department: department ? department : undefined,
             contactPersonEmail: contactPersonEmail ? contactPersonEmail : undefined,
             contactNumber: contactNumber ? contactNumber : undefined,
             alterContactNumber: alterContactNumber ? alterContactNumber : undefined,
-            bankname: bankname ? bankname : undefined,
+            bankname: bankname ? bankname : "",
             bankBranchName: bankBranchName ? bankBranchName : undefined,
             accountNumber: accountNumber ? accountNumber : undefined,
             ifscCode: ifscCode ? ifscCode : undefined,
             msmeNo: msmeNo ? msmeNo : undefined,
             companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
             partyCode: partyCode ? partyCode : "",
+            branchTypeId: branchTypeId ? parseInt(branchTypeId) : undefined,
+            parentId: partyId ? partyId : undefined,
 
 
 
-            Branchattachments: {
+            attachments: {
                 deleteMany: {
                     ...(incomingIds.length > 0 && {
                         id: { notIn: incomingIds }
@@ -203,13 +257,14 @@ async function update(id, body) {
                     })),
             },
 
+
         }
     })
     return { statusCode: 0, data };
 };
 
 async function remove(id) {
-    const data = await prisma.partyBranch.delete({
+    const data = await prisma.party.delete({
         where: {
             id: parseInt(id)
         },

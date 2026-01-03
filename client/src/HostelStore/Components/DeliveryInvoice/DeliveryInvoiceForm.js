@@ -1,5 +1,5 @@
 import { FaFileAlt } from "react-icons/fa"
-import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
+import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, ReusableSearchableInputNewCustomerwithBranches, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { findFromList, isGridDatasValid } from "../../../Utils/helper";
@@ -527,7 +527,7 @@ const InvoiceForm = ({
 
                             >
 
-                                <ReusableSearchableInputNewCustomer
+                                <ReusableSearchableInputNewCustomerwithBranches
                                     label="Customer Name"
                                     component="PartyMaster"
                                     placeholder="Search Customer Name"
