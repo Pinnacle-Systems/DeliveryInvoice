@@ -31,6 +31,7 @@ import { getImageUrlPath } from "../../../Constants";
 import { push } from "../../../redux/features/opentabs";
 import AddBranch from "./AddBranch";
 import { useGetbranchTypeQuery } from "../../../redux/services/BranchTypeMaster";
+import { useGetPartyBranchByIdQuery } from "../../../redux/services/PartyBranchMasterService";
 
 
 
@@ -65,6 +66,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
     const [email, setEmail] = useState("");
     const [isSupplier, setIsSupplier] = useState(false);
     const [isCustomer, setIsCustomer] = useState(true);
+    const [isBranch, setIsBranch] = useState(false);
+
     const [active, setActive] = useState(true);
     const [view, setView] = useState("all");
     const [isClient, setClient] = useState();
@@ -74,6 +77,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
     const [contact, setContact] = useState('')
     const [designation, setDesignation] = useState('')
     const [department, setDepartment] = useState('')
+    const [parentId, setParentId] = useState('')
+
     const [contactPersonEmail, setContactPersonEmail] = useState('')
     const [contactNumber, setContactNumber] = useState('')
     const [alterContactNumber, setAlterContactNumber] = useState('')
@@ -90,6 +95,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
     const [branchModelOpen, setBranchModelOpen] = useState(false);
     const [branchForm, setBranchForm] = useState(false)
     const [branchId, setBranchId] = useState("")
+    const [branchTypeId, setBranchTypeId] = useState("");
 
     const childRecord = useRef(0);
     const dispatch = useDispatch()
@@ -106,25 +112,14 @@ export default function Form({ partyId, onCloseForm, childId }) {
         companyId,
         // isParent: true
     };
-    const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =
-        useGetCityQuery({ params });
+    const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =  useGetCityQuery({ params });
     const { data: branchTypeData } = useGetbranchTypeQuery({});
 
 
-    // const openPartyModal = useSelector((state) => {
-    //     console.log(state?.partyMaster,"useSelector")
-    //     return (
-    //         state.party.openPartyModal
 
-    //     )
-    // });
-    // const lastTapName = useSelector((state) => state.party.lastTab);
-
-
-    const activeTab = useSelector(
-        (state) => state.openTabs.tabs.find((tab) => tab.active).name
-    );
     const { data: allData, isLoading, isFetching } = useGetPartyQuery({ params, searchParams: searchValue });
+
+
 
     const {
         data: singleData,
@@ -135,6 +130,9 @@ export default function Form({ partyId, onCloseForm, childId }) {
     const [addData] = useAddPartyMutation();
     const [updateData] = useUpdatePartyMutation();
     const [removeData] = useDeletePartyMutation();
+
+
+
 
     const syncFormWithDb = useCallback((data) => {
 
@@ -181,14 +179,83 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
         setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
         setPartyCode(data?.partyCode ? data?.partyCode : "")
+        setIsBranch(data?.isBranch ? data?.isBranch : false)
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
 
     }, [id]);
 
+
+
     useEffect(() => {
         syncFormWithDb(singleData?.data);
     }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
+
+
+
+      const {
+        data: singleBranchData,
+        isFetching: singleBranchFetching,
+        isLoading: singleBranchLoading,
+      } = useGetPartyBranchByIdQuery(parentId, { skip: !parentId });
+
+
+    const syncFormWithDbNew = useCallback((data) => {
+
+        
+        setPanNo(data?.panNo ? data?.panNo : "");
+        setAliasName(data?.aliasName ? data?.aliasName : "");
+
+        setDisplayName(data?.displayName ? data?.displayName : "");
+        setAddress(data?.address ? data?.address : "");
+        setTinNo(data?.tinNo ? data?.tinNo : "");
+        setCstNo(data?.cstNo ? data?.cstNo : "");
+        setCinNo(data?.cinNo ? data?.cinNo : "");
+        setFaxNo(data?.faxNo ? data?.faxNo : "");
+        setCinNo(data?.cinNo ? data?.cinNo : "");
+        setCoa(data?.coa ? data?.coa : "");
+        setSoa(data?.soa ? data?.soa : "")
+
+        setContactPersonName(data?.contactPersonName ? data?.contactPersonName : "");
+        setGstNo(data?.gstNo ? data?.gstNo : "");
+        setCostCode(data?.costCode ? data?.costCode : "");
+        setCstDate(data?.cstDate ? moment.utc(data?.cstDate).format('YYYY-MM-DD') : "");
+        setCode(data?.code ? data?.code : "");
+        setPincode(data?.pincode ? data?.pincode : "");
+        setWebsite(data?.website ? data?.website : "");
+        setEmail(data?.email ? data?.email : "");
+        setCity(data?.cityId ? data?.cityId : "");
+        setIsSupplier((data?.isSupplier ? data.isSupplier : false));
+        setIsCustomer((data?.isCustomer ? data.isCustomer : true));
+        setActive(id ? (data?.active ? data.active : false) : true);
+        setContactMobile((data?.contactMobile ? data.contactMobile : ''));
+        setlandMark(data?.landMark ? data?.landMark : '')
+        setContact(data?.contact ? data?.contact : '')
+        setDesignation(data?.designation ? data?.designation : "")
+        setDepartment(data?.department ? data?.department : "")
+        setContactPersonEmail(data?.contactPersonEmail ? data?.contactPersonEmail : "")
+        setContactNumber(data?.contactNumber ? data?.contactNumber : "")
+        setAlterContactNumber(data?.alterContactNumber ? data?.alterContactNumber : "")
+        setBankName(data?.bankname ? data?.bankname : "")
+        setBankBranchName(data?.bankBranchName ? data?.bankBranchName : "")
+        setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
+        setIfscCode(data?.ifscCode ? data?.ifscCode : '')
+        setAttachments(data?.attachments ? data?.attachments : [])
+        setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
+        setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
+        setPartyCode(data?.partyCode ? data?.partyCode : "")
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
+
+    }, [id]);
+
+
+      
+    useEffect(() => {
+        syncFormWithDb(singleBranchData?.data);
+    }, [singleBranchFetching, singleBranchLoading, parentId, syncFormWithDbNew, singleBranchData]);
+
+
 
     const data = {
         name, isSupplier, isCustomer, code, aliasName, displayName, address, cityId: city, pincode, panNo, tinNo, cstNo, cstDate, cinNo,
@@ -911,7 +978,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                     setValue={setContactPersonName}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     className="focus:ring-2 focus:ring-blue-100 w-10"
                                                 />
                                             </div>
@@ -923,7 +990,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                 setValue={setDesignation}
                                                 readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
+                                                // disabled={childRecord.current > 0}
                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                             />
                                             <TextInputNew1
@@ -933,7 +1000,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                 setValue={setDepartment}
                                                 readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
+                                                // disabled={childRecord.current > 0}
                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                             />
                                             <div className='col-span-1'>
@@ -946,7 +1013,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                     setValue={setContactPersonEmail}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     className="focus:ring-2 focus:ring-blue-100 w-10"
                                                 />
                                             </div>
@@ -1441,7 +1508,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                     <Modal
                         isOpen={form}
                         form={form}
-                        widthClass={"w-[90%] h-[89%]"}
+                        widthClass={"w-[90%] h-[99%]"}
                         onClose={() => {
                             setForm(false);
                         }}
@@ -1463,7 +1530,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
                                 <div className="flex gap-2">
-                                    <div className="  ">
+                                    {/* <div className="  ">
                                         <button
                                             onClick={() => {
                                                 if (id) {
@@ -1497,7 +1564,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                             </svg>
                                             Add Branch
                                         </button>
-                                    </div>
+                                    </div> */}
                                     <div className="flex gap-2">
                                         <div>
                                             {readOnly && (
@@ -1555,10 +1622,10 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <div className="flex flex-row items-center gap-4">
+                                                <div className="flex flex-row items-center gap-4 col-span-2 mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"
@@ -1582,9 +1649,75 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                             Supplier
                                                         </label>
                                                     </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isBranch}
+                                                            onChange={(e) => {
+                                                                if (parentId || branchTypeId) {
+                                                                    setParentId("")
+                                                                    setBranchTypeId("")
+                                                                }
+                                                                setIsBranch(e.target.checked)
+                                                            }}
+                                                            disabled={readOnly}
+                                                        />
+                                                        <label className="block text-xs font-bold text-gray-600">
+                                                            Is Branch
+                                                        </label>
+                                                    </div>
                                                 </div>
 
 
+
+                                                <div className="col-span-2">
+                                                    <DropdownInputNew
+                                                        name="Customer/supplier"
+                                                        options={dropDownListObject(
+                                                            id
+                                                                ? allData?.data
+                                                                : allData?.data?.filter(
+                                                                    (item) => item.active
+                                                                ),
+                                                            "name",
+                                                            "id"
+                                                        )}
+                                                        value={parentId}
+                                                        setValue={setParentId}
+                                                        readOnly={readOnly}
+                                                        required={true}
+                                                        disabled={childRecord.current > 0 || !isBranch}
+                                                    />
+
+
+
+
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <DropdownInputNew
+                                                        name="Branch Category"
+                                                        options={dropDownListObject(
+                                                            id
+                                                                ? branchTypeData?.data
+                                                                : branchTypeData?.data?.filter(
+                                                                    (item) => item.active
+                                                                ),
+                                                            "name",
+                                                            "id" || []
+                                                        )}
+                                                        value={branchTypeId}
+                                                        ref={countryNameRef}
+                                                        openOnFocus={true}
+                                                        setValue={(value) => {
+                                                            setBranchTypeId(value)
+                                                            setName(findFromList(parentId, allData?.data, "name"))
+
+                                                        }}
+                                                        required={true}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0 || !isBranch}
+                                                    />
+                                                </div>
 
                                                 <div className="col-span-2">
                                                     <TextInputNew1
@@ -1605,7 +1738,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
                                                 </div>
-                                                <div className="col-span-2">
+                                                {/* <div className="col-span-2">
                                                     <TextInputNew1
                                                         name="Alias Name"
                                                         type="text"
@@ -1616,7 +1749,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
-                                                </div>
+                                                </div> */}
                                                 <div className="col-span-1">
                                                     <TextInputNew1
                                                         name="Code"
@@ -1656,7 +1789,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                     </div>
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px] overflow-y-auto">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                                             <div className="space-y-2">
 
@@ -1681,7 +1814,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                                     setValue={setlandMark}
                                                                     readOnly={readOnly}
-                                                                    disabled={childRecord.current > 0}
+                                                                    // disabled={childRecord.current > 0}
                                                                     className="focus:ring-2 focus:ring-blue-100 w-10"
                                                                 />
                                                             </div>
@@ -1710,7 +1843,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                                     setValue={setCity}
                                                                     required={true}
                                                                     readOnly={readOnly}
-                                                                    disabled={childRecord.current > 0}
+                                                                    // disabled={childRecord.current > 0}
                                                                     className="focus:ring-2 focus:ring-blue-100"
                                                                 />
                                                             </div>
@@ -1722,7 +1855,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                                 setValue={setPincode}
                                                                 readOnly={readOnly}
-                                                                disabled={childRecord.current > 0}
+                                                                // disabled={childRecord.current > 0}
                                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                                             />
 
@@ -1766,7 +1899,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                     </div>
                                     <div className="lg:col-span-4 space-y-3">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200  h-[260px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200  h-[330px]">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
                                             <div className="space-y-2">
 
@@ -1782,7 +1915,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                             setValue={setContactPersonName}
                                                             readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
+                                                            // disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
@@ -1794,7 +1927,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                         setValue={setDesignation}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
                                                     <TextInputNew1
@@ -1804,7 +1937,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                         setValue={setDepartment}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
                                                     <div className='col-span-1'>
@@ -1817,7 +1950,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                             setValue={setContactPersonEmail}
                                                             readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
+                                                            // disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
@@ -1829,7 +1962,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                             setValue={setContactNumber}
 
                                                             readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
+                                                            // disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
@@ -1911,7 +2044,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         value={panNo}
                                                         setValue={setPanNo}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
                                                     <TextInputNew
@@ -1929,7 +2062,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         value={msmeNo}
                                                         setValue={setMsmeNo}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
                                                     <TextInputNew
@@ -1938,7 +2071,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         value={cinNo}
                                                         setValue={setCinNo}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
 
@@ -1961,7 +2094,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                     setValue={setBankName}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     className="focus:ring-2 focus:ring-blue-100 w-10"
                                                 />
                                                 <div className="grid grid-cols-2 gap-2">
@@ -1973,7 +2106,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                             setValue={setBankBranchName}
                                                             readOnly={readOnly}
-                                                            disabled={childRecord.current > 0}
+                                                            // disabled={childRecord.current > 0}
                                                             className="focus:ring-2 focus:ring-blue-100 w-10"
                                                         />
                                                     </div>
@@ -1985,7 +2118,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                         setValue={setAccountNumber}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
                                                     <TextInputNew
@@ -1995,7 +2128,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                         setValue={setIfscCode}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
+                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100 w-10"
                                                     />
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 
 const PopUp = ({
-  setIsPrintOpen, onClose, setPrintModalOpen, nextprocess, formclose ,syncFormWithDb ,onNew
+  setIsPrintOpen, onClose, setPrintModalOpen, nextprocess, formclose, syncFormWithDb, inputRef, setId
 }) => {
 
 
@@ -12,8 +12,8 @@ const PopUp = ({
     <div id='' className="flex flex-col   ">
       <div className="md:flex md:items-center bg-gray-500  h-[60px]">
         <div className="heading text-center md:mx-10 ">
-          Would you like to view the Invoice  against  this transaction?       
-           </div>
+          Would you like to view the Invoice  against  this transaction?
+        </div>
 
       </div>
 
@@ -36,8 +36,10 @@ const PopUp = ({
               setIsPrintOpen(false)
               if (nextprocess == "close") {
                 formclose()
-              }else{
+              } else {
+                setId("")
                 syncFormWithDb(undefined)
+                inputRef.current?.focus();
               }
             }}
 

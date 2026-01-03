@@ -144,6 +144,17 @@ const InvoiceForm = ({
     } = useGetDeliveryInvoiceByIdQuery(id, { skip: !id });
 
 
+    const inputRef = useRef(null);
+    const customerRef = useRef(null)
+    const customerDate = useRef(null)
+
+    useEffect(() => {
+        if (id) return;
+        inputRef.current?.focus();
+    }, []);
+
+
+
 
 
     const syncFormWithDb = useCallback((data) => {
@@ -185,6 +196,8 @@ const InvoiceForm = ({
         );
         setRemarks(data?.remarks || "");
         setTermsAndConditions(data?.termsandcondtions ? data?.termsandcondtions : "")
+        console.log(id,"iddddddddd")
+
     }, [id]);
 
 
@@ -262,7 +275,7 @@ const InvoiceForm = ({
     const roundOff = Number((roundedNetAmount - netAmount).toFixed(2));
     const overallAmount = parseFloat(parseFloat(netAmount) + parseFloat(roundOff)).toFixed(2)
 
-    console.log(overallAmount,"overallAmount")
+    console.log(overallAmount, "overallAmount")
 
 
 
@@ -343,6 +356,8 @@ const InvoiceForm = ({
     }
 
     const saveData = (nextProcess) => {
+
+
         setNextProcess(nextProcess)
 
         if (!validateData(data)) {
@@ -374,15 +389,6 @@ const InvoiceForm = ({
         }
     }
 
-    const inputRef = useRef(null);
-    const customerRef = useRef(null)
-    const customerDate = useRef(null)
-
-    useEffect(() => {
-        if (id) return;
-        inputRef.current?.focus();
-    }, []);
-
 
 
     return (
@@ -394,7 +400,8 @@ const InvoiceForm = ({
                 widthClass={"px-2 h-[25%] w-[40%]"} >
 
                 <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
-                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew}
+                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew} inputRef={inputRef}
+                    setId={setId}
                     id={id} />
             </Modal>
             <Modal
@@ -406,6 +413,7 @@ const InvoiceForm = ({
                     }
                     if (nextprocess == "new") {
                         syncFormWithDb(undefined)
+                        inputRef.current?.focus();
                     }
                 }}
                 widthClass={"w-[90%] h-[90%]"}

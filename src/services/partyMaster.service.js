@@ -279,7 +279,7 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, parentId, branchTypeId
     } = await body
     console.log(body, 'body')
 
@@ -312,6 +312,8 @@ async function create(body) {
                 msmeNo: msmeNo ? msmeNo : undefined,
                 companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
                 partyCode: partyCode ? partyCode : "",
+                branchTypeId: branchTypeId ? parseInt(branchTypeId) : undefined,
+                parentId: parentId ? parentId : undefined,
 
                 attachments: JSON.parse(attachments)?.length > 0
                     ? {
@@ -338,7 +340,8 @@ async function update(id, body) {
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode ,
+        branchTypeId , parentId
     } = await body
 
 
@@ -390,7 +393,8 @@ async function update(id, body) {
             msmeNo: msmeNo ? msmeNo : undefined,
             companyAlterNumber: companyAlterNumber ? companyAlterNumber : '',
             partyCode: partyCode ? partyCode : "",
-
+            branchTypeId: branchTypeId ? parseInt(branchTypeId) : undefined,
+            parentId: parentId ? parentId : undefined,
 
 
             attachments: {

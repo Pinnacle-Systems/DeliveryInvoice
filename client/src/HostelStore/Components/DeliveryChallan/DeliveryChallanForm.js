@@ -75,8 +75,8 @@ const ChallanForm = ({
 
     const [addData] = useAddDeliveryChallanMutation();
     const [updateData] = useUpdateDeliveryChallanMutation();
-
     const [removeData] = useDeletePartyMutation();
+
 
 
     const {
@@ -240,16 +240,11 @@ const ChallanForm = ({
     const saveData = (nextProcess) => {
         setNextProcess(nextProcess)
         if (!validateData(data)) {
-            // Swal.fire({
-            //     // title: "Total percentage exceeds 100%",
-            //     title: "Please fill all required fields...!",
 
-            // }); 
             Swal.fire({
                 icon: 'success',
                 title: `Please fill all required fields...!`,
-                // showConfirmButton: false,
-                // timer: 2000
+
             });
             return
         }
@@ -293,7 +288,7 @@ const ChallanForm = ({
                 widthClass={"px-2 h-[25%] w-[40%]"} >
 
                 <PopUp setIsPrintOpen={setIsPrintOpen} onClose={() => setIsPrintOpen(false)} setPrintModalOpen={setPrintModalOpen}
-                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew}
+                    nextprocess={nextprocess} formclose={onClose} syncFormWithDb={syncFormWithDb} onNew={onNew} inputRef={inputRef}
                     id={id} />
             </Modal>
             <Modal
@@ -306,6 +301,8 @@ const ChallanForm = ({
                     }
                     else if (nextprocess == "new") {
                         syncFormWithDb(undefined)
+                        inputRef?.current?.focus()
+
                     }
                 }}
                 widthClass={"w-[90%] h-[90%]"}
@@ -567,53 +564,6 @@ const ChallanForm = ({
 
 
 
-                {/* <div className="grid grid-cols-5 gap-3">
-
-
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm  col-span-2">
-
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">Delivery Details</h2>
-                        <div className="grid grid-cols-4 gap-2">
-                            <TextInputNew1 name="Vehicle No"
-                                value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
-
-
-                            <div className="col-span-2">
-                                <DropdownInputNew name="Delivery To" options={dropDownListObject(supplierList?.data?.filter(val => val.isCustomer), "name", "id")} value={deliveryTo} setValue={setDeliveryTo} readOnly={readOnly} />
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">Remarks</h2>
-                        <textarea
-                            readOnly={readOnly}
-                            value={remarks}
-                            onChange={(e) => {
-                                setRemarks(e.target.value)
-                            }}
-                            className="w-full h-20 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
-                            placeholder="Additional notes..."
-                        />
-                    </div>
-
-                    <div className="border border-slate-200  bg-white rounded-md shadow-sm flex justify-between p-5">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">
-                            Total Qty
-                        </h2>
-
-                        <span className="text-md font-semibold text-slate-800 ">
-                            {deliveryItems?.reduce((sum, next) => {
-                                return sum + (Number(next?.qty) || 0);
-                            }, 0).toFixed(3)} PCS
-                        </span>
-                    </div>
-
-                </div> */}
 
 
 

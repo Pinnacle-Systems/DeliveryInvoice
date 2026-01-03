@@ -738,7 +738,7 @@ export const DropdownInputNew = forwardRef(({
 
 
   return (
-    <div className={`mb-2 ${width}`}>
+    <div className={`mb-1 ${width}`}>
       {name && (
         <label className="block text-xs font-bold text-slate-700 mb-1">
           {required ? <RequiredLabel name={name} /> : name}
