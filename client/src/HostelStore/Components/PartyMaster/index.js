@@ -181,6 +181,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
         setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
         setPartyCode(data?.partyCode ? data?.partyCode : "")
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
 
     }, [id]);
 
@@ -352,7 +354,14 @@ export default function Form({ partyId, onCloseForm, childId }) {
     }
 
 
-    const deleteData = async (id) => {
+    const deleteData = async (id, childRecord) => {
+        if (childRecord) {
+            Swal.fire({
+                icon: "error",
+                title: "Child record Exists",
+            });
+            return;
+        }
         if (id) {
             if (!window.confirm("Are you sure to delete.   ..?")) {
                 return;
@@ -2208,6 +2217,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                     companyId={companyId} readOnly={readOnly} isCustomer={isCustomer} isSupplier={isSupplier}
                     branchId={branchId} setBranchId={setBranchId}
                     parentName={name}
+                    parentPanNo={panNo} parentGstNo={gstNo} parentMsme={msmeNo} parentCinNo={cinNo}
 
                 />
 

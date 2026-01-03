@@ -105,14 +105,22 @@ async function get(req) {
                     name: true
                 }
             },
-            EmployeeCategory: true
+            EmployeeCategory: true,
+            _count: {
+                select: {
+                    User: true
+                }
+            }
         }
     })
-    return { statusCode: 0, data: data.map((item) => exclude({ ...item }, ["image"])) };
+    return { statusCode: 0, data: data.map((item) => exclude({ ...item, childRecord: item?._count?.User }, ["image"])) };
 }
 
 
 async function getOne(id) {
+    const childRecord = await prisma.user.count({ where: { employeeId: parseInt(id) } });
+    
+    console.log(childRecord,"childRecord")
     const data = await xprisma.employee.findUnique({
         where: {
             id: parseInt(id)
@@ -137,7 +145,7 @@ async function getOne(id) {
         }
     })
     if (!data) return NoRecordFound("Employee");
-    return { statusCode: 0, data: exclude({ ...data }, ["image"]) };
+    return { statusCode: 0, data: exclude({ ...data,childRecord }, ["image"]) };
 }
 
 async function getSearch(req) {
@@ -293,7 +301,7 @@ async function update(id, req) {
     const { name, email, regNo, chamberNo, joiningDate, fatherName, dob, gender, maritalStatus, bloodGroup,
         panNo, consultFee, salaryPerMonth, commissionCharges, mobile, accountNo, ifscNo, branchName, degree,
         specialization, localAddress, localCity, localPincode, permAddress, permCity, permPincode, department, employeeCategoryId, active,
-        leavingReason, leavingDate, canRejoin, rejoinReason, isDeleteImage ,bankName } = await req.body
+        leavingReason, leavingDate, canRejoin, rejoinReason, isDeleteImage, bankName } = await req.body
     const dataFound = await prisma.employee.findFirst({
         where: {
             id: parseInt(id),

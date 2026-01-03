@@ -123,6 +123,8 @@ export default function Form() {
 
     const syncFormWithDb = useCallback((data) => {
         // if (id) setReadOnly(true);
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
         setPanNo(data?.panNo ? data?.panNo : "");
         setName(data?.name ? data?.name : "");
         setFatherName(data?.fatherName ? data?.fatherName : "");
@@ -172,7 +174,7 @@ export default function Form() {
         panNo, name, fatherName, dob, chamberNo, localAddress, localCity, localPincode, mobile, degree, specialization, salaryPerMonth,
         commissionCharges, gender, joiningDate, permAddress, permCity, permPincode, email, maritalStatus, consultFee, accountNo,
         ifscNo, branchName, bloodGroup, ...department && { department }, employeeCategoryId: employeeCategory, permanent, active,
-        id, leavingReason, leavingDate, canRejoin, rejoinReason ,bankName
+        id, leavingReason, leavingDate, canRejoin, rejoinReason, bankName
     }
 
     // if (data.name && data.gender && data.bloodGroup && data.dob && data.active && data.employeeCategory && data.department && data.chamberNo && data.joiningDate && data.fatherName && data.maritalStatus && data.panNo && data.specialization && data.accountNo
@@ -283,7 +285,14 @@ export default function Form() {
     }
 
 
-    const deleteData = async (id) => {
+    const deleteData = async (id, childRecord) => {
+        if (childRecord) {
+            Swal.fire({
+                title: 'Child Record Exists',
+                icon: 'error',
+            });
+            return
+        }
         if (id) {
             if (!window.confirm("Are you sure to delete...?")) {
                 return;

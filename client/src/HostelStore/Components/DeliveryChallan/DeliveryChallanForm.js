@@ -416,7 +416,7 @@ const ChallanForm = ({
                                         id={id}
                                         onDeleteItem={onDeleteItem}
                                     />
-{/* 
+                                    {/* 
                                     <ReusableSearchableInputNewCustomerwithBranches
                                         label="Customer Name"
                                         component="PartyMaster"
@@ -545,21 +545,24 @@ const ChallanForm = ({
                             setValue={setRemarks}
                         />
                     </div>
-                    <div className="w-[230px]">
+                    <div className="grid grid-cols-4 ">
+                        <div className="col-span-2">
 
+                        </div>
+                        <div className="col-span-2  bg-white rounded-md shadow-sm flex justify-between gap-10 mt-5">
+                            <h2 className="font-medium text-slate-700 mb-2 text-base">
+                                Total Qty
+                            </h2>
+
+                            <span className="text-md font-semibold text-slate-800 ">
+                                {deliveryItems?.reduce((sum, next) => {
+                                    return sum + (Number(next?.qty) || 0);
+                                }, 0).toFixed(3)} PCS
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="  bg-white rounded-md shadow-sm flex justify-between gap-10 mt-5">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">
-                            Total Qty
-                        </h2>
 
-                        <span className="text-md font-semibold text-slate-800 ">
-                            {deliveryItems?.reduce((sum, next) => {
-                                return sum + (Number(next?.qty) || 0);
-                            }, 0).toFixed(3)} PCS
-                        </span>
-                    </div>
                 </div>
 
 

@@ -18,7 +18,8 @@ import cityMasterApi from "../../../redux/services/CityMasterService";
 
 const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setReadOnly,
   branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer, branchId, setBranchId,
-  parentName
+  parentName,
+  parentGstNo
 }) => {
 
   // const {
@@ -989,10 +990,11 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
                         <TextInputNew
                           name="GST No"
                           type="text"
-                          value={gstNo}
+                          value={parentGstNo}
                           setValue={setGstNo}
                           readOnly={readOnly}
                           required={true}
+                          disabled={true}
                           className="focus:ring-2 focus:ring-blue-100"
                         />
                         <TextInputNew

@@ -77,6 +77,11 @@ async function get(req) {
                 select: {
                     name: true
                 }
+            },
+            _count: {
+                select: {
+                    Supplier: true
+                }
             }
         }
 
@@ -91,7 +96,12 @@ async function get(req) {
             name: `${i.name} ${" "} / ${" "} ${i.City?.name ?? ""}`
         }))
     }
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(party => ({
+            ...party,
+            childRecord: party?._count.Supplier > 0
+        })),
+    };
 }
 
 export async function getNew(req) {
@@ -149,6 +159,8 @@ export async function getNew(req) {
 
 
 async function getOne(id) {
+    const childRecord = await prisma.deliveryChallan.count({ where: { supplierId: parseInt(id) } });
+
     const data = await prisma.party.findUnique({
         where: {
             id: parseInt(id)
@@ -211,7 +223,7 @@ async function getOne(id) {
         acc + (next.paidAmount || 0), 0
     )
 
-    const childRecord = data.PurchaseBillSupplier.length + data.SalesBillSupplier.length;
+    // const childRecord = data.PurchaseBillSupplier.length + data.SalesBillSupplier.length;
 
     return {
         statusCode: 0,
@@ -223,13 +235,13 @@ async function getOne(id) {
             totalPaymentPurchaseBill,
             totalDiscount,
 
-
+            childRecord,
             totaloutstanding,
             totalPaymentAgainstInvoice,
 
 
 
-            childRecord
+
         }
     };
 }
