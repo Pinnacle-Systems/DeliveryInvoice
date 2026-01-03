@@ -5,7 +5,8 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { companyId, active } = req.query
-    const data = await prisma.city.findMany({
+    let data;
+    data = await prisma.city.findMany({
         where: {
             state: {
                 country: {
@@ -14,33 +15,61 @@ async function get(req) {
             },
             active: active ? Boolean(active) : undefined,
         },
-        select: {
-            name: true, code: true, active: true, id: true, stateId: true,
+        // select: {
+        //     name: true,
+        //     code: true,
+        //     active: true
+        //     , id: true,
+        //     stateId: true,
+        //     state: {
+        //         select: {
+        //             name: true,
+
+        //             country: {
+        //                 select: {
+        //                     name: true
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        include: {
             state: {
                 select: {
                     name: true,
-
                     country: {
                         select: {
                             name: true
                         }
                     }
                 }
+            },
+            _count: {
+                select: {
+                    Party: true
+                }
             }
         }
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(order => ({
+            ...order,
+            childRecord: order?._count.Party > 0
+        })),
+    };
 }
 
 
 async function getOne(id) {
+    const childRecord = await prisma.party.count({ where: { cityId: parseInt(id) } });
+
     const data = await prisma.city.findUnique({
         where: {
             id: parseInt(id)
         }
     })
     if (!data) return NoRecordFound("City");
-    return { statusCode: 0, data };
+    return { statusCode: 0, data: {...data, ...{childRecord}} };
 }
 
 async function getSearch(req) {

@@ -56,6 +56,8 @@ export default function Form() {
             setName(data?.name ? data.name : "");
             setCode(data?.code ? data.code : "");
             setActive(id ? (data?.active ? data.active : false) : true);
+            childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
         },
         [id]
     );

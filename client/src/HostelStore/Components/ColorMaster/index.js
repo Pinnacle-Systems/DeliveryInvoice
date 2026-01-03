@@ -60,6 +60,8 @@ export default function Form() {
         setPantone("");
         setIsGrey(false);
         setActive(id ? data?.active : true);
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
       } else {
         // setReadOnly(true);
 
@@ -67,6 +69,8 @@ export default function Form() {
         setPantone(data?.pantone || "");
         setIsGrey(data?.isGrey || false);
         setActive(id ? data?.active ?? false : true);
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
       }
     },
     [id]
@@ -144,7 +148,14 @@ export default function Form() {
     }
   };
 
-  const deleteData = async (id) => {
+  const deleteData = async (id, childRecord) => {
+    if (childRecord) {
+      Swal.fire({
+        icon: "error",
+        title: "Child record Exists",
+      });
+      return;
+    }
     if (id) {
       if (!window.confirm("Are you sure to delete...?")) {
         return;
@@ -239,7 +250,7 @@ export default function Form() {
     },
   ];
 
-  
+
   const countryNameRef = useRef(null);
 
   useEffect(() => {

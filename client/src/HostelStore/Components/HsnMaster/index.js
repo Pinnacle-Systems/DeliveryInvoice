@@ -50,6 +50,8 @@ export default function Form() {
             setName(data?.name ? data.name : "");
             setActive(id ? (data?.active ? data.active : false) : true);
             setTax(data?.tax ? data?.tax : "")
+            childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
         },
         [id]
     );
@@ -132,7 +134,14 @@ export default function Form() {
         }
     };
 
-    const deleteData = async (id) => {
+    const deleteData = async (id,childRecord) => {
+        if (childRecord) {
+            Swal.fire({
+                icon: "error",
+                title: "Child record Exists",
+            });
+            return;
+        }
         if (id) {
             if (!window.confirm("Are you sure to delete...?")) {
                 return;

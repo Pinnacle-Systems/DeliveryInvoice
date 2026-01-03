@@ -16,7 +16,7 @@ async function get(req) {
 }
 
 async function getOne(id) {
-    const childRecord = await prisma.styleItem.count({where:{id : parseInt(id)}});
+    const childRecord = await prisma.deliveryChallanItems.count({where:{ styleId : parseInt(id)}});
     const data = await prisma.styleItem.findUnique({
         where: {
             id: parseInt(id)

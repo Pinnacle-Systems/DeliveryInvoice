@@ -128,7 +128,14 @@ export default function Form() {
         }
     }
 
-    const deleteData = async (id) => {
+    const deleteData = async (id , childRecord) => {
+        if (childRecord) {
+            Swal.fire({
+                icon: "error",
+                title: "Child record Exists",
+            });
+            return;
+        }
         if (id) {
             if (!window.confirm("Are you sure to delete...?")) {
                 return

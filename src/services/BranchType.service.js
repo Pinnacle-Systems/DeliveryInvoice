@@ -6,16 +6,31 @@ const prisma = new PrismaClient()
 async function get(req) {
     console.log("hit")
     const { companyId, active } = req.query
-    const data = await prisma.branchType.findMany({
+    let data;
+    data = await prisma.branchType.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
         },
+        include: {
+            _count: {
+                select: {
+                    Party: true
+                }
+            }
+        }
 
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(color => ({
+            ...color,
+            childRecord: color?._count.Party > 0
+        })),
+    };
 }
 
 async function getOne(id) {
+    const childRecord = await prisma.party.count({ where: { branchTypeId: parseInt(id) } });
+
     const data = await prisma.branchType.findUnique({
         where: {
             id: parseInt(id)
@@ -23,7 +38,7 @@ async function getOne(id) {
 
     })
     if (!data) return NoRecordFound("Branch");
-    return { statusCode: 0, data };
+    return { statusCode: 0, data: { ...data, ...{ childRecord } } };
 }
 
 async function getSearch(req) {

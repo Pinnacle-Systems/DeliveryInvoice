@@ -7,20 +7,33 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { companyId, active } = req.query
-    const data = await prisma.style.findMany({
+    let data;
+    data = await prisma.style.findMany({
         where: {
 
 
             active: active ? Boolean(active) : undefined,
         },
+        include: {
+            _count: {
+                select: {
+                    DeliveryChallanItems: true
+                }
+            }
+        }
 
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(color => ({
+            ...color,
+            childRecord: color?._count.DeliveryChallanItems > 0
+        })),
+    };
 }
 
 
 async function getOne(id) {
-    const childRecord = 0;
+    const childRecord = await prisma.deliveryChallanItems.count({ where: { styleId: parseInt(id) } });
     const data = await prisma.style.findUnique({
         where: {
             id: parseInt(id)
@@ -96,7 +109,7 @@ async function create(req) {
     const { name, fabricId, colorId, aliasName, active, styleCode, code, sku } = await req;
     const data = await prisma.style.create({
         data: {
-            name, aliasName: sku, active ,code
+            name, aliasName: sku, active, code
 
         }
     });

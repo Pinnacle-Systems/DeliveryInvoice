@@ -6,24 +6,37 @@ const prisma = new PrismaClient()
 
 async function get(req) {
     const { companyId, active } = req.query
-    const data = await prisma.hsn.findMany({
+    let data;
+    data = await prisma.hsn.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
+        },
+        include: {
+            _count: {
+                select: {
+                    DeliveryChallanItems: true
+                }
+            }
         }
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(color => ({
+            ...color,
+            childRecord: color?._count.DeliveryChallanItems > 0
+        })),
+    };
 }
 
 
 async function getOne(id) {
-    const childRecord = 0;
+    const childRecord = await prisma.deliveryChallanItems.count({ where: { hsnId: parseInt(id) } });
     const data = await prisma.hsn.findUnique({
         where: {
             id: parseInt(id)
         }
     })
     if (!data) return NoRecordFound("hsn");
-    return { statusCode: 0, data: {...data, ...{childRecord}} };
+    return { statusCode: 0, data: { ...data, ...{ childRecord } } };
 }
 
 async function getSearch(req) {
@@ -51,11 +64,11 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { name, code, companyId, active ,tax } = await body
+    const { name, code, companyId, active, tax } = await body
     const data = await prisma.hsn.create(
         {
             data: {
-                name, code,  active ,tax
+                name, code, active, tax
             }
         }
     )
@@ -63,7 +76,7 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, code, active ,tax} = await body
+    const { name, code, active, tax } = await body
     const dataFound = await prisma.hsn.findUnique({
         where: {
             id: parseInt(id)
@@ -76,7 +89,7 @@ async function update(id, body) {
         },
         data:
         {
-            name, code, active ,tax
+            name, code, active, tax
         },
     })
     return { statusCode: 0, data };

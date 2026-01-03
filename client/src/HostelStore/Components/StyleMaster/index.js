@@ -20,7 +20,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     const [id, setId] = useState("");
     const [name, setName] = useState("");
     const [sku, setSku] = useState("");
-    const [code,setCode]   =  useState("")
+    const [code, setCode] = useState("")
     const [active, setActive] = useState(true);
 
 
@@ -47,12 +47,15 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     const [removeData] = useDeleteStyleMasterMutation();
 
 
+    const childRecord = useRef(0);
 
     const syncFormWithDb = useCallback(
         (data) => {
             setName(data?.name ? data.name : "");
             setCode(data?.code ? data?.code : "");
             setActive(id ? (data?.active ? data.active : false) : true);
+            childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
         },
         [id]
     );
@@ -65,7 +68,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
 
 
     const data = {
-        id, sku, active, code ,
+        id, sku, active, code,
         //  productType, 
         name,
         // seoTitle, sleeve, fabricId, sizeTemplateId,
@@ -145,7 +148,14 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
         }
     };
 
-    const deleteData = async (id) => {
+    const deleteData = async (id, childRecord) => {
+        if (childRecord) {
+            Swal.fire({
+                icon: "error",
+                title: "Child record Exists",
+            });
+            return;
+        }
         if (id) {
             if (!window.confirm("Are you sure to delete...?")) {
                 return;
@@ -423,7 +433,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                                 type="button"
                                                 onClick={() => {
                                                     saveData("close")
-                                                }} 
+                                                }}
                                                 className="px-3 py-1 hover:bg-blue-600 hover:text-white rounded text-blue-600 
                                                 border border-blue-600 flex items-center gap-1 text-xs"
                                             >
@@ -458,11 +468,17 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
                                             <div className="grid grid-cols-2  gap-3  ">
 
                                                 <div className="">
-                                                    <TextInputNew1 name="Style Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef} />
+                                                    <TextInputNew1 name="Style Name" type="text" value={name} setValue={setName} required={true} readOnly={readOnly} ref={countryNameRef}
+                                                        disabled={childRecord.current > 0}
+
+                                                    />
 
                                                 </div>
                                                 <div className="">
-                                                    <TextInputNew1 name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly} />
+                                                    <TextInputNew1 name="Code" type="text" value={code} setValue={setCode} readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+
+                                                    />
                                                 </div>
                                             </div>
                                             <div className="mt-2">

@@ -100,7 +100,7 @@ export default function Form() {
   };
 
   const validateData = (data) => {
-    if (data.name  && data?.state) {
+    if (data.name && data?.state) {
       return true;
     }
     return false;
@@ -144,7 +144,7 @@ export default function Form() {
       );
     }
 
-    console.log(allData?.data,"alldata")
+    console.log(allData?.data, "alldata")
 
     if (foundItem) {
       Swal.fire({
@@ -172,7 +172,14 @@ export default function Form() {
     }
   };
 
-  const deleteData = async (id) => {
+  const deleteData = async (id, childRecord) => {
+    if (childRecord) {
+      Swal.fire({
+        icon: "error",
+        title: "Child record Exists",
+      });
+      return;
+    }
     if (id) {
       if (!window.confirm("Are you sure to delete...?")) {
         return;
@@ -297,7 +304,7 @@ export default function Form() {
   //     );
   function countryFromState() {
     return state
-      ? stateList.data.find((item) => item.id === parseInt(state)).country?.name
+      ? stateList?.data?.find((item) => item.id === parseInt(state)).country?.name
       : "";
   }
 
@@ -439,14 +446,14 @@ export default function Form() {
                           options={
                             Array.isArray(stateList?.data)
                               ? dropDownListObject(
-                                  id
-                                    ? stateList?.data
-                                    : stateList?.data?.filter(
-                                        (item) => item?.active
-                                      ),
-                                  "name",
-                                  "id"
-                                )
+                                id
+                                  ? stateList?.data
+                                  : stateList?.data?.filter(
+                                    (item) => item?.active
+                                  ),
+                                "name",
+                                "id"
+                              )
                               : []
                           }
                           value={state}

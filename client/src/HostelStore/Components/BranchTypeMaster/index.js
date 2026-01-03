@@ -51,12 +51,16 @@ export default function Form() {
       setName("");
       setCode("");
       setActive(id ? (data?.active ?? true) : true);
+      childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
     } else {
       // setReadOnly(true);
 
       setName(data?.name || "");
       setCode(data?.code || "");
       setActive(id ? (data?.active ?? false) : true);
+      childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
     }
 
   },
@@ -152,8 +156,14 @@ export default function Form() {
     }
   };
 
-  const deleteData = async (id) => {
-
+  const deleteData = async (id, childRecord) => {
+    if (childRecord) {
+      Swal.fire({
+        icon: "error",
+        title: "Child record Exists",
+      });
+      return;
+    }
     if (id) {
       setForm(false)
       if (!window.confirm("Are you sure to delete...?")) {
@@ -508,7 +518,7 @@ export default function Form() {
 
                             {errors.name && <span className="text-red-500 text-xs ml-1">{errors.name}</span>}
 
-                            <div>
+                            <div className="mt-2">
                               <ToggleButton name="Status" options={statusDropdown} value={active} setActive={setActive} required={true} readOnly={readOnly} disabled={childRecord.current > 0} />
                             </div>
 

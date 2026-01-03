@@ -55,11 +55,14 @@ export default function Form() {
         setName("");
         setActive(id ? data?.active : true);
         setAliasName(data?.aliasName ? data?.aliasName : "")
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
       } else {
         setName(data?.name || "");
         setActive(id ? data?.active ?? false : true);
         setAliasName(data?.aliasName ? data?.aliasName : "")
+        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+
       }
     },
     [id]

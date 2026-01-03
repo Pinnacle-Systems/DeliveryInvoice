@@ -175,7 +175,7 @@ export default function Form() {
     }
   }
 
-  const onNew = () => { setId(""); setReadOnly(false); setForm(true); setSearchValue("") ; syncFormWithDb(undefined)}
+  const onNew = () => { setId(""); setReadOnly(false); setForm(true); setSearchValue(""); syncFormWithDb(undefined) }
 
   function onDataClick(id) {
     setId(id);
@@ -398,6 +398,7 @@ export default function Form() {
                                 setValue={setName}
                                 required={true}
                                 readOnly={readOnly}
+                                disabled={childRecord.current > 0}
                               />
                             </div>
                             <div className="mb-3 ml-5 ">
@@ -408,6 +409,8 @@ export default function Form() {
                                 setValue={setCode}
                                 required={true}
                                 readOnly={readOnly}
+                                disabled={childRecord.current > 0}
+
                               />
                             </div>
                           </div>

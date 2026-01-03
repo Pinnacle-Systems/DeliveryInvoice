@@ -150,7 +150,7 @@ export default function Form() {
         ?.filter((i) => i.id != id)
         ?.some((item) => item.name == name && item.countryId == country);
     } else {
-      foundItem = allData?.data?.some((item) => item.name == name && item.countryId == country );
+      foundItem = allData?.data?.some((item) => item.name == name && item.countryId == country);
     }
     if (foundItem) {
       Swal.fire({
@@ -503,8 +503,8 @@ export default function Form() {
                           required={true}
                           readOnly={readOnly}
                           ref={countryNameRef}
+                          disabled={(childRecord.current > 0)}
 
-                          // disabled={(childRecord.current > 0)}
                         />
                       </div>
                       <div className="">
@@ -514,8 +514,8 @@ export default function Form() {
                             id
                               ? countriesList?.data
                               : countriesList?.data?.filter(
-                                  (item) => item?.active
-                                ),
+                                (item) => item?.active
+                              ),
                             "name",
                             "id"
                           )}
@@ -524,6 +524,8 @@ export default function Form() {
                           required={true}
                           readOnly={readOnly}
                           className={`w-[150px]`}
+                          disabled={(childRecord.current > 0)}
+
                         />
                       </div>
 
@@ -535,7 +537,7 @@ export default function Form() {
                           setValue={setCode}
                           required={true}
                           readOnly={readOnly}
-                          // disabled={(childRecord.current > 0)}
+                        disabled={(childRecord.current > 0)}
                         />
                       </div>
 
