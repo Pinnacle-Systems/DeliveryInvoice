@@ -17,7 +17,8 @@ import cityMasterApi from "../../../redux/services/CityMasterService";
 
 
 const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setReadOnly,
-  branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer, branchId, setBranchId
+  branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer, branchId, setBranchId,
+  parentName
 }) => {
 
   // const {
@@ -553,7 +554,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
           <div className="bg-gray-200 shadow-xl w-full  overflow-auto p-2 h-[98%] ">
             <div className="flex justify-between bg-white items-center my-2 rounded-md  px-4 ">
               <h2 className="text-gray-800 font-semibold text-lg p-1">Add New Branch</h2>
-              <h2 className="text-lg font-semibold text-zinc-800 p-1">{name}</h2>
+              <h2 className="text-lg font-semibold text-zinc-800 p-1">{parentName}</h2>
 
               <div className='flex flex-row gap-3'>
 
@@ -615,7 +616,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
 
 
                 <div className="lg:col-span-4 space-y-3">
-                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[290px]">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[250px]">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                     <div className="grid grid-cols-2 gap-2">
 
@@ -652,7 +653,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
 
                       <div className="col-span-2">
                         <TextInputNew1
-                          name={"branchName"}
+                          name={"Branch Name"}
                           type="text"
                           value={name}
                           inputClass="h-8"
@@ -669,7 +670,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
                           className="focus:ring-2 focus:ring-blue-100"
                         />
                       </div>
-                      <div className="col-span-2">
+                      {/* <div className="col-span-2">
                         <TextInputNew1
                           name="Alias Name"
                           type="text"
@@ -680,7 +681,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
                           disabled={childRecord.current > 0}
                           className="focus:ring-2 focus:ring-blue-100"
                         />
-                      </div>
+                      </div> */}
                       <div className="col-span-1">
                         <TextInputNew1
                           name="Code"
@@ -727,7 +728,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
 
                 </div>
                 <div className="lg:col-span-4 space-y-3 ">
-                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[290px] overflow-y-auto">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[250px] overflow-y-auto">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                     <div className="space-y-2">
 
@@ -841,7 +842,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
 
                 <div className="lg:col-span-4 space-y-3">
 
-                  <div className="bg-white p-3 rounded-md border border-gray-200  h-[290px]">
+                  <div className="bg-white p-3 rounded-md border border-gray-200  h-[250px]">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
                     <div className="space-y-2">
 
@@ -932,7 +933,93 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
                   </div>
                 </div>
 
+                <div className="lg:col-span-4 space-y-3">
+                  <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
+                    <h3 className="font-medium text-gray-800 mb-2 text-sm">Business Details</h3>
+                    <div className="space-y-2">
 
+                      <div className="grid grid-cols-2 gap-2">
+
+
+                        {/* <DropdownInput
+                                                    name="Currency"
+                                                    options={dropDownListObject(
+                                                        id
+                                                            ? currencyList?.data ?? []
+                                                            : currencyList?.data?.filter(
+                                                                (item) => item.active
+                                                            ) ?? [],
+                                                        "name",
+                                                        "id"
+                                                    )}
+                                                    // lastTab={activeTab}
+                                                    masterName="CURRENCY MASTER"
+                                                    value={currency}
+                                                    setValue={setCurrency}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                /> */}
+
+                        {/* <DropdownInput
+                                                    name="PayTerm"
+                                                    options={dropDownListObject(
+                                                        id
+                                                            ? payTermList?.data
+                                                            : payTermList?.data?.filter((item) => item.active),
+                                                        "name",
+                                                        "id"
+                                                    )}
+                                                    value={payTermDay}
+                                                    setValue={setPayTermDay}
+                                                    // required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                /> */}
+                        <TextInputNew
+                          name="Pan No"
+                          type="pan_no"
+                          value={panNo}
+                          setValue={setPanNo}
+                          readOnly={readOnly}
+                          disabled={childRecord.current > 0}
+                          className="focus:ring-2 focus:ring-blue-100"
+                        />
+                        <TextInputNew
+                          name="GST No"
+                          type="text"
+                          value={gstNo}
+                          setValue={setGstNo}
+                          readOnly={readOnly}
+                          required={true}
+                          className="focus:ring-2 focus:ring-blue-100"
+                        />
+                        <TextInputNew
+                          name="MSME CERTFICATE  No"
+                          type="text"
+                          value={msmeNo}
+                          setValue={setMsmeNo}
+                          readOnly={readOnly}
+                          disabled={childRecord.current > 0}
+                          className="focus:ring-2 focus:ring-blue-100"
+                        />
+                        <TextInputNew
+                          name="CIN No"
+                          type="text"
+                          value={cinNo}
+                          setValue={setCinNo}
+                          readOnly={readOnly}
+                          disabled={childRecord.current > 0}
+                          className="focus:ring-2 focus:ring-blue-100"
+                        />
+
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
                 <div className="lg:col-span-4 space-y-3">
                   <div className="bg-white p-3 rounded-md border border-gray-200 h-[240px]">
                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Bank  Details</h3>

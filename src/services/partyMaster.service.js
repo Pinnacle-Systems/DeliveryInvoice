@@ -6,8 +6,8 @@ const prisma = new PrismaClient()
 
 
 async function get(req) {
-    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent ,isAddessCombined} = req.query
-    console.log(isAddessCombined,"isAddessCombined")
+    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent, isAddessCombined } = req.query
+    console.log(isAddessCombined, "isAddessCombined")
     // if (isPartyLedgerReport) {
     //     const data = await getPartyLedgerReport(partyId, startDate, endDate)
     //     return { statusCode: 0, data };
@@ -93,6 +93,60 @@ async function get(req) {
     }
     return { statusCode: 0, data };
 }
+
+export async function getNew(req) {
+    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent, isAddessCombined } = req.query
+    let data;
+    data = await prisma.party.findMany({
+        where: {
+            companyId: companyId ? parseInt(companyId) : undefined,
+            active: active ? Boolean(active) : undefined,
+        },
+        include: {
+            Supplier: {
+                select: {
+                    id: true,
+                    DeliveryChallanItems: true
+                }
+            },
+            DeliveryInvoice: {
+                select: {
+                    DeliveryInvoiceItems: true
+                }
+            }
+        }
+
+    });
+
+    const filteredParties = data.filter(party => {
+
+        const deliveryQty = party.Supplier.reduce((partySum, supplier) => {
+            const supplierQty = supplier.DeliveryChallanItems.reduce(
+                (sum, item) => sum + (item.qty || 0),
+                0
+            );
+            return partySum + supplierQty;
+        }, 0);
+
+        const invoiceQty = party.DeliveryInvoice.reduce((partySum, invoice) => {
+            const invoiceItemQty = invoice.DeliveryInvoiceItems.reduce(
+                (sum, item) => sum + (item.invoiceQty || 0),
+                0
+            );
+            return partySum + invoiceItemQty;
+        }, 0);
+
+        console.log({
+            deliveryQty,
+            invoiceQty
+        }, "invoiceQty")
+
+        return deliveryQty > invoiceQty;
+    });
+    return { statusCode: 0, data: filteredParties };
+
+}
+
 
 async function getOne(id) {
     const data = await prisma.party.findUnique({

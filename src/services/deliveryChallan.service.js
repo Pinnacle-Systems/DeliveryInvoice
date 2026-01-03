@@ -85,6 +85,10 @@ async function get(req) {
                     DeliveryInvoiceItems: true
                 }
             }
+        },
+        orderBy : {
+            id : "desc"
+
         }
     });
 

@@ -5,7 +5,7 @@ import Select from 'react-dropdown-select';
 import { findFromList } from '../Utils/helper';
 import { FaChevronLeft, FaChevronRight, FaEdit, FaInfoCircle, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import secureLocalStorage from 'react-secure-storage';
-import { useGetPartyQuery } from '../redux/services/PartyMasterService';
+import { useGetPartyNewQuery, useGetPartyQuery } from '../redux/services/PartyMasterService';
 import { useModal } from '../Basic/pages/home/context/ModalContext';
 import useOutsideClick from '../CustomHooks/handleOutsideClick';
 import Modal from '../UiComponents/Modal';
@@ -1755,7 +1755,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
-                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ?  item.id : null)}
+                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
                         title="Edit Customer"
                       >
                         <FaEdit className="text-sm" />
@@ -2203,3 +2203,351 @@ export const TextAreaNew = ({
     </div>
   );
 };
+
+
+export const ShowInvoicPendingCustomers = forwardRef(
+  (
+    {
+      label,
+      placeholder,
+      onDeleteItem,
+      component,
+      setSearchTerm,   // selected value (partyId)
+      searchTerm,
+      readOnly,
+      nextRef,
+      required,
+      name,
+      disabled,
+      show,
+      id,
+    },
+
+    ref
+
+  ) => {
+    /* ---------------------------------- DATA ---------------------------------- */
+
+    const companyId = secureLocalStorage.getItem(
+      sessionStorage.getItem("sessionId") + "userCompanyId"
+    );
+    const userId = secureLocalStorage.getItem(
+      sessionStorage.getItem("sessionId") + "userId"
+    );
+
+    const { data: partyList } = useGetPartyNewQuery({
+      params: { companyId, userId, isAddessCombined: true },
+    });
+
+    console.log(partyList, "partyList")
+
+    /* ---------------------------------- STATE --------------------------------- */
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [tooltipVisible, setTooltipVisible] = useState(false);
+    const [editingItem, setEditingItem] = useState(null);
+    const [openModel, setOpenModel] = useState(false);
+    const [childId, setChildId] = useState('')
+
+    const [search, setSearch] = useState("");           // 🔹 search text
+    const [filteredPages, setFilteredPages] = useState([]);
+    const [isListShow, setIsListShow] = useState(false);
+
+    const containerRef = useRef(null);
+    const modal = useModal();
+    const { openAddModal } = modal || {};
+
+
+
+
+    /* ---------------------------- OUTSIDE CLICK ---------------------------- */
+    // useEffect(() => {
+    //   if (id) return;
+    //   setIsDropdownOpen(true);
+    // }, []);
+
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+          setIsDropdownOpen(false);
+          setIsListShow(false)
+
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    /* ---------------------------- FILTER PARTIES ---------------------------- */
+
+    useEffect(() => {
+      if (!partyList?.data) return;
+
+      if (!search.trim()) {
+        setFilteredPages(partyList?.data);
+        return;
+      }
+
+      const filtered = partyList?.data?.filter((item) =>
+
+        item?.name?.toLowerCase().includes(search.toLowerCase())
+      );
+
+      setFilteredPages(filtered);
+    }, [search, partyList]);
+
+
+    /* ---------------------------- ARROW NAVIGATION --------------------------- */
+
+    useEffect(() => {
+      const pageSearch = document.getElementById("pageSearch");
+      if (!pageSearch) return;
+
+      const handler = (e) => {
+        const items = pageSearch.querySelectorAll('[tabindex="0"]');
+        const index = Array.from(items).indexOf(document.activeElement);
+
+        if (e.key === "ArrowDown") {
+          items[index + 1]?.focus();
+          e.preventDefault();
+        }
+
+        if (e.key === "ArrowUp") {
+          items[index - 1]?.focus();
+          e.preventDefault();
+        }
+      };
+
+      pageSearch.addEventListener("keydown", handler);
+      return () => pageSearch.removeEventListener("keydown", handler);
+    }, []);
+
+    /* ---------------------------------- HANDLERS ------------------------------ */
+
+    const handleEdit = (id, e, isChildid) => {
+      e.stopPropagation();
+      setEditingItem(id);
+      setIsDropdownOpen(false);
+      setIsListShow(false);
+      setOpenModel(true);
+      setChildId(isChildid)
+
+    };
+
+    const handleDelete = (id, e) => {
+      onDeleteItem?.(id);
+    };
+
+    /* ---------------------------------- JSX ---------------------------------- */
+
+    return (
+      <>
+        {/* ----------------------------- MODAL ----------------------------- */}
+        <Modal
+          isOpen={openModel}
+          onClose={() => setOpenModel(false)}
+          widthClass="w-[90%] h-[90%]"
+        >
+          <DynamicRenderer
+            componentName={component}
+            editingItem={editingItem}
+            childId={childId}
+            onCloseForm={() => setOpenModel(false)}
+          />
+        </Modal>
+
+        {/* ----------------------------- INPUT ----------------------------- */}
+        <div
+          className="relative text-sm w-full"
+          id="pageSearch"
+          ref={containerRef}
+        >
+          {label && (
+            <label className="block text-xs font-bold text-gray-600 mb-1">
+              {required ? <RequiredLabel name={label || name} /> : label}
+            </label>
+          )}
+
+          <div className="flex gap-2">
+            <div className="relative flex-grow">
+              <FaSearch className="absolute left-3 top-3 text-slate-400 text-xs" />
+
+              {isListShow ? (
+                /* ---------------- SEARCH INPUT ---------------- */
+                <input
+                  ref={ref}
+                  className="w-full pl-8 pr-2 py-1.5 text-xs border rounded-md"
+                  placeholder={placeholder}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setIsDropdownOpen(true);
+                  }}
+                  onFocus={() => {
+                    setIsListShow(true);
+                    setIsDropdownOpen(true);
+                  }}
+                  disabled={disabled || readOnly}
+                  tabIndex={0}
+                />
+              ) : (
+                /* ---------------- SELECTED VALUE ---------------- */
+                <input
+                  ref={ref}
+                  className="w-full pl-8 pr-2 py-1.5 text-xs border rounded-md"
+                  placeholder={placeholder}
+                  value={findFromList(
+                    searchTerm,
+                    partyList?.data?.filter(i => i.isCustomer),
+                    "name"
+                  )}
+                  onFocus={() => {
+                    setIsListShow(true);
+                    setIsDropdownOpen(true);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && nextRef?.current) {
+                      nextRef.current.focus();
+                    }
+                  }}
+                  disabled={disabled || readOnly}
+                  tabIndex={0}
+                />
+              )}
+            </div>
+
+            {/* ---------------- ADD BUTTON ---------------- */}
+            <div className="relative">
+              <button
+                className="h-full px-3 py-1.5 border border-green-500 rounded-md
+                hover:bg-green-500 text-green-600 hover:text-white"
+                disabled={disabled || readOnly}
+                onClick={() => {
+                  setEditingItem("new");
+                  setOpenModel(true);
+                }}
+                onMouseEnter={() => setTooltipVisible(true)}
+                onMouseLeave={() => setTooltipVisible(false)}
+              >
+                <FaPlus />
+              </button>
+
+              {tooltipVisible && (
+                <div className="absolute z-10 top-full right-0 mt-1 w-48 bg-indigo-800 text-white text-xs rounded p-2">
+                  <FaInfoCircle className="inline mr-1" />
+                  Click to add new party
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ---------------- DROPDOWN LIST ---------------- */}
+          {/* {isDropdownOpen && (
+            <div className="absolute w-full mt-1 max-h-40 overflow-y-auto  rounded bg-white z-20 border border-gray-200" ref={ref}>
+              {filteredPages.length > 0 ? (
+                filteredPages?.map((item) => (
+                  <div
+                    key={item.id}
+                    tabIndex={0}
+                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer flex justify-between group border rounded-sm border-gray-400"
+                    onClick={() => {
+                      setSearchTerm(item.id);
+                      setSearch("");
+                      setIsDropdownOpen(false);
+                      setIsListShow(false);
+                      nextRef?.current?.focus();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchTerm(item.id);
+                        setSearch("");
+                        setIsDropdownOpen(false);
+                        setIsListShow(false);
+                        nextRef?.current?.focus();
+                      }
+                    }}
+                  >
+                    <span className='0'>{item.name}</span>
+
+                  
+                  </div>
+                ))
+              ) : (
+                <div className="px-3 py-2 text-xs text-gray-500">
+                  No party found
+                </div>
+              )}
+            </div>
+          )} */}
+          {isDropdownOpen && (
+            <div className="border border-slate-200 rounded-md shadow-md bg-white mt-1 max-h-40 overflow-y-auto z-20 absolute w-full">
+              {filteredPages?.length > 0 ? (
+                filteredPages?.map((item) => (
+                  <div
+                    key={item.id}
+                    tabIndex={0}
+                    className="px-3 py-2 text-xs hover:bg-slate-100 cursor-pointer transition-colors flex justify-between items-center group"
+                    onClick={() => {
+                      setSearchTerm(item.id);
+                      setIsDropdownOpen(false);
+                      setSearch("");
+                      setIsListShow(false);
+                      if (nextRef?.current) {
+                        nextRef?.current?.focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchTerm(item.id);
+                        setSearch("");
+                        setIsListShow(false);
+                        setIsDropdownOpen(false);
+                        if (nextRef?.current) {
+                          e.preventDefault();
+                          nextRef?.current?.focus();
+                        }
+
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                    </div>
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        className="text-indigo-600 hover:text-indigo-800 p-1"
+                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
+                        title="Edit Customer"
+                      >
+                        <FaEdit className="text-sm" />
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-800 p-1"
+                        onClick={(e) => handleDelete(item?.id, e, item?.parentId)}
+                        title="Delete Customer"
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <button
+                  type="button"
+                  className="w-full px-3 py-2 text-left text-indigo-600 hover:bg-slate-50 flex items-center gap-2"
+                  onClick={() => {
+                    setEditingItem(null);
+                    setIsDropdownOpen(false);
+                    openAddModal();
+                  }}
+                >
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
+);

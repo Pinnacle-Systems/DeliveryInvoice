@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { PARTY_API} from "../../Api";
+import { PARTY_API } from "../../Api";
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
@@ -11,10 +11,10 @@ const partyMasterApi = createApi({
   tagTypes: ["Party"],
   endpoints: (builder) => ({
     getParty: builder.query({
-      query: ({params, searchParams}) => {
-        if(searchParams){
+      query: ({ params, searchParams }) => {
+        if (searchParams) {
           return {
-            url: PARTY_API +"/search/"+searchParams,
+            url: PARTY_API + "/search/" + searchParams,
             method: "GET",
             headers: {
               "Content-type": "application/json; charset=UTF-8",
@@ -24,6 +24,29 @@ const partyMasterApi = createApi({
         }
         return {
           url: PARTY_API,
+          method: "GET",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+          params
+        };
+      },
+      providesTags: ["Party"],
+    }),
+    getPartyNew: builder.query({
+      query: ({ params, searchParams }) => {
+        if (searchParams) {
+          return {
+            url: `${PARTY_API}/new` + "/search/" + searchParams,
+            method: "GET",
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+            params
+          };
+        }
+        return {
+          url: `${PARTY_API}/new`,
           method: "GET",
           headers: {
             "Content-type": "application/json; charset=UTF-8",
@@ -54,7 +77,7 @@ const partyMasterApi = createApi({
       invalidatesTags: ["Party"],
     }),
     updateParty: builder.mutation({
-      query: ({id, body}) => {
+      query: ({ id, body }) => {
         return {
           url: `${PARTY_API}/${id}`,
           method: "PUT",
@@ -75,6 +98,7 @@ const partyMasterApi = createApi({
 
 export const {
   useGetPartyQuery,
+  useGetPartyNewQuery,
   useGetPartyByIdQuery,
   useAddPartyMutation,
   useUpdatePartyMutation,

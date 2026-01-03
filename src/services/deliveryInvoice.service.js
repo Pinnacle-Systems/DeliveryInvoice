@@ -62,7 +62,7 @@ async function get(req) {
 
     const { serachDocNo, supplier, searchDate, searchDueDate } = req.query
 
-    let data = await prisma.DeliveryInvoice.findMany({
+    let data = await prisma.deliveryInvoice.findMany({
         where: {
             docId: serachDocNo ? { contains: serachDocNo } : undefined,
             Party: {
@@ -75,7 +75,11 @@ async function get(req) {
                     name: true
                 }
             }
+        },
+        orderBy : {
+            id : "desc"
         }
+        
     });
 
 

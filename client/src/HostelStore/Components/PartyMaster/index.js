@@ -104,7 +104,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
     )
     const params = {
         companyId,
-        isParent: true
+        // isParent: true
     };
     const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =
         useGetCityQuery({ params });
@@ -1621,7 +1621,6 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                     />
                                                 </div>
 
-
                                                 <div className=" ml-2">
                                                     <ToggleButton
                                                         name="Status"
@@ -1635,6 +1634,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         inactiveClass="text-gray-500"
                                                     />
                                                 </div>
+
 
 
 
@@ -2207,6 +2207,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                     branchForm={branchForm} setBranchForm={setBranchForm} branchTypeData={branchTypeData}
                     companyId={companyId} readOnly={readOnly} isCustomer={isCustomer} isSupplier={isSupplier}
                     branchId={branchId} setBranchId={setBranchId}
+                    parentName={name}
 
                 />
 
