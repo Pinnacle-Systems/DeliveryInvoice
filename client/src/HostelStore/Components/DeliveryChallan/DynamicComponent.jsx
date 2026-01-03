@@ -3,12 +3,14 @@ import { PartyMaster, StyleMaster } from "..";
 
 
 
-const DynamicRenderer = ({ openModelForAddress, onCloseForm, componentName, editingItem ,dynamicForm , setDynamicForm }) => {
+const DynamicRenderer = ({ openModelForAddress, onCloseForm, componentName, editingItem , childId ,dynamicForm , setDynamicForm }) => {
     console.log(componentName,"componentName")
 
 
     const COMPONENTS = {
-        PartyMaster: () => <PartyMaster partyId={editingItem} onCloseForm={onCloseForm} openModelForAddress={openModelForAddress} />,
+        PartyMaster: () => <PartyMaster partyId={editingItem} onCloseForm={onCloseForm} openModelForAddress={openModelForAddress} 
+        childId={childId}
+        />,
         // EmployeeCategoryMaster: () => <EmployeeCategoryMaster />,
         StyleMaster: () => <StyleMaster styleId={editingItem} dynamicForm={dynamicForm} setDynamicForm={setDynamicForm}  />,
     };

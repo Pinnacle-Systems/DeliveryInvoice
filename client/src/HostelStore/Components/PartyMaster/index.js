@@ -34,9 +34,9 @@ import { useGetbranchTypeQuery } from "../../../redux/services/BranchTypeMaster"
 
 
 
-export default function Form({ partyId, onCloseForm }) {
+export default function Form({ partyId, onCloseForm, childId }) {
 
-    console.log(partyId, "partyId")
+    console.log(partyId, "partyId", childId)
     const [form, setForm] = useState(false);
 
     const [readOnly, setReadOnly] = useState(false);
@@ -89,6 +89,7 @@ export default function Form({ partyId, onCloseForm }) {
     const [companyAlterNumber, setCompanyAlterNumber] = useState('')
     const [branchModelOpen, setBranchModelOpen] = useState(false);
     const [branchForm, setBranchForm] = useState(false)
+    const [branchId, setBranchId] = useState("")
 
     const childRecord = useRef(0);
     const dispatch = useDispatch()
@@ -458,19 +459,50 @@ export default function Form({ partyId, onCloseForm }) {
 
 
 
+    // useEffect(() => {
+    //     if (!partyId) return
+    //     if (partyId == "new") {
+    //         onNew()
+    //     }
+    //     else {
+    //         setId(partyId);
+    //     }
+    //     // if (childId) {
+    //     //     branchModelOpen(true)
+    //     //     setBranchId(childId)
+    //     // }
+    //     // if (openModelForAddress) {
+    //     //   setIsAddressExpanded(true);
+    //     // }
+    // }, [partyId]);
+
+
+
     useEffect(() => {
-        if (!partyId) return
-        if (partyId == "new") {
-            onNew()
+        if (!partyId) return;
+
+        if (partyId === "new") {
+            onNew();
+            return;
         }
-        else {
+        else if (!childId) {
             setId(partyId);
+            setForm(true);
         }
-        setForm(true);
-        // if (openModelForAddress) {
-        //   setIsAddressExpanded(true);
-        // }
-    }, [partyId]);
+
+        // // existing party
+        // setId(partyId);
+        // setForm(true);
+
+        // open branch modal if childId exists
+        if (childId) {
+            console.log("Hit")
+            setBranchModelOpen(true)
+            setBranchForm(false)
+            setBranchId(childId);
+        }
+
+    }, [partyId, childId]);
 
 
 
@@ -663,7 +695,7 @@ export default function Form({ partyId, onCloseForm }) {
                                                 <input
                                                     type="checkbox"
                                                     checked={isSupplier}
-                                                    onChange={(e) =>  setIsSupplier(e.target.checked)}
+                                                    onChange={(e) => setIsSupplier(e.target.checked)}
                                                     disabled={readOnly}
                                                 />
                                                 <label className="block text-xs font-bold text-gray-600">
@@ -1268,10 +1300,32 @@ export default function Form({ partyId, onCloseForm }) {
 
                 </div>
 
-                {/* 
-                    </Modal>
-                )} */}
+                <Modal
+                    isOpen={branchModelOpen}
+                    form={form}
+                    widthClass={"w-[90%] h-[89%]"}
+                    setBranchModelOpen={setBranchModelOpen}
+                    onClose={() => {
+                        setBranchModelOpen(false)
+                    }}
+                >
+
+
+
+                    <AddBranch
+                        cityList={cityList}
+                        setReadOnly={setReadOnly} partyId={partyId}
+                        branchForm={branchForm} setBranchForm={setBranchForm} branchTypeData={branchTypeData}
+                        companyId={companyId} readOnly={readOnly} isCustomer={isCustomer} isSupplier={isSupplier}
+                        branchId={branchId} setBranchId={setBranchId}
+
+                    />
+
+
+
+                </Modal>
             </>
+
         )
     }
 
@@ -2152,6 +2206,7 @@ export default function Form({ partyId, onCloseForm }) {
                     setReadOnly={setReadOnly} partyId={id}
                     branchForm={branchForm} setBranchForm={setBranchForm} branchTypeData={branchTypeData}
                     companyId={companyId} readOnly={readOnly} isCustomer={isCustomer} isSupplier={isSupplier}
+                    branchId={branchId} setBranchId={setBranchId}
 
                 />
 

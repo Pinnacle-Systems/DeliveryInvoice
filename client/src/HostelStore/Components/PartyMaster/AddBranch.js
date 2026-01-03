@@ -12,11 +12,12 @@ import moment from "moment";
 import { useGetbranchTypeQuery } from "../../../redux/services/BranchTypeMaster";
 import { useAddPartyMutation, useDeletePartyMutation, useGetPartyByIdQuery, useUpdatePartyMutation } from "../../../redux/services/PartyMasterService";
 import { useDispatch } from "react-redux";
+import cityMasterApi from "../../../redux/services/CityMasterService";
 
 
 
 const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setReadOnly,
-  branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer,
+  branchForm, setBranchForm, branchState, refetch, companyId, branchTypeData, isSupplier, isCustomer, branchId, setBranchId
 }) => {
 
   // const {
@@ -135,10 +136,9 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
     current: 0
   }
 
-  console.log(branchTypeData, "branchTypeData")
+  console.log(branchId, "branchId")
 
   const [isBranchcontact, setIsBranchcontact] = useState(false)
-  const [branchId, setBranchId] = useState("")
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [contactForm, setContactForm] = useState(false)
   const today = new Date();
@@ -196,7 +196,7 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
     isLoading: isSingleLoading,
   } = useGetPartyBranchByIdQuery(branchId, { skip: !branchId });
 
-  console.log(allData, "allData",branchId)
+  console.log(allData, "allData", branchId)
 
 
   const [addData] = useAddPartyBranchMutation();
@@ -304,6 +304,8 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
         returnData = await callback(formData).unwrap();
       }
       dispatch(partyBranchMasterApi.util.invalidateTags(["partyBranchMaster"]));
+      dispatch(cityMasterApi.util.invalidateTags(["cityMaster"]));
+
       // dispatch({
       //   type: `accessoryItemMaster/invalidateTags`,
       //   payload: ['AccessoryItemMaster'],
@@ -474,13 +476,13 @@ const AddBranch = ({ partyId, setPartyId, cityList, branchInfo, readOnly, setRea
     setBranchId('')
     syncFormWithDb(undefined);
   };
-    const countryNameRef = useRef(null);
+  const countryNameRef = useRef(null);
 
-    useEffect(() => {
-        if (form && countryNameRef.current) {
-            countryNameRef.current.focus();
-        }
-    }, [form]);
+  useEffect(() => {
+    if (form && countryNameRef.current) {
+      countryNameRef.current.focus();
+    }
+  }, [form]);
 
   return (
 

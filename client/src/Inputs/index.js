@@ -1474,10 +1474,10 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     );
 
     const { data: partyList } = useGetPartyQuery({
-      params: { companyId, userId ,isAddessCombined : true },
+      params: { companyId, userId, isAddessCombined: true },
     });
 
-      console.log(partyList,"partyList")
+    console.log(partyList, "partyList")
 
     /* ---------------------------------- STATE --------------------------------- */
 
@@ -1485,6 +1485,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [openModel, setOpenModel] = useState(false);
+    const [childId, setChildId] = useState('')
 
     const [search, setSearch] = useState("");           // 🔹 search text
     const [filteredPages, setFilteredPages] = useState([]);
@@ -1562,13 +1563,14 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
 
     /* ---------------------------------- HANDLERS ------------------------------ */
 
-    const handleEdit = (id, e) => {
+    const handleEdit = (id, e, isChildid) => {
       e.stopPropagation();
       setEditingItem(id);
       setIsDropdownOpen(false);
       setIsListShow(false);
-
       setOpenModel(true);
+      setChildId(isChildid)
+
     };
 
     const handleDelete = (id, e) => {
@@ -1588,6 +1590,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
           <DynamicRenderer
             componentName={component}
             editingItem={editingItem}
+            childId={childId}
             onCloseForm={() => setOpenModel(false)}
           />
         </Modal>
@@ -1752,15 +1755,15 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
-                        onClick={(e) => handleEdit(item?.id, e)}
-                        title="Edit supplier"
+                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ?  item.id : null)}
+                        title="Edit Customer"
                       >
                         <FaEdit className="text-sm" />
                       </button>
                       <button
                         className="text-red-600 hover:text-red-800 p-1"
-                        onClick={(e) => handleDelete(item?.id, e)}
-                        title="Delete supplier"
+                        onClick={(e) => handleDelete(item?.id, e, item?.parentId)}
+                        title="Delete Customer"
                       >
                         <FaTrash className="text-sm" />
                       </button>
