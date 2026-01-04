@@ -10,13 +10,25 @@ async function get(req) {
     let data = await prisma.styleItem.findMany({
         where: {
             active: active ? Boolean(active) : undefined,
+        },
+        include: {
+            _count: {
+                select: {
+                    DeliveryChallanItems: true
+                }
+            }
         }
     });
-    return { statusCode: 0, data };
+    return {
+        statusCode: 0, data: data = data.map(color => ({
+            ...color,
+            childRecord: color?._count.DeliveryChallanItems > 0
+        })),
+    };
 }
 
 async function getOne(id) {
-    const childRecord = await prisma.deliveryChallanItems.count({where:{ styleId : parseInt(id)}});
+    const childRecord = await prisma.deliveryChallanItems.count({ where: { styleId: parseInt(id) } });
     const data = await prisma.styleItem.findUnique({
         where: {
             id: parseInt(id)
@@ -46,11 +58,11 @@ async function getSearch(req) {
 }
 
 async function create(body) {
-    const { name, aliasName, active ,code } = await body
+    const { name, aliasName, active, code } = await body
     const data = await prisma.styleItem.create(
         {
             data: {
-                name, aliasName, active,code
+                name, aliasName, active, code
             }
         }
     )
@@ -58,8 +70,8 @@ async function create(body) {
 }
 
 async function update(id, body) {
-    const { name, active ,aliasName  ,code } = await body
-    
+    const { name, active, aliasName, code } = await body
+
     const dataFound = await prisma.styleItem.findUnique({
         where: {
             id: parseInt(id)
@@ -72,7 +84,7 @@ async function update(id, body) {
         },
         data:
         {
-                name, aliasName, active,code
+            name, aliasName, active, code
         },
     })
     return { statusCode: 0, data };

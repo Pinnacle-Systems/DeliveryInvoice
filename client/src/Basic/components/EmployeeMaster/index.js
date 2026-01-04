@@ -924,7 +924,7 @@ export default function Form() {
                                                     setValue={(value) => setEmployeeCategory(value)}
                                                     required={true}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     onKeyDown={(e) => handleKeyNext(e, null)}
                                                 />
                                                 {errors.employeeCategory && <span className="text-red-500 text-xs ml-1">{errors.employeeCategory}</span>}
@@ -946,7 +946,7 @@ export default function Form() {
                                                     setValue={setDepartment}
                                                     readOnly={readOnly}
                                                     required={true}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                                 {errors.department && <span className="text-red-500 text-xs ml-1">{errors.department}</span>}
                                             </div>
@@ -958,7 +958,7 @@ export default function Form() {
                                                     setValue={setChamberNo}
                                                     readOnly={readOnly}
                                                     required={isCurrentEmployeeDoctor(employeeCategory)}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                             </div>
 
@@ -988,7 +988,7 @@ export default function Form() {
                                                     setValue={setFatherName}
 
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                                 {errors.fatherName && <span className="text-red-500 text-xs ml-1">{errors.fatherName}</span>}
                                             </div>
@@ -1001,7 +1001,7 @@ export default function Form() {
                                                     setValue={setMaritalStatus}
                                                     required
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                                 {errors.maritalStatus && <span className="text-red-500 text-xs ml-1">{errors.maritalStatus}</span>}
                                             </div>
@@ -1013,7 +1013,7 @@ export default function Form() {
                                                     setValue={setPanNo}
 
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                                 {errors.panNo && <span className="text-red-500 text-xs ml-1">{errors.panNo}</span>}
                                             </div>
@@ -1053,7 +1053,7 @@ export default function Form() {
                                                     value={bankName}
                                                     setValue={setBankName}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                             </div>
                                             <div className="col-span-1">
@@ -1062,7 +1062,7 @@ export default function Form() {
                                                     value={branchName}
                                                     setValue={setbranchName}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                             </div>
 
@@ -1073,7 +1073,7 @@ export default function Form() {
                                                     value={ifscNo}
                                                     setValue={setIfscNo}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
 
                                                 <TextInputNew
@@ -1082,7 +1082,7 @@ export default function Form() {
                                                     value={accountNo}
                                                     setValue={setAccountNo}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
 
                                             </div>
@@ -1100,7 +1100,7 @@ export default function Form() {
                                                     setValue={setMobile}
                                                     required={true}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
 
                                                 <TextInputNew
@@ -1109,7 +1109,7 @@ export default function Form() {
                                                     value={email}
                                                     setValue={setEmail}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                 />
                                             </div>
 
@@ -1120,7 +1120,7 @@ export default function Form() {
                                                 setValue={setlocalAddress}
                                                 required
                                                 readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
+                                                // disabled={childRecord.current > 0}
                                             />
                                             {errors.localAddress && <span className="text-red-500 text-xs ml-1">{errors.localAddress}</span>}
 
@@ -1131,7 +1131,7 @@ export default function Form() {
                                                     value={permPincode}
                                                     setValue={setPermPincode}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     required
                                                 />
                                                 <DropdownInputNew
@@ -1144,7 +1144,7 @@ export default function Form() {
                                                     value={permCity}
                                                     setValue={setPermCity}
                                                     readOnly={readOnly}
-                                                    disabled={childRecord.current > 0}
+                                                    // disabled={childRecord.current > 0}
                                                     required
                                                 />
                                             </div>

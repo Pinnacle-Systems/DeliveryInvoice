@@ -277,7 +277,7 @@ const DeliveryInvoice = ({
   const gstSummary = {};
 
   poItems?.filter(i => i.styleId)?.forEach(item => {
-    const amount = item.qty * item.price;
+    const amount = item.invoiceQty * item.price;
     const tax = item?.Hsn?.tax
     const halfGst = tax / 2;
 

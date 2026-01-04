@@ -181,7 +181,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setPartyCode(data?.partyCode ? data?.partyCode : "")
         setIsBranch(data?.isBranch ? data?.isBranch : false)
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
-        // setParentId(data?.parentId ? data?.parentId : "")
+        setParentId(data?.parentId ? data?.parentId : "")
         setBranchTypeId(data?.branchTypeId ? data?.branchTypeId : "")
         setIsBranch(data?.isBranch ? data?.isBranch : "")
 
@@ -316,6 +316,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
             if (nextProcess == "new") {
                 syncFormWithDb(undefined);
                 onNew();
+                countryNameRef?.current?.focus()
+
             } else {
                 if (partyId) {
                     onCloseForm()
@@ -684,7 +686,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                         <div className="flex gap-2">
 
                             <div className="flex gap-2">
-                                <div className="  ">
+                                {/* <div className="  ">
                                     <button
                                         onClick={() => {
                                             if (id) {
@@ -718,7 +720,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                         </svg>
                                         Add Branch
                                     </button>
-                                </div>
+                                </div> */}
                                 <div>
                                     {readOnly && (
                                         <button
@@ -773,12 +775,11 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
 
-
                             <div className="lg:col-span-4 space-y-3 ">
-                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px]">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
                                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <div className="flex flex-row items-center gap-4">
+                                        <div className="flex flex-row items-center gap-4 col-span-2 mb-2">
                                             <div className="flex items-center gap-2">
                                                 <input
                                                     type="checkbox"
@@ -802,41 +803,124 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                     Supplier
                                                 </label>
                                             </div>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isBranch}
+                                                    onChange={(e) => {
+                                                        if (parentId || branchTypeId) {
+                                                            setParentId("")
+                                                            setBranchTypeId("")
+                                                        }
+                                                        setIsBranch(e.target.checked)
+                                                    }}
+                                                    disabled={readOnly}
+                                                />
+                                                <label className="block text-xs font-bold text-gray-600">
+                                                    Is Branch
+                                                </label>
+                                            </div>
                                         </div>
 
 
 
                                         <div className="col-span-2">
-                                            <TextInputNew1
-                                                name={isSupplier ? "Supplier Name" : "Customer Name"}
-                                                type="text"
-                                                value={name}
-                                                inputClass="h-8"
-                                                ref={countryNameRef}
-                                                setValue={setName}
+                                            <DropdownInputNew
+                                                name="Customer/supplier"
+                                                options={dropDownListObject(
+                                                    id
+                                                        ? allData?.data?.filter(i => i.id != id && !i.parentId)
+                                                        : allData?.data?.filter(
+                                                            (item) => item.active && item.id != id && !item.parentId
+                                                        ),
+                                                    "name",
+                                                    "id" || []
+                                                )}
+                                                value={parentId}
+                                                setValue={(value) => {
+                                                    console.log(value, "value")
+                                                    setParentId(value)
+                                                    setName(findFromList(value, allData?.data, "name"))
+
+                                                }}
+                                                // setValue={setParentId}
+                                                readOnly={readOnly}
+                                                required={true}
+                                                disabled={childRecord.current > 0 || !isBranch}
+                                            />
+
+
+
+
+                                        </div>
+                                        <div className="col-span-2">
+                                            <DropdownInputNew
+                                                name="Branch Type"
+                                                options={dropDownListObject(
+                                                    id
+                                                        ? branchTypeData?.data
+                                                        : branchTypeData?.data?.filter(
+                                                            (item) => item.active
+                                                        ),
+                                                    "name",
+                                                    "id" || []
+                                                )}
+                                                value={branchTypeId}
+                                                openOnFocus={true}
+                                                setValue={(value) => {
+                                                    setBranchTypeId(value)
+
+                                                }}
                                                 required={true}
                                                 readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
-                                                onBlur={(e) => {
-                                                    if (aliasName) return;
-                                                    setAliasName(e.target.value);
-                                                }}
+                                                disabled={childRecord.current > 0 || !isBranch || !parentId}
+                                            />
+                                        </div>
+                                        {!isBranch && (
 
-                                                className="focus:ring-2 focus:ring-blue-100"
-                                            />
-                                        </div>
-                                        <div className="col-span-2">
-                                            <TextInputNew1
-                                                name="Alias Name"
-                                                type="text"
-                                                inputClass="h-8"
-                                                value={aliasName}
-                                                setValue={setAliasName}
-                                                readOnly={readOnly}
-                                                disabled={childRecord.current > 0}
-                                                className="focus:ring-2 focus:ring-blue-100"
-                                            />
-                                        </div>
+                                            <div className="col-span-2">
+                                                <TextInputNew1
+                                                    name={"name"}
+                                                    type="text"
+                                                    value={name}
+                                                    inputClass="h-8"
+                                                    ref={countryNameRef}
+                                                    setValue={setName}
+                                                    required={true}
+                                                    readOnly={readOnly}
+                                                    disabled={childRecord.current > 0}
+                                                    onBlur={(e) => {
+                                                        if (aliasName) return;
+                                                        setAliasName(e.target.value);
+                                                    }}
+
+                                                    className="focus:ring-2 focus:ring-blue-100"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {isBranch && (
+                                            <div className="col-span-2">
+
+                                                <TextAreaNew name="Branch Name"
+                                                    inputClass="h-10" value={name}
+                                                    setValue={setName} required={true}
+                                                    readOnly={readOnly}
+                                                    isabled={(childRecord.current > 0)} />
+                                            </div>
+                                        )}
+                                        {/* <div className="col-span-2">
+                                                    <TextInputNew1
+                                                        name="Alias Name"
+                                                        type="text"
+                                                        inputClass="h-8"
+                                                        value={aliasName}
+                                                        setValue={setAliasName}
+                                                        readOnly={readOnly}
+                                                        disabled={childRecord.current > 0}
+                                                        className="focus:ring-2 focus:ring-blue-100"
+                                                    />
+                                                </div> */}
                                         <div className="col-span-1">
                                             <TextInputNew1
                                                 name="Code"
@@ -849,7 +933,6 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                 className="focus:ring-2 focus:ring-blue-100 w-10"
                                             />
                                         </div>
-
 
                                         <div className=" ml-2">
                                             <ToggleButton
@@ -868,6 +951,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
 
+
                                     </div>
 
 
@@ -876,7 +960,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                             </div>
                             <div className="lg:col-span-4 space-y-3 ">
-                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[260px] overflow-y-auto">
+                                <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
                                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Address  Details</h3>
                                     <div className="space-y-2">
 
@@ -986,7 +1070,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                             </div>
                             <div className="lg:col-span-4 space-y-3">
-                                <div className="bg-white p-3 rounded-md border border-gray-200  h-[260px]">
+                                <div className="bg-white p-3 rounded-md border border-gray-200  h-[330px]">
                                     <h3 className="font-medium text-gray-800 mb-2 text-sm">Contact  Details</h3>
                                     <div className="space-y-2">
 
@@ -1141,6 +1225,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                 setValue={setGstNo}
                                                 readOnly={readOnly}
                                                 required={true}
+                                                disabled={parentId || isBranch}
+
                                                 className="focus:ring-2 focus:ring-blue-100"
                                             />
                                             <TextInputNew
@@ -1450,6 +1536,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                     onNew();
                                     syncFormWithDb(undefined)
                                     syncFormWithDbNew(undefined)
+                                    setParentId("")
                                 }}
                                 className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
                             >
@@ -1649,7 +1736,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
                                     <div className="lg:col-span-4 space-y-3 ">
-                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px]">
+                                        <div className="bg-white p-3 rounded-md border border-gray-200 h-[330px] overflow-y-auto">
                                             <h3 className="font-medium text-gray-800 mb-2 text-sm">Basic Details</h3>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <div className="flex flex-row items-center gap-4 col-span-2 mb-2">
@@ -1728,7 +1815,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                 </div>
                                                 <div className="col-span-2">
                                                     <DropdownInputNew
-                                                        name="Branch Category"
+                                                        name="Branch Type"
                                                         options={dropDownListObject(
                                                             id
                                                                 ? branchTypeData?.data
@@ -1739,7 +1826,6 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                             "id" || []
                                                         )}
                                                         value={branchTypeId}
-                                                        ref={countryNameRef}
                                                         openOnFocus={true}
                                                         setValue={(value) => {
                                                             setBranchTypeId(value)
@@ -1750,26 +1836,39 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         disabled={childRecord.current > 0 || !isBranch || !parentId}
                                                     />
                                                 </div>
+                                                {!isBranch && (
 
-                                                <div className="col-span-2">
-                                                    <TextInputNew1
-                                                        name={"name"}
-                                                        type="text"
-                                                        value={name}
-                                                        inputClass="h-8"
-                                                        ref={countryNameRef}
-                                                        setValue={setName}
-                                                        required={true}
-                                                        readOnly={readOnly}
-                                                        disabled={childRecord.current > 0}
-                                                        onBlur={(e) => {
-                                                            if (aliasName) return;
-                                                            setAliasName(e.target.value);
-                                                        }}
+                                                    <div className="col-span-2">
+                                                        <TextInputNew1
+                                                            name={"name"}
+                                                            type="text"
+                                                            value={name}
+                                                            inputClass="h-8"
+                                                            ref={countryNameRef}
+                                                            setValue={setName}
+                                                            required={true}
+                                                            readOnly={readOnly}
+                                                            disabled={childRecord.current > 0}
+                                                            onBlur={(e) => {
+                                                                if (aliasName) return;
+                                                                setAliasName(e.target.value);
+                                                            }}
 
-                                                        className="focus:ring-2 focus:ring-blue-100"
-                                                    />
-                                                </div>
+                                                            className="focus:ring-2 focus:ring-blue-100"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {isBranch && (
+                                                    <div className="col-span-2">
+
+                                                        <TextAreaNew name="Branch Name"
+                                                            inputClass="h-10" value={name}
+                                                            setValue={setName} required={true}
+                                                            readOnly={readOnly}
+                                                            isabled={(childRecord.current > 0)} />
+                                                    </div>
+                                                )}
                                                 {/* <div className="col-span-2">
                                                     <TextInputNew1
                                                         name="Alias Name"
@@ -2086,6 +2185,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         setValue={setGstNo}
                                                         readOnly={readOnly}
                                                         required={true}
+                                                        disabled={parentId || isBranch}
+
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
                                                     <TextInputNew
@@ -2103,7 +2204,6 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         value={cinNo}
                                                         setValue={setCinNo}
                                                         readOnly={readOnly}
-                                                        // disabled={childRecord.current > 0}
                                                         className="focus:ring-2 focus:ring-blue-100"
                                                     />
 

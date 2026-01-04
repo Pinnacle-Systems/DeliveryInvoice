@@ -1569,7 +1569,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
       setIsDropdownOpen(false);
       setIsListShow(false);
       setOpenModel(true);
-      setChildId(isChildid)
+      // setChildId(isChildid)
 
     };
 
@@ -1585,7 +1585,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
         <Modal
           isOpen={openModel}
           onClose={() => setOpenModel(false)}
-          widthClass="w-[90%] h-[90%]"
+          widthClass="w-[90%] h-[99%]"
         >
           <DynamicRenderer
             componentName={component}
@@ -1755,7 +1755,8 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
-                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
+                        // onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
+                        onClick={(e) => handleEdit(item.id,e)}
                         title="Edit Customer"
                       >
                         <FaEdit className="text-sm" />
@@ -2347,7 +2348,7 @@ export const ShowInvoicPendingCustomers = forwardRef(
         <Modal
           isOpen={openModel}
           onClose={() => setOpenModel(false)}
-          widthClass="w-[90%] h-[90%]"
+          widthClass="w-[90%] h-[99%]"
         >
           <DynamicRenderer
             componentName={component}

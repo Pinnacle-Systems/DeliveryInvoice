@@ -162,8 +162,14 @@ export default function Form() {
     }
   };
 
-  const handleDelete = async (id) => {
-
+  const handleDelete = async (id, childRecord) => {
+    if (childRecord) {
+      Swal.fire({
+        icon: "error",
+        title: "Child record Exists",
+      });
+      return;
+    }
     if (id) {
       if (!window.confirm("Are you sure to delete...?")) {
         return;

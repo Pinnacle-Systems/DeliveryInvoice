@@ -31,9 +31,10 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
     const gstSummary = {};
 
     poItems.forEach(item => {
-        const amount = item.qty * item.price;
+        const amount = item.invoiceQty * item.price;
         const tax = item?.Hsn?.tax
         const halfGst = tax / 2;
+
 
         if (!gstSummary[tax]) {
             gstSummary[tax] = {
@@ -43,15 +44,29 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                 sgstAmount: 0
             };
         }
+        console.log({
+            halfGst,
+            amount
+        },'halfGst')
 
         gstSummary[tax].cgstAmount += amount * (halfGst / 100);
         gstSummary[tax].sgstAmount += amount * (halfGst / 100);
     });
 
-    
+    const gstArray = Object.keys(gstSummary).map(tax => {
+        return {
+            taxRate: Number(tax),
+            cgstRate: gstSummary[tax].cgstRate,
+            sgstRate: gstSummary[tax].sgstRate,
+            cgstAmount: gstSummary[tax].cgstAmount,
+            sgstAmount: gstSummary[tax].sgstAmount,
+            totalTax: gstSummary[tax].cgstAmount + gstSummary[tax].sgstAmount
+        };
+    });
+
     const result = poItems.reduce(
         (acc, item) => {
-            const amount = item.qty * item.price;
+            const amount = item.invoiceQty * item.price;
             const tax = item?.Hsn?.tax
             const halfGst = tax / 2;
 
@@ -88,15 +103,20 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
     );
 
 
-
-    console.log(result, "result");
+  
+    console.log(gstArray, "gstArray");
+    console.log(result,'result')
     console.log(gstSummary, "gstSummary")
     const netAmount = Math.max(totalAmount - discountAmount, 0) + (parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst))
     const roundedNetAmount = Math.round(netAmount);
     const roundOff = Number((roundedNetAmount - netAmount).toFixed(2));
     const overallAmount = parseFloat(parseFloat(netAmount) + parseFloat(roundOff)).toFixed(2)
 
-
+ console.log({
+            netAmount,
+            totalAmount,
+            
+        },'netAmountnetAmount')
 
 
 
@@ -180,17 +200,33 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                             />
                         </td>
                     </tr>
-                    <tr className='h-7'>
-                        <td className="border border-gray-500">Tax Amount(CGST,SGST)</td>
-                        <td className="border border-gray-500" colSpan={2}
-                        >
-                            <input disabled type="text" name='value' className='h-7 w-full text-right'
-                                value={
-                                    parseFloat(result?.totalSgst) + parseFloat(result?.totalCgst)
-                                }
-                            />
-                        </td>
-                    </tr>
+                    {gstArray?.map(i => (
+                        <>
+                            <tr className='h-7'>
+                                <td className="border border-gray-500">CGST @{i.cgstRate}%</td>
+                                <td className="border border-gray-500" colSpan={2}
+                                >
+                                    <input disabled type="text" name='value' className='h-7 w-full text-right'
+                                        value=
+                                        {i.cgstAmount.toFixed(2)}
+
+                                    />
+                                </td>
+                            </tr>
+                            <tr className='h-7'>
+                                <td className="border border-gray-500">SGST @{i.sgstRate}%</td>
+                                <td className="border border-gray-500" colSpan={2}
+                                >
+                                    <input disabled type="text" name='value' className='h-7 w-full text-right'
+                                        value={i.sgstAmount.toFixed(2)}
+
+                                    />
+                                </td>
+                            </tr>
+                        </>
+
+                    ))}
+
                     <tr className='h-7'>
                         <td className="border border-gray-500">IGST Amount</td>
                         <td className="border border-gray-500" colSpan={2}
