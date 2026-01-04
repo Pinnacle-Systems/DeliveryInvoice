@@ -544,7 +544,7 @@ const InvoiceForm = ({
                                     searchTerm={supplierId}
                                     show={"isSupplier"}
                                     required={true}
-                                    disabled={id}
+                                    // disabled={id}
                                     ref={inputRef}
                                     nextRef={customerRef}
                                 />
