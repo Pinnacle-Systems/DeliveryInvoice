@@ -2222,6 +2222,8 @@ export const ShowInvoicPendingCustomers = forwardRef(
       disabled,
       show,
       id,
+      supplierId,
+      partyList
     },
 
     ref
@@ -2236,9 +2238,9 @@ export const ShowInvoicPendingCustomers = forwardRef(
       sessionStorage.getItem("sessionId") + "userId"
     );
 
-    const { data: partyList } = useGetPartyNewQuery({
-      params: { companyId, userId, isAddessCombined: true },
-    });
+    // const { data: partyList } = useGetPartyNewQuery({
+    //   params: { companyId, userId, isAddessCombined: true , id ,supplierId },
+    // });
 
     console.log(partyList, "partyList")
 

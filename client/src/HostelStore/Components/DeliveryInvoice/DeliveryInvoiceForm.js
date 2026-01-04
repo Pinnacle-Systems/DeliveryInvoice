@@ -14,7 +14,7 @@ import { useGetStyleItemMasterQuery } from "../../../redux/services/StyleItemMas
 import { useGetUomQuery } from "../../../redux/services/UomMasterService";
 import DeliveryChallanApi, { useAddDeliveryChallanMutation, useGetDeliveryChallanByIdQuery, useGetDeliveryChallanItemsQuery, useUpdateDeliveryChallanMutation } from "../../../redux/services/DeliveryChallanService";
 import Swal from "sweetalert2";
-import { useGetPartyByIdQuery } from "../../../redux/services/PartyMasterService";
+import partyMasterApi, { useGetPartyByIdQuery, useGetPartyNewQuery } from "../../../redux/services/PartyMasterService";
 import InvoiceItems from "./InvoiceItems";
 import Modal from "../../../UiComponents/Modal";
 import DeliveryItemsSelection from "./DeliveyItemsSelction";
@@ -31,6 +31,7 @@ import { groupBy } from "lodash";
 import { useGetTaxTermMasterQuery } from "../../../redux/services/TaxTermMasterServices";
 import { useDispatch } from "react-redux";
 import PopUp from "./Pop";
+import pageDetailsApi from "../../../redux/services/PageMasterService";
 
 const InvoiceForm = ({
     onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, supplierList, params, termsData, branchList, hsnData,
@@ -155,7 +156,9 @@ const InvoiceForm = ({
 
 
 
-
+    const { data: partyList } = useGetPartyNewQuery({
+        params: { companyId,  isAddessCombined: true, id, supplierId },
+    });
 
     const syncFormWithDb = useCallback((data) => {
 
@@ -196,7 +199,7 @@ const InvoiceForm = ({
         );
         setRemarks(data?.remarks || "");
         setTermsAndConditions(data?.termsandcondtions ? data?.termsandcondtions : "")
-        console.log(id,"iddddddddd")
+        console.log(id, "iddddddddd")
 
     }, [id]);
 
@@ -296,6 +299,7 @@ const InvoiceForm = ({
                     showConfirmButton: false,
                     timer: 2000
                 });
+                dispatch(partyMasterApi.util.invalidateTags(["Party"]));
                 dispatch(DeliveryChallanApi.util.invalidateTags(["DeliveryChallan"]));
 
                 // if (returnData.statusCode === 0) {
@@ -547,6 +551,9 @@ const InvoiceForm = ({
                                     // disabled={id}
                                     ref={inputRef}
                                     nextRef={customerRef}
+                                    id={id}
+                                    supplierId={supplierId}
+                                    partyList={partyList}
                                 />
 
 

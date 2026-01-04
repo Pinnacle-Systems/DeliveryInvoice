@@ -105,7 +105,7 @@ async function get(req) {
 }
 
 export async function getNew(req) {
-    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent, isAddessCombined } = req.query
+    const { companyId, active, isPartyOverAllReport, searchValue, partyId, startDate, endDate, isPartyLedgerReport, isPartyLedgerReportCus, isPartyPurchaseOverAllReport, isParent, isAddessCombined, id, supplierId } = req.query
     let data;
     data = await prisma.party.findMany({
         where: {
@@ -128,31 +128,38 @@ export async function getNew(req) {
 
     });
 
-    const filteredParties = data.filter(party => {
+    let filteredParties
+    if (supplierId) {
+        filteredParties = data.filter(party => party.id == supplierId);
+    } else {
+        filteredParties = data.filter(party => {
 
-        const deliveryQty = party.Supplier.reduce((partySum, supplier) => {
-            const supplierQty = supplier.DeliveryChallanItems.reduce(
-                (sum, item) => sum + (item.qty || 0),
-                0
-            );
-            return partySum + supplierQty;
-        }, 0);
+            const deliveryQty = party.Supplier.reduce((partySum, supplier) => {
+                const supplierQty = supplier.DeliveryChallanItems.reduce(
+                    (sum, item) => sum + (item.qty || 0),
+                    0
+                );
+                return partySum + supplierQty;
+            }, 0);
 
-        const invoiceQty = party.DeliveryInvoice.reduce((partySum, invoice) => {
-            const invoiceItemQty = invoice.DeliveryInvoiceItems.reduce(
-                (sum, item) => sum + (item.invoiceQty || 0),
-                0
-            );
-            return partySum + invoiceItemQty;
-        }, 0);
+            const invoiceQty = party.DeliveryInvoice.reduce((partySum, invoice) => {
+                const invoiceItemQty = invoice.DeliveryInvoiceItems.reduce(
+                    (sum, item) => sum + (item.invoiceQty || 0),
+                    0
+                );
+                return partySum + invoiceItemQty;
+            }, 0);
 
-        console.log({
-            deliveryQty,
-            invoiceQty
-        }, "invoiceQty")
+            console.log({
+                deliveryQty,
+                invoiceQty
+            }, "invoiceQty")
 
-        return deliveryQty > invoiceQty;
-    });
+            return deliveryQty > invoiceQty;
+        });
+    }
+
+
     return { statusCode: 0, data: filteredParties };
 
 }
@@ -343,7 +350,7 @@ async function update(id, body) {
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
         alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode,
-        branchTypeId, parentId ,isBranch
+        branchTypeId, parentId, isBranch
     } = await body
 
 
