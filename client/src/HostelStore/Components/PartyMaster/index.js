@@ -112,7 +112,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
         companyId,
         // isParent: true
     };
-    const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } =  useGetCityQuery({ params });
+    const { data: cityList, isLoading: cityLoading, isFetching: cityFetching } = useGetCityQuery({ params });
     const { data: branchTypeData } = useGetbranchTypeQuery({});
 
 
@@ -133,8 +133,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
 
-
     const syncFormWithDb = useCallback((data) => {
+        console.log(data, 'datadata')
 
         setPanNo(data?.panNo ? data?.panNo : "");
         setName(data?.name ? data?.name : "");
@@ -181,7 +181,9 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setPartyCode(data?.partyCode ? data?.partyCode : "")
         setIsBranch(data?.isBranch ? data?.isBranch : false)
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
-
+        // setParentId(data?.parentId ? data?.parentId : "")
+        setBranchTypeId(data?.branchTypeId ? data?.branchTypeId : "")
+        setIsBranch(data?.isBranch ? data?.isBranch : "")
 
     }, [id]);
 
@@ -193,21 +195,24 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
 
-      const {
+    const {
         data: singleBranchData,
         isFetching: singleBranchFetching,
         isLoading: singleBranchLoading,
-      } = useGetPartyBranchByIdQuery(parentId, { skip: !parentId });
+    } = useGetPartyBranchByIdQuery(parentId, { skip: !parentId });
 
+    console.log(singleData, "iddd", singleBranchData)
 
     const syncFormWithDbNew = useCallback((data) => {
 
-        
+
         setPanNo(data?.panNo ? data?.panNo : "");
-        setAliasName(data?.aliasName ? data?.aliasName : "");
+        // setAliasName(data?.aliasName ? data?.aliasName : "");
+        // setlandMark(data?.landMark ? data?.landMark : '')
+        // setCity(data?.cityId ? data?.cityId : "");
+        // setPincode(data?.pincode ? data?.pincode : "");
 
         setDisplayName(data?.displayName ? data?.displayName : "");
-        setAddress(data?.address ? data?.address : "");
         setTinNo(data?.tinNo ? data?.tinNo : "");
         setCstNo(data?.cstNo ? data?.cstNo : "");
         setCinNo(data?.cinNo ? data?.cinNo : "");
@@ -216,26 +221,23 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setCoa(data?.coa ? data?.coa : "");
         setSoa(data?.soa ? data?.soa : "")
 
-        setContactPersonName(data?.contactPersonName ? data?.contactPersonName : "");
+        // setContactPersonName(data?.contactPersonName ? data?.contactPersonName : "");
         setGstNo(data?.gstNo ? data?.gstNo : "");
         setCostCode(data?.costCode ? data?.costCode : "");
         setCstDate(data?.cstDate ? moment.utc(data?.cstDate).format('YYYY-MM-DD') : "");
         setCode(data?.code ? data?.code : "");
-        setPincode(data?.pincode ? data?.pincode : "");
         setWebsite(data?.website ? data?.website : "");
         setEmail(data?.email ? data?.email : "");
-        setCity(data?.cityId ? data?.cityId : "");
         setIsSupplier((data?.isSupplier ? data.isSupplier : false));
         setIsCustomer((data?.isCustomer ? data.isCustomer : true));
-        setActive(id ? (data?.active ? data.active : false) : true);
+        // setActive(id ? (data?.active ? data.active : false) : true);
         setContactMobile((data?.contactMobile ? data.contactMobile : ''));
-        setlandMark(data?.landMark ? data?.landMark : '')
         setContact(data?.contact ? data?.contact : '')
-        setDesignation(data?.designation ? data?.designation : "")
-        setDepartment(data?.department ? data?.department : "")
-        setContactPersonEmail(data?.contactPersonEmail ? data?.contactPersonEmail : "")
-        setContactNumber(data?.contactNumber ? data?.contactNumber : "")
-        setAlterContactNumber(data?.alterContactNumber ? data?.alterContactNumber : "")
+        // setDesignation(data?.designation ? data?.designation : "")
+        // setDepartment(data?.department ? data?.department : "")
+        // setContactPersonEmail(data?.contactPersonEmail ? data?.contactPersonEmail : "")
+        // setContactNumber(data?.contactNumber ? data?.contactNumber : "")
+        // setAlterContactNumber(data?.alterContactNumber ? data?.alterContactNumber : "")
         setBankName(data?.bankname ? data?.bankname : "")
         setBankBranchName(data?.bankBranchName ? data?.bankBranchName : "")
         setAccountNumber(data?.accountNumber ? data?.accountNumber : "")
@@ -244,15 +246,16 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setMsmeNo(data?.msmeNo ? data?.msmeNo : "")
         setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
         setPartyCode(data?.partyCode ? data?.partyCode : "")
+        // setParentId(data?.parentId ? data?.parentId : "")
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
 
-    }, [id]);
+    }, [parentId]);
 
 
-      
+
     useEffect(() => {
-        syncFormWithDb(singleBranchData?.data);
+        syncFormWithDbNew(singleBranchData?.data);
     }, [singleBranchFetching, singleBranchLoading, parentId, syncFormWithDbNew, singleBranchData]);
 
 
@@ -263,7 +266,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
         active, companyId, coa: coa ? coa : "", soa,
         id, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode
+        bankBranchName, accountNumber, ifscCode, attachments: attachments?.filter(i => i.name), msmeNo, companyAlterNumber, partyCode, parentId, isBranch, branchTypeId
     }
 
     const validateData = (data) => {
@@ -379,7 +382,28 @@ export default function Form({ partyId, onCloseForm, childId }) {
         }
     }, [form]);
     const saveData = (nextProcess) => {
-
+        if (isBranch) {
+            if (!parentId) {
+                Swal.fire({
+                    text: `Choose  the Parent Customer/supplier `,
+                    icon: "warning",
+                    customClass: {
+                        popup: 'swal-custom-height'
+                    }
+                });
+                return false;
+            }
+            if (!branchTypeId) {
+                Swal.fire({
+                    text: `Choose the Branch Type`,
+                    icon: "warning",
+                    customClass: {
+                        popup: 'swal-custom-height'
+                    }
+                });
+                return false;
+            }
+        }
 
         if (!validateData(data)) {
             Swal.fire({
@@ -596,7 +620,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
             header: reportName,
             accessor: (item) => item?.name,
             //   cellClass: () => "font-medium text-gray-900",
-            className: "font-medium text-gray-900 text-left uppercase w-72",
+            className: "font-medium text-gray-900 text-left uppercase w-2/4",
         },
 
 
@@ -1425,6 +1449,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                     setForm(true);
                                     onNew();
                                     syncFormWithDb(undefined)
+                                    syncFormWithDbNew(undefined)
                                 }}
                                 className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
                             >
@@ -1511,6 +1536,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
                         widthClass={"w-[90%] h-[99%]"}
                         onClose={() => {
                             setForm(false);
+                            // syncFormWithDb(undefined)
+                            // syncFormWithDbNew(undefined)
                         }}
                     >
 
@@ -1675,15 +1702,21 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         name="Customer/supplier"
                                                         options={dropDownListObject(
                                                             id
-                                                                ? allData?.data
+                                                                ? allData?.data?.filter(i => i.id != id && !i.parentId)
                                                                 : allData?.data?.filter(
-                                                                    (item) => item.active
+                                                                    (item) => item.active && item.id != id && !item.parentId
                                                                 ),
                                                             "name",
                                                             "id"
                                                         )}
                                                         value={parentId}
-                                                        setValue={setParentId}
+                                                        setValue={(value) => {
+                                                            console.log(value, "value")
+                                                            setParentId(value)
+                                                            setName(findFromList(value, allData?.data, "name"))
+
+                                                        }}
+                                                        // setValue={setParentId}
                                                         readOnly={readOnly}
                                                         required={true}
                                                         disabled={childRecord.current > 0 || !isBranch}
@@ -1710,12 +1743,11 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         openOnFocus={true}
                                                         setValue={(value) => {
                                                             setBranchTypeId(value)
-                                                            setName(findFromList(parentId, allData?.data, "name"))
 
                                                         }}
                                                         required={true}
                                                         readOnly={readOnly}
-                                                        disabled={childRecord.current > 0 || !isBranch}
+                                                        disabled={childRecord.current > 0 || !isBranch || !parentId}
                                                     />
                                                 </div>
 

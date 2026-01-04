@@ -357,6 +357,8 @@ model Party {
   updatedById          Int?
   isSupplier           Boolean?          @default(false)
   isCustomer           Boolean?          @default(false)
+
+  isBranch             Boolean?          @default(false)
   landMark             String?
   contact              String?
   designation          String?

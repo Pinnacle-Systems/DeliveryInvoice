@@ -279,7 +279,7 @@ async function create(body) {
         gstNo, currencyId, costCode, soa, coa,
         companyId, active, userId,
         landMark, contact, designation, department, contactPersonEmail, contactNumber, alterContactNumber, bankname,
-        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, parentId, branchTypeId
+        bankBranchName, accountNumber, ifscCode, attachments, msmeNo, companyAlterNumber, partyCode, parentId, branchTypeId, isBranch
     } = await body
     console.log(body, 'body')
 
@@ -289,6 +289,8 @@ async function create(body) {
                 name, code, aliasName, displayName, address,
                 isSupplier: isSupplier ? JSON.parse(isSupplier) : false,
                 isCustomer: isCustomer ? JSON.parse(isCustomer) : false,
+                isBranch: isBranch ? JSON.parse(isBranch) : false,
+
                 cityId: cityId ? parseInt(cityId) : undefined, pincode: pincode ? parseInt(pincode) : undefined,
                 panNo, tinNo, cstNo, cstDate: cstDate ? new Date(cstDate) : undefined,
                 cinNo, faxNo, email, website, contactPersonName,
@@ -340,8 +342,8 @@ async function update(id, body) {
         cinNo, faxNo, email, website, contactPersonName, contactMobile,
         gstNo, coa, soa,
         companyId, active, userId, landMark, contact, designation, department, contactPersonEmail, contactNumber,
-        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode ,
-        branchTypeId , parentId
+        alterContactNumber, bankname, bankBranchName, accountNumber, ifscCode, msmeNo, attachments, companyAlterNumber, partyCode,
+        branchTypeId, parentId ,isBranch
     } = await body
 
 
@@ -395,6 +397,7 @@ async function update(id, body) {
             partyCode: partyCode ? partyCode : "",
             branchTypeId: branchTypeId ? parseInt(branchTypeId) : undefined,
             parentId: parentId ? parentId : undefined,
+            isBranch: isBranch ? JSON.parse(isBranch) : false,
 
 
             attachments: {
