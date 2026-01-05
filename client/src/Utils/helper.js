@@ -1,5 +1,6 @@
 import moment from "moment";
 import secureLocalStorage from "react-secure-storage";
+import { toWords } from "number-to-words";
 
 export function generateSessionId(length = 8) {
   let result = '';
@@ -237,7 +238,8 @@ export const getCommonParams = () => ({
     sessionStorage.getItem("sessionId") + "userId"
   ),
   finYearId: secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'currentFinYear'),
-  token: `Bearer ${secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'token')} `})
+  token: `Bearer ${secureLocalStorage.getItem(sessionStorage.getItem("sessionId") + 'token')} `
+})
 
 export function isGridDatasValid(datas, isRequiredAllData, mandatoryFields = []) {
   console.log(mandatoryFields, "mandatory fields", datas, isRequiredAllData, "isRequiredAllData");
@@ -290,4 +292,19 @@ export function renameFile(originalFile) {
     lastModified: originalFile.lastModified,
   });
   return file;
+}
+
+export function amountInWords(amount) {
+  const rupees = Math.floor(amount);
+  const paise = Math.round((amount - rupees) * 100);
+
+  console.log(amount,"amount",rupees,"rupees","paise",paise)
+
+  let words = `Rupees ${toWords(rupees)}`;
+
+  if (paise > 0) {
+    words += ` and Paise ${toWords(paise)}`;
+  }
+
+  return words + " Only";
 }

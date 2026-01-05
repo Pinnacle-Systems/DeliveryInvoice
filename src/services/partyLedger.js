@@ -407,7 +407,7 @@ txns AS (
     -- 🔹 PAYMENT (CREDIT)
     SELECT
         docId AS transactionId,
-        createdAt AS txnDate,
+        cvv AS txnDate,
         'PAYMENT' AS txnType,
         0 AS debit,
         totalAmount AS credit
