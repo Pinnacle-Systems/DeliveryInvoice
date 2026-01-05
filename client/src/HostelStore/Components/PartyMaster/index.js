@@ -201,13 +201,17 @@ export default function Form({ partyId, onCloseForm, childId }) {
         data: singleBranchData,
         isFetching: singleBranchFetching,
         isLoading: singleBranchLoading,
-    } = useGetPartyBranchByIdQuery(parentId, { skip: id || !branchId });
+    } = useGetPartyBranchByIdQuery(parentId, {
+        skip: id
+    });
 
-    console.log(singleData, "iddd", singleBranchData)
+    console.log(id, "iddd", !branchId)
 
     const syncFormWithDbNew = useCallback((data) => {
 
-        if (id) return
+        if (!parentId) return
+
+        console.log("HJittttttt")
 
         setPanNo(data?.panNo ? data?.panNo : "");
         // setAliasName(data?.aliasName ? data?.aliasName : "");
@@ -427,23 +431,52 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
         let foundItem;
-        if (id) {
-            foundItem = allData?.data
-                ?.filter((i) => i.id != id)
-                ?.some((item) => item?.parentId && item.name == name && item.gstNo == gstNo);
-        } else {
-            foundItem = allData?.data?.some((item) => item?.parentId && item.name == name && item.gstNo == gstNo);
+
+        if (isBranch) {
+            if (id) {
+                foundItem = allData?.data
+                    ?.filter((i) => i.id != id)
+                    ?.some((item) => item.branchTypeId == branchTypeId && item.parentId == parentId);
+            } else {
+                foundItem = allData?.data?.some((item) => item.branchTypeId == branchTypeId && item.parentId == parentId);
+            }
         }
-        if (foundItem) {
-            Swal.fire({
-                text: `The ${isSupplier ? "Branch" : "Branch"} name is already  exists `,
-                icon: "warning",
-                customClass: {
-                    popup: 'swal-custom-height'
-                }
-            });
-            return false;
+        else {
+            if (id) {
+                foundItem = allData?.data
+                    ?.filter((i) => i.id != id)
+                    ?.some((item) => item.name == name && item.gstNo == gstNo);
+            } else {
+                foundItem = allData?.data?.some((item) => item.name == name && item.gstNo == gstNo);
+            }
         }
+
+
+        if (isBranch) {
+            if (foundItem) {
+                Swal.fire({
+                    text: `The Branch name is already  exists `,
+                    icon: "warning",
+                    customClass: {
+                        popup: 'swal-custom-height'
+                    }
+                });
+                return false;
+            }
+        }
+        else {
+            if (foundItem) {
+                Swal.fire({
+                    text: `The ${isSupplier ? "Supplier" : "Customer"} name is already  exists `,
+                    icon: "warning",
+                    customClass: {
+                        popup: 'swal-custom-height'
+                    }
+                });
+                return false;
+            }
+        }
+
 
 
         if (!window.confirm("Are you sure save the details ...?")) {
@@ -1557,7 +1590,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                 onClick={() => {
                                     setForm(true);
                                     onNew();
-                                    syncFormWithDb(undefined)
+                                    // syncFormWithDb(undefined)
                                     // syncFormWithDbNew(undefined)
                                     setParentId("")
                                 }}

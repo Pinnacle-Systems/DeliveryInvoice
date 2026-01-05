@@ -155,53 +155,53 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                     <table className="w-full border-collapse table-fixed ">
                         <thead className="text-gray-800 bg-gray-200">
                             <tr>
-                                <th className="w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className=" sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     S.No
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0  z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Dc No
                                 </th>
 
-                                <th className="w-32 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 w-32 z-10 bg-gray-200 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Style No
                                 </th>
 
-                                <th className="w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Item
                                 </th>
-                                <th className="w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Hsn
                                 </th>
-                                <th className="w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Color
                                 </th>
 
-                                <th className="w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className= "sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     No of Box
                                 </th>
 
-                                <th className="w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     UOM
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Delivery Qty
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Balance Delivery Qty
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Qty <span className="text-red-500">*</span>
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Price <span className="text-red-500">*</span>
                                 </th>
 
-                                <th className="w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Gross Amount
                                 </th>
 
