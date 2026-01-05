@@ -747,14 +747,14 @@ const DeliveryInvoice = ({
               </Text>
 
               <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
-                {row?.price ? (Number(row?.price)).toFixed(3) : ""}
+                {row?.price ? (Number(row?.price)).toFixed(2) : ""}
               </Text>
 
               <Text style={[styles.td, { flex: 2.5, textAlign: "right" }]}>
                 {row?.invoiceQty * row?.price ? (
                   (Number(row?.invoiceQty) || 0) *
                   (Number(row?.price) || 0)
-                ).toFixed(3) : ''}
+                ).toFixed(2) : ''}
               </Text>
 
 
@@ -807,7 +807,7 @@ const DeliveryInvoice = ({
             <Text style={[{
               flex: 2.5, textAlign: "right", fontSize: 8, borderRight: "1 solid #000", padding: 3,
             }]}>
-              {parseFloat(totalAmount).toFixed(3)}
+              {parseFloat(totalAmount).toFixed(2  )}
             </Text>
 
 
@@ -843,7 +843,7 @@ const DeliveryInvoice = ({
                   padding: 3,
                 }}
               >
-                {parseFloat(totalAmount).toFixed(3)}
+                {parseFloat(totalAmount).toFixed(2)}
 
               </Text>
             </View>
