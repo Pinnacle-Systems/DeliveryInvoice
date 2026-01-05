@@ -20,6 +20,9 @@ const PartyOverAllLedger = () => {
         }
     });
     const partyList = data?.data || [];
+
+    console.log(partyList, "partyList");
+
     const dispatch = useDispatch();
     return (
         <>
@@ -78,7 +81,11 @@ const PartyOverAllLedger = () => {
                             </td> */}
                                 <td className="table-data">
                                     <div className='flex items-center justify-center'>
-                                        {party?.outstandingAmount  ?  parseFloat(party?.outstandingAmount).toFixed(2)  : (0.000.toFixed(2))}
+                                        {/* {party?.outstandingAmount  ?  parseFloat(party?.outstandingAmount).toFixed(2)  : (0.000.toFixed(2))} */}
+                                        {Number(party?.outstandingAmount || 0).toLocaleString("en-IN", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
                                     </div>
                                 </td>
                                 <td className="table-data">
@@ -86,7 +93,7 @@ const PartyOverAllLedger = () => {
                                         dispatch(push({
                                             name: "CUSTOMER LEDGER",
                                             previewId: party.id,
-                                            date : startDate
+                                            date: startDate
                                         }))
                                     }}>
                                         {VIEW}
