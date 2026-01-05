@@ -181,8 +181,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setPartyCode(data?.partyCode ? data?.partyCode : "")
         setIsBranch(data?.isBranch ? data?.isBranch : false)
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
-        console.log( data?.childRecord," data?.childRecord");
-        
+
         setParentId(data?.parentId ? data?.parentId : "")
         setBranchTypeId(data?.branchTypeId ? data?.branchTypeId : "")
         setIsBranch(data?.isBranch ? data?.isBranch : "")
@@ -195,18 +194,20 @@ export default function Form({ partyId, onCloseForm, childId }) {
         syncFormWithDb(singleData?.data);
     }, [isSingleFetching, isSingleLoading, id, syncFormWithDb, singleData]);
 
+    console.log(childRecord, " data?.childRecord");
 
 
     const {
         data: singleBranchData,
         isFetching: singleBranchFetching,
         isLoading: singleBranchLoading,
-    } = useGetPartyBranchByIdQuery(parentId, { skip: !parentId });
+    } = useGetPartyBranchByIdQuery(parentId, { skip: id || !branchId });
 
     console.log(singleData, "iddd", singleBranchData)
 
     const syncFormWithDbNew = useCallback((data) => {
 
+        if (id) return
 
         setPanNo(data?.panNo ? data?.panNo : "");
         // setAliasName(data?.aliasName ? data?.aliasName : "");
@@ -249,7 +250,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setCompanyAlterNumber(data?.companyAlterNumber ? data?.companyAlterNumber : "")
         setPartyCode(data?.partyCode ? data?.partyCode : "")
         // setParentId(data?.parentId ? data?.parentId : "")
-        childRecord.current = data?.childRecord ? data?.childRecord : 0;
+        // childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
 
     }, [parentId]);
@@ -423,7 +424,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                 ?.filter((i) => i.id != id)
                 ?.some((item) => item?.parentId && item.name == name && item.gstNo == gstNo);
         } else {
-            foundItem = allData?.data?.some((item) =>item?.parentId && item.name == name && item.gstNo == gstNo);
+            foundItem = allData?.data?.some((item) => item?.parentId && item.name == name && item.gstNo == gstNo);
         }
         if (foundItem) {
             Swal.fire({
@@ -447,7 +448,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
             handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     }
-console.log(childRecord,"childRecord");
+    console.log(childRecord, "childRecord");
 
 
     const deleteData = async (id, childRecord) => {
@@ -1881,7 +1882,7 @@ console.log(childRecord,"childRecord");
                                                             inputClass="h-10" value={name}
                                                             setValue={setName} required={true}
                                                             readOnly={readOnly}
-                                                            isabled={(childRecord.current > 0)} />
+                                                            disabled={(childRecord.current > 0)} />
                                                     </div>
                                                 )}
                                                 {/* <div className="col-span-2">

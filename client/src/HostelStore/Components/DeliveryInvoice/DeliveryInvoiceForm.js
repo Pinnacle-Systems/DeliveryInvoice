@@ -815,7 +815,7 @@ const InvoiceForm = ({
 
 
                 </div> */}
-                <div className="grid grid-cols-9 gap-3">
+                <div className="grid grid-cols-10 gap-3">
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-3">
                         <div className="w-56">
@@ -870,7 +870,7 @@ const InvoiceForm = ({
                     </div>
 
 
-                    {/* <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-1    ">
                         <h2 className="font-bold text-slate-800 mb-2 text-base">
                             Tax Summary
                         </h2>
@@ -882,24 +882,22 @@ const InvoiceForm = ({
                             }}>
                             View Tax Summary
                         </button>
-                    </div> */}
+                    </div>
 
-                    <div className="border border-slate-200 bg-white rounded-md shadow-sm p-5 space-y-2">
+                    <div className="border border-slate-200 bg-white rounded-md shadow-sm p-1 col-span-2">
 
-                        <div className="flex justify-between text-sm ">
-                            <span className="text-md text-slate-700" >Gross Amount</span>
-                            <span className="text-sm text-slate-700 ">{totalAmount.toFixed(2)}</span>
+                        <div className="flex justify-between  font-semibold">
+                            <span className="font-bold text-slate-700 bord mb-1" >Total Gross Amount</span>
+                            <span className="font-bold text-slate-700 bord mb-1">{totalAmount.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm ">
-                            <span className="text-md text-slate-700">Tax Amount</span>
-                            <span className="text-sm text-slate-700 "> </span>
+                        <div className="flex justify-between  font-semibold">
+                            <span className="font-bold text-slate-700 bord mb-1">Tax Amount</span>
+                            <span className="font-bold text-slate-700 bord mb-1">{result?.overallTax?.toFixed(2)} </span>
                         </div>
-                        <div className="flex justify-between text-sm h-5 ">
-
-                        </div>
-                        <div className="flex justify-between border-t pt-2 font-semibold">
-                            <span className="font-medium text-slate-700 mb-2 text-base ">Net Amount</span>
-                            <span className="" >{netAmount.toFixed(2)}</span>
+                    
+                        <div className="flex justify-between  font-semibold">
+                            <span className="font-bold text-slate-700 bord mb-1 ">Net Amount</span>
+                            <span className="font-bold text-slate-700 bord mb-1" >{netAmount.toFixed(2)}</span>
                         </div>
                     </div>
 

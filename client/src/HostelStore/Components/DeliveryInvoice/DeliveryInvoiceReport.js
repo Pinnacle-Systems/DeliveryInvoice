@@ -201,17 +201,17 @@ const DeliveryInvoiceFormReport = ({
                   <th className=" px-3  font-medium text-[13px]  text-gray-900  text-center w-32">
                     <div>Invoice No</div>
                   </th>
-          
+
                   <th className=" px-3  font-medium text-[13px]  text-gray-900  text-center w-32">
                     <div>Invoice Date</div>
                   </th>
-        
+
 
 
                   <th className="w-96  px-3   font-medium text-[13px] text-gray-900  text-center ">
                     <div>Customer</div>
                   </th>
-     
+
                   <th className="w-14   px-3  font-medium text-[13px]  text-gray-900  text-center ">
                     <div>Actions</div>
 
@@ -300,7 +300,11 @@ const DeliveryInvoiceFormReport = ({
                       </td>
 
 
-                      <td className="py-1.5 text-left"> {dataObj?.Party?.name}</td>
+                      <td className="py-1.5 text-left"> {`${dataObj?.Party?.name}${dataObj?.Party?.BranchType?.name
+                        ? ` / ${dataObj.Party.BranchType.name}`
+                        : ""
+                        }${dataObj?.Party?.City?.name ? ` / ${dataObj.Party.City.name}` : ""}`}
+                      </td>
                       {rowActions && (
                         <td className=" w-[30px] border-gray-200 gap-1 px-2   h-8 justify-end">
                           <div className="flex">

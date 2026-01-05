@@ -83,7 +83,7 @@ async function get(req) {
                     Supplier: true
                 }
             },
-            BranchType:true
+            BranchType: true
         }
 
     });
@@ -94,7 +94,9 @@ async function get(req) {
     if (isAddessCombined) {
         data = data?.filter(i => i.isCustomer).map(i => ({
             ...i,
-            name: `${i.name} ${" "}  ${i?.BranchType?.name ? ("/" + i?.BranchType?.name) : ""} / ${" "} ${i.City?.name ?? ""}`
+            name: `${i.name}${i?.BranchType?.name ? ` / ${i.BranchType.name}` : ""
+                }${i?.City?.name ? ` / ${i.City.name}` : ""}`
+
         }))
     }
     return {
@@ -120,6 +122,16 @@ export async function getNew(req) {
                     DeliveryChallanItems: true
                 }
             },
+            BranchType: {
+                select: {
+                    name: true
+                }
+            },
+            City: {
+                select: {
+                    name: true
+                }
+            },
             DeliveryInvoice: {
                 select: {
                     DeliveryInvoiceItems: true
@@ -130,7 +142,7 @@ export async function getNew(req) {
     });
 
     let filteredParties
-    if (supplierId) {
+    if (supplierId && id) {
         filteredParties = data.filter(party => party.id == supplierId);
     } else {
         filteredParties = data.filter(party => {
@@ -160,7 +172,12 @@ export async function getNew(req) {
         });
     }
 
-
+    if (isAddessCombined) {
+        filteredParties = filteredParties?.filter(i => i.isCustomer).map(i => ({
+            ...i,
+            name: `${i.name} ${" "}  ${i?.BranchType?.name ? ("/" + i?.BranchType?.name) : ""} / ${" "} ${i.City?.name ?? ""}`
+        }))
+    }
     return { statusCode: 0, data: filteredParties };
 
 }
