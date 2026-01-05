@@ -211,7 +211,7 @@ const DeliveryItems = ({
             </Modal>
             <div className="border border-slate-200 px-1 py-1 bg-white rounded-md shadow-sm max-h-[480px] overflow-auto">
                 <div className="flex justify-between items-center ">
-                    <h2 className="font-bold text-slate-700">List Of  DeliveryItems</h2>
+                    <h2 className="font-bold text-slate-700">List Of  Delivery Items</h2>
                     <button className="font-bold text-slate-700 bord"
 
                     >
@@ -587,9 +587,11 @@ const DeliveryItems = ({
                                         {index + 1}
                                     </td>
 
-                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                    <td className="py-0.5  border border-gray-300  focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px] text-[11px]">
                                         <select
-                                            className="w-full rounded py-0.5  table-data-input"
+                                            className="w-full rounded py-0.5 focus:outline-none focus:border-transparent"
                                             value={row.styleId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "styleId")}
                                             disabled={readOnly}
@@ -601,9 +603,11 @@ const DeliveryItems = ({
                                         </select>
                                     </td>
 
-                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                    <td className="py-0.5 border border-gray-300 focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px] text-[11px]">
                                         <select
-                                            className="w-full rounded py-0.5  table-data-input "
+                                            className="w-full rounded py-0.5  focus:outline-none focus:border-transparent "
                                             value={row.styleItemId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "styleItemId")}
                                             disabled={!row.styleId || readOnly}
@@ -615,10 +619,12 @@ const DeliveryItems = ({
                                         </select>
                                     </td>
 
-                                    <td className="py-0.5 border border-gray-300 text-[11px] text-right">
+                                    <td className="py-0.5 border border-gray-300 text-[11px] focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px] text-right">
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "hsnId") } }}
-                                            tabIndex={"0"} className='text-left w-full rounded py-0.5 table-data-input'
+                                            tabIndex={"0"} className='text-left w-full rounded py-0.5 focus:outline-none focus:border-transparent'
                                             value={row.styleItemId ? row.hsnId : ""}
                                             onChange={(e) => handleInputChange(e.target.value, index, "hsnId")}
                                             onBlur={(e) => {
@@ -637,9 +643,11 @@ const DeliveryItems = ({
                                         </select>
                                     </td>
 
-                                    <td className="py-0.5 border border-gray-300 text-[11px]">
+                                    <td className="py-0.5 border border-gray-300 text-[11px] focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px]">
                                         <select
-                                            className="w-full rounded py-0.5 table-data-input"
+                                            className="w-full rounded py-0.5 focus:outline-none focus:border-transparent"
                                             value={row.colorId}
                                             onChange={(e) => handleInputChange(e.target.value, index, "colorId")}
                                             disabled={!row.styleItemId || readOnly}
@@ -652,7 +660,9 @@ const DeliveryItems = ({
                                     </td>
 
 
-                                    <td className=" border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs">
+                                    <td className=" border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px]">
                                         <input
                                             className=" rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right "
                                             type="number"
@@ -698,10 +708,12 @@ const DeliveryItems = ({
 
 
 
-                                    <td className="w-12 border border-gray-300 text-[11px] py-0.5">
+                                    <td className="w-12 border border-gray-300 text-[11px] py-0.5 focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px]">
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "uomId") } }}
-                                            className='text-left w-full rounded py-0.5 table-data-input'
+                                            className='text-left w-full rounded py-0.5 focus:outline-none focus:border-transparent'
                                             value={row.colorId? row.uomId : ""}
                                             onChange={(e) => handleInputChange(e.target.value, index, "uomId")}
                                             onBlur={(e) => {
@@ -722,7 +734,9 @@ const DeliveryItems = ({
                                         </select>
                                     </td>
 
-                                    <td className="border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs">
+                                    <td className="border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs  focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px]">
                                         <input
                                             className="rounded px-1 ml-2 w-full py-0.5 text-xs focus:outline-none text-right"
                                             type="number"
@@ -767,7 +781,7 @@ const DeliveryItems = ({
                                     </td>
 
 
-                                    <td className="flex justify-center items-center py-0.5">
+                                    <td className="flex justify-center items-center py-0.5 ">
                                         <button
                                             onClick={() => addNewRow(index)}
                                             onKeyDown={(e) => {
