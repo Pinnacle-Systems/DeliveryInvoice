@@ -467,67 +467,74 @@ export async function getPartyOverAllReport(searchPartyName, date) {
 
     const DateFormatted = moment(date).format("YYYY-MM-DD");
 
+
     //     const sql = `
+    // SELECT
+    //     p.id,
+    //     p.name,
 
-    // 	SELECT
-    // 		p.id,
-    // 		p.name,
+    //     -- Opening balance
+    //     COALESCE(p.coa, 0) AS openingBalance,
 
-    // 		-- Opening balance
-    // 		COALESCE(p.coa, 0) AS openingBalance,
+    //     -- Ledger amount (all previous + selected date)
+    //     COALESCE(l.ledgerAmount, 0) AS ledgerAmount,
 
-    // 		-- Ledger amount
-    // 		COALESCE(l.ledgerAmount, 0) AS ledgerAmount,
+    //     -- Paid amount (all previous + selected date)
+    //     COALESCE(pay.paidAmount, 0) AS paidAmount,
 
-    // 		-- Paid amount
-    // 		COALESCE(pay.paidAmount, 0) AS paidAmount,
+    //     -- Outstanding = Opening + Ledger - Payment
+    //     (
+    //         COALESCE(p.coa, 0)
+    //         + COALESCE(l.ledgerAmount, 0)
+    //         - COALESCE(pay.paidAmount, 0)
+    //     ) AS outstandingAmount
 
-    // 		-- Outstanding calculation
-    // 		(
-    // 			COALESCE(l.ledgerAmount, 0)
-    // 			+ COALESCE(p.coa, 0)
-    // 			- COALESCE(pay.paidAmount, 0)
-    // 		) AS outstandingAmount
+    // FROM party p
 
-    // 	FROM party p
+    // -- 🔹 Ledger (all invoices till selected date)
+    // LEFT JOIN (
+    //     SELECT
+    //         partyId,
+    //         SUM(amount) AS ledgerAmount
+    //     FROM Ledger
+    //     WHERE creditOrDebit = 'Credit'
+    //       AND createdAt < DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
+    //     GROUP BY partyId
+    // ) l ON p.id = l.partyId
 
-    // 	LEFT JOIN (
-    // 		SELECT
-    // 			partyId,
-    // 			SUM(amount) AS ledgerAmount
-    // 		FROM Ledger
-    // 		WHERE creditOrDebit = 'Credit'
-    // 		GROUP BY partyId
-    // 	) l ON p.id = l.partyId
+    // -- 🔹 Payment (all payments till selected date)
+    // LEFT JOIN (
+    //     SELECT
+    //         partyId,
+    //         SUM(totalAmount) AS paidAmount
+    //     FROM Payment
+    //     WHERE cvv < DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
+    //     GROUP BY partyId
+    // ) pay ON p.id = pay.partyId
 
-    // 	LEFT JOIN (
-    // 		SELECT
-    // 			partyId,
-    // 			SUM(totalAmount) AS paidAmount
-    // 		FROM Payment
-    // 		WHERE DATE(createdAt) <= '${DateFormatted}'
-    // 		GROUP BY partyId
-    // 	) pay ON p.id = pay.partyId
-
-    // 	WHERE p.name LIKE '%${searchPartyName}%'
-    // 	ORDER BY p.name;
+    // WHERE p.name LIKE '%${searchPartyName}%'
+    // ORDER BY p.name;
 
     // `
+
     const sql = `
 SELECT
     p.id,
-    p.name,
 
-    -- Opening balance
+    TRIM(
+        CONCAT(
+            p.name,
+            IF(bt.name IS NOT NULL, CONCAT(' / ', bt.name), ''),
+            IF(c.name IS NOT NULL, CONCAT(' / ', c.name), '')
+        )
+    ) AS name,
+
     COALESCE(p.coa, 0) AS openingBalance,
 
-    -- Ledger amount (all previous + selected date)
     COALESCE(l.ledgerAmount, 0) AS ledgerAmount,
 
-    -- Paid amount (all previous + selected date)
     COALESCE(pay.paidAmount, 0) AS paidAmount,
 
-    -- Outstanding = Opening + Ledger - Payment
     (
         COALESCE(p.coa, 0)
         + COALESCE(l.ledgerAmount, 0)
@@ -536,7 +543,13 @@ SELECT
 
 FROM party p
 
--- 🔹 Ledger (all invoices till selected date)
+-- 🔹 Branch Type
+LEFT JOIN BranchType bt ON bt.id = p.branchTypeId
+
+-- 🔹 City
+LEFT JOIN City c ON c.id = p.cityId
+
+-- 🔹 Ledger
 LEFT JOIN (
     SELECT
         partyId,
@@ -547,18 +560,19 @@ LEFT JOIN (
     GROUP BY partyId
 ) l ON p.id = l.partyId
 
--- 🔹 Payment (all payments till selected date)
+-- 🔹 Payment
 LEFT JOIN (
     SELECT
         partyId,
         SUM(totalAmount) AS paidAmount
     FROM Payment
-    WHERE cvv < DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
+    WHERE cvv <  DATE_ADD('${DateFormatted}', INTERVAL 1 DAY)
     GROUP BY partyId
 ) pay ON p.id = pay.partyId
 
 WHERE p.name LIKE '%${searchPartyName}%'
-ORDER BY p.name;
+ORDER BY name;
+
 
 `
 

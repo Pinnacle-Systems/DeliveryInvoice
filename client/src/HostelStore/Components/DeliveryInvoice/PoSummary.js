@@ -2,6 +2,7 @@ import { Loader } from "../../../Basic/components"
 import useTaxDetailsHook from "../../../CustomHooks/TaxHookDetails"
 import { discountTypes } from "../../../Utils/DropdownData"
 import numberToWords from "number-to-words";
+import { amountInWords, formatAmountIN } from "../../../Utils/helper";
 
 const numberToText = require('number-to-text')
 
@@ -147,7 +148,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         <td className="border border-gray-500 py-1">Gross Amount</td>
                         <td className="border border-gray-500 text-right" colSpan={2}
                         >
-                            {parseFloat(totalAmount).toFixed(2)}
+                            {formatAmountIN(parseFloat(totalAmount).toFixed(2))}
                         </td>
                     </tr>
                     <tr>
@@ -196,7 +197,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         <td className="border border-gray-500"
                         >
                             <input disabled type="text" name='value' className='h-7 w-full text-right'
-                                value={discountAmount}
+                                value={formatAmountIN(discountAmount)}
                             />
                         </td>
                     </tr>
@@ -218,7 +219,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                                 <td className="border border-gray-500" colSpan={2}
                                 >
                                     <input disabled type="text" name='value' className='h-7 w-full text-right'
-                                        value={i.sgstAmount.toFixed(2)}
+                                        value={formatAmountIN(i.sgstAmount.toFixed(2))}
 
                                     />
                                 </td>
@@ -255,7 +256,7 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         >
                             <input disabled type="text" name='value' className='h-7 w-full text-right'
                                 value={
-                                    parseFloat(overallAmount).toFixed(2)
+                                    formatAmountIN(parseFloat(overallAmount).toFixed(2))
                                 }
                             />
                         </td>
@@ -265,13 +266,9 @@ const PoSummary = ({ poItems, readOnly, taxTypeId, isSupplierOutside, discountTy
                         <td className="border border-gray-500">Amount in Words</td>
                         <td className="border border-gray-500" colSpan={2}
                         >
-                            {/* <input disabled type="text" name='value' className='h-7 w-full text-right'
-                                value={
-                                    numberToText.convertToText(overallAmount, { language: "en-in" }) + " Only"
-                                }
-                            /> */}
-                            {numberToWords.toWords(roundedNetAmount)} only
-
+                          
+                            {/* {numberToWords.toWords(roundedNetAmount)} only */}
+                            {amountInWords(roundedNetAmount)}
                         </td>
                     </tr>
                 </tbody>

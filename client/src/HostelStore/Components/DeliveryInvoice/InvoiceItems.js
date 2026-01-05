@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { formatAmountIN } from "../../../Utils/helper";
 
 const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceItems, readOnly,
     styleItemList, colorList,
@@ -383,7 +384,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                         onBlur={(e) => {
                                             const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
                                             const val = e.target.value;
-                                            const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(3);
+                                            const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(2);
                                             e.target.value = formatted;
                                             handleInputChange(val === "" ? 0 : formatted, index, "price", row.requiredQty, balanceQty);
                                         }}
@@ -392,7 +393,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 </td>
 
                                 <td className="p-0.5 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs">
-                                    {parseFloat(parseFloat(row.invoiceQty || 0) * parseFloat(row.price || 0)).toFixed(3)}
+                                    {formatAmountIN(parseFloat(parseFloat(row.invoiceQty || 0) * parseFloat(row.price || 0)).toFixed(2))}
                                 </td>
 
 

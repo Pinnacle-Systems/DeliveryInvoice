@@ -308,3 +308,12 @@ export function amountInWords(amount) {
 
   return words + " Only";
 }
+
+export function formatAmountIN(value = 0) {
+  const amount = Number(value) || 0;
+
+  return amount.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}

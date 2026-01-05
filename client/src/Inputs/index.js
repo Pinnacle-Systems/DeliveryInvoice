@@ -1756,7 +1756,7 @@ export const ReusableSearchableInputNewCustomerwithBranches = forwardRef(
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
                         // onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
-                        onClick={(e) => handleEdit(item.id,e)}
+                        onClick={(e) => handleEdit(item.id, e)}
                         title="Edit Customer"
                       >
                         <FaEdit className="text-sm" />
@@ -2520,7 +2520,7 @@ export const ShowInvoicPendingCustomers = forwardRef(
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 p-1"
-                        onClick={(e) => handleEdit(item?.parentId ? item?.parentId : item?.id, e, item?.parentId ? item.id : null)}
+                        onClick={(e) => handleEdit(item?.id, e,)}
                         title="Edit Customer"
                       >
                         <FaEdit className="text-sm" />

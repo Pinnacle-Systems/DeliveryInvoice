@@ -396,11 +396,11 @@ const ChallanForm = ({
                         <h2 className="font-medium text-slate-700 mb-1">
                             Delivery Challan Details
                         </h2>
-                        <div className="grid grid-cols-5 ">
+                        <div className="grid grid-cols-6 ">
 
 
-                            <div className="col-span-5 flex flex-row gap-2">
-                                <div className="w-2/4"
+                            <div className="col-span-6 flex flex-row gap-2">
+                                <div className="w-3/4"
 
                                 >
 

@@ -2,7 +2,7 @@ import { FaFileAlt } from "react-icons/fa"
 import { DateInputNew, DropdownInput, DropdownInputNew, ReusableInput, ReusableInputNew, ReusableSearchableInput, ReusableSearchableInputNew, ReusableSearchableInputNewCustomer, ReusableSearchableInputNewCustomerwithBranches, ShowInvoicPendingCustomers, TextAreaNew, TextInput, TextInputNew, TextInputNew1 } from "../../../Inputs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
-import { findFromList, isGridDatasValid } from "../../../Utils/helper";
+import { findFromList, formatAmountIN, isGridDatasValid } from "../../../Utils/helper";
 import { deliveryTypes } from "../../../Utils/DropdownData";
 import { toast } from "react-toastify";
 import { FiEdit2, FiPrinter, FiSave } from "react-icons/fi";
@@ -182,7 +182,7 @@ const InvoiceForm = ({
                 qty: i.DeliveryChallanItems?.qty ? parseInt(i.DeliveryChallanItems?.qty).toFixed(3) : "",
                 noOfBox: i.noOfBox ? parseFloat(i.noOfBox).toFixed(3) : "",
                 invoiceQty: i.invoiceQty ? parseInt(i.invoiceQty).toFixed(3) : "",
-                price: i.price ? parseFloat(i.price).toFixed(3) : '',
+                price: i.price ? parseFloat(i.price).toFixed(2) : '',
                 balanceQty: i.DeliveryChallanItems?.qty
             }))
         );
@@ -532,10 +532,10 @@ const InvoiceForm = ({
                         <h2 className="font-medium text-slate-700 mb-2">
                             Invoice Details
                         </h2>
-                        <div className="grid grid-cols-6 gap-2">
+                        <div className="grid grid-cols-7 gap-2">
 
 
-                            <div className="col-span-2"
+                            <div className="col-span-3"
 
                             >
 
@@ -870,34 +870,37 @@ const InvoiceForm = ({
                     </div>
 
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-1    ">
-                        <h2 className="font-bold text-slate-800 mb-2 text-base">
+                    <div className="border border-slate-200 bg-white rounded-lg shadow-sm p-4 flex flex-col justify-between h-full hover:shadow-md transition">
+                        <h2 className="font-semibold text-gray-700 text-base mb-3">
                             Tax Summary
                         </h2>
 
-                        <button className="text-sm bg-sky-500 hover:text-white font-semibold hover:bg-sky-800 transition p-1 rounded"
-                            onClick={() => {
-
-                                setSummary(true)
-                            }}>
-                            View Tax Summary
+                        <button
+                            onClick={() => setSummary(true)}
+                            className="mt-auto inline-flex items-center justify-center gap-2 text-sm font-medium
+               bg-indigo-500 text-white px-2 rounded-md
+               hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:bg-indigo-500
+               transition"
+                        >
+                            View Tax Details
                         </button>
                     </div>
 
+
                     <div className="border border-slate-200 bg-white rounded-md shadow-sm p-1 col-span-2">
 
-                        <div className="flex justify-between  font-semibold">
-                            <span className="font-bold text-slate-700 bord mb-1" >Total Gross Amount</span>
-                            <span className="font-bold text-slate-700 bord mb-1">{totalAmount.toFixed(2)}</span>
+                        <div className="flex justify-between  ">
+                            <span className="font-bold text-gray-600 bord text-md mb-1" >Total Gross Amount</span>
+                            <span className="font-bold text-gray-600 bord mb-1">{formatAmountIN(totalAmount.toFixed(2))}</span>
                         </div>
                         <div className="flex justify-between  font-semibold">
-                            <span className="font-bold text-slate-700 bord mb-1">Tax Amount</span>
-                            <span className="font-bold text-slate-700 bord mb-1">{result?.overallTax?.toFixed(2)} </span>
+                            <span className="font-bold text-gray-600 bord mb-1">Tax Amount</span>
+                            <span className="font-bold text-gray-600 bord mb-1">{formatAmountIN(result?.overallTax?.toFixed(2))} </span>
                         </div>
-                    
+
                         <div className="flex justify-between  font-semibold">
-                            <span className="font-bold text-slate-700 bord mb-1 ">Net Amount</span>
-                            <span className="font-bold text-slate-700 bord mb-1" >{netAmount.toFixed(2)}</span>
+                            <span className="font-bold text-gray-600 bord mb-1 ">Net Amount</span>
+                            <span className="font-bold text-gray-600 bord mb-1" >{formatAmountIN(netAmount.toFixed(2))}</span>
                         </div>
                     </div>
 
