@@ -82,7 +82,8 @@ async function get(req) {
                 select: {
                     Supplier: true
                 }
-            }
+            },
+            BranchType:true
         }
 
     });
@@ -93,11 +94,11 @@ async function get(req) {
     if (isAddessCombined) {
         data = data?.filter(i => i.isCustomer).map(i => ({
             ...i,
-            name: `${i.name} ${" "} / ${" "} ${i.City?.name ?? ""}`
+            name: `${i.name} ${" "}  ${i?.BranchType?.name ? ("/" + i?.BranchType?.name) : ""} / ${" "} ${i.City?.name ?? ""}`
         }))
     }
     return {
-        statusCode: 0, data: data = data.map(party => ({
+        statusCode: 0, data: data = data?.map(party => ({
             ...party,
             childRecord: party?._count.Supplier > 0
         })),
