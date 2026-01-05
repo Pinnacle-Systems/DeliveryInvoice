@@ -157,7 +157,7 @@ const InvoiceForm = ({
 
 
     const { data: partyList } = useGetPartyNewQuery({
-        params: { companyId,  isAddessCombined: true, id, supplierId },
+        params: { companyId, isAddessCombined: true, id, supplierId },
     });
 
     const syncFormWithDb = useCallback((data) => {
@@ -815,7 +815,7 @@ const InvoiceForm = ({
 
 
                 </div> */}
-                <div className="grid grid-cols-7 gap-3">
+                <div className="grid grid-cols-8 gap-3">
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-2">
                         <div className="w-56">
@@ -884,7 +884,11 @@ const InvoiceForm = ({
                         </button>
                     </div>
 
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
+                            
 
+                  
+                    </div>
 
 
                 </div>

@@ -694,7 +694,7 @@ export const TextInputNew = forwardRef(({
         max={max ? String(max) : undefined}
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-          transition-all duration-150 shadow-sm
+          transition-all duration-150 shadow-sm ${readOnly || disabled ? "bg-slate-100" : ""}
           ${className}`}
       />
     </div>
@@ -753,7 +753,7 @@ export const DropdownInputNew = forwardRef(({
         required={required}
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-          transition-all duration-150 shadow-sm
+          transition-all duration-150 shadow-sm ${readOnly || disabled ? "bg-slate-100" : ""}
           ${className}`}
         value={value}
         onChange={(e) => {
@@ -1093,7 +1093,7 @@ export const TextInputNew1 = forwardRef(({
         max={max ? String(max) : undefined}
         className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-          transition-all duration-150 shadow-sm
+          transition-all duration-150 shadow-sm ${readOnly || disabled ? "bg-slate-100" : ""}
           ${className}`}
       />
     </div>

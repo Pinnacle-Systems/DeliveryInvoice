@@ -190,7 +190,13 @@ const ChallanForm = ({
                 });
                 console.log(returnData?.data, "returnData")
                 setId(returnData?.data?.id)
-                setIsPrintOpen(true)
+                if (nextProcess == "new") {
+                    setIsPrintOpen(true)
+                } else {
+                    syncFormWithDb(undefined);
+                    onClose()
+                }
+
                 // if (nextProcess == "new") {
                 //     syncFormWithDb(undefined);
                 //     onNew()

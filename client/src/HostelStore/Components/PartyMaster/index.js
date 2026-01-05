@@ -1771,13 +1771,14 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                                 if (parentId || branchTypeId) {
                                                                     setParentId("")
                                                                     setBranchTypeId("")
+                                                                    setName("")
                                                                 }
                                                                 setIsBranch(e.target.checked)
                                                             }}
                                                             disabled={readOnly}
                                                         />
                                                         <label className="block text-xs font-bold text-gray-600">
-                                                            Is Branch
+                                                            Add Branch
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1840,7 +1841,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
                                                     <div className="col-span-2">
                                                         <TextInputNew1
-                                                            name={"name"}
+                                                            name={`${isSupplier ? "Supplier Name" : "Customer Name"}`}
                                                             type="text"
                                                             value={name}
                                                             inputClass="h-8"
@@ -1862,7 +1863,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                 {isBranch && (
                                                     <div className="col-span-2">
 
-                                                        <TextAreaNew name="Branch Name"
+                                                        <TextInputNew1 name="Branch Name"
                                                             inputClass="h-10" value={name}
                                                             setValue={setName} required={true}
                                                             readOnly={readOnly}
@@ -2183,7 +2184,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                         type="text"
                                                         value={gstNo}
                                                         setValue={setGstNo}
-                                                        readOnly={readOnly}
+                                                        readOnly={readOnly || parentId || isBranch}
                                                         required={true}
                                                         disabled={parentId || isBranch}
 
