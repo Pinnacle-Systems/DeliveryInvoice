@@ -1550,7 +1550,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                     setForm(true);
                                     onNew();
                                     syncFormWithDb(undefined)
-                                    syncFormWithDbNew(undefined)
+                                    // syncFormWithDbNew(undefined)
                                     setParentId("")
                                 }}
                                 className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"

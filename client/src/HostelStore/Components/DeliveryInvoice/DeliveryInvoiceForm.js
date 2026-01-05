@@ -878,11 +878,11 @@ const InvoiceForm = ({
                         <button
                             onClick={() => setSummary(true)}
                             className="mt-auto inline-flex items-center justify-center gap-2 text-sm font-medium
-               bg-indigo-500 text-white px-2 rounded-md
+               bg-indigo-500 text-white px-1 py-1 rounded-md
                hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:bg-indigo-500
                transition"
                         >
-                            View Tax Details
+                            View 
                         </button>
                     </div>
 
