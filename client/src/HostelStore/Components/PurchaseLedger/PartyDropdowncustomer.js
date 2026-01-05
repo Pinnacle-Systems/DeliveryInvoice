@@ -5,7 +5,7 @@ import { useGetPartyQuery } from '../../../redux/services/PartyMasterService';
 
 const PartyDropdownSearchCus = ({ readOnly, name, selected, setSelected, id, required }) => {
     const { token, ...params } = getCommonParams();
-    const { data: partyList } = useGetPartyQuery({ params: { ...params } });
+    const { data: partyList } = useGetPartyQuery({ params: { ...params,isAddessCombined: true } });
 
     return (
         <div className='flex flex-col text-xs  h-10'>

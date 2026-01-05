@@ -16,7 +16,7 @@ const PartyOverAllLedger = () => {
         {
             isPartyOverAllReport: true,
             searchValue: searchPartyName,
-            startDate: startDate
+            startDate: startDate,isAddessCombined: true
         }
     });
     const partyList = data?.data || [];

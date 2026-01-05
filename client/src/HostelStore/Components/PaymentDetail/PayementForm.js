@@ -256,7 +256,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
         <>
 
 
-            <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid  '>
+            <div onKeyDown={handleKeyDown} className='md:items-start md:justify-items-center grid h-[85vh] relative'>
 
                 <div className='flex flex-col w-full '>
 
@@ -440,7 +440,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                         </div>
 
                     </div> */}
-                    <div className="w-full p-11 bg-gray-100 border border-gray-200">
+                    <div className="w-full p-11 mt-3 bg-gray-100 border border-gray-200">
                         <div className="grid grid-cols-6 gap-6">
                             <div className="">
                                 <label className="block text-xs font-bold text-gray-600 mb-1">Payment No</label>
@@ -569,7 +569,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 Amount in words: <span className="text-green-700 font-semibold">      
                                     {toWords(parseInt(paidAmount ? paidAmount : 0))}</span>
                             </p> */}
-                            <p className="text-sm text-gray-700">
+                            <p className="text-sm text-gray-700 text-center">
                                 Amount in words: <span className="text-green-700 font-semibold">
                                     {amountInWords(parseFloat(paidAmount ? paidAmount : 0))}
 
@@ -580,11 +580,11 @@ const PaymentForm = ({ id, setId, onClose }) => {
 
 
                 </div>
-                <div className='flex flex-col w-full'>
+                <div className='flex flex-col absolute bottom-3 w-full'>
 
                     <div className="flex flex-col md:flex-row gap-2 justify-between mt-4">
                         {/* Left Buttons */}
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 ml-2 flex-wrap">
                             <button onClick={() => saveData("close")} className="bg-indigo-500 text-white px-4 py-1 rounded-md hover:bg-indigo-600 flex items-center text-sm">
                                 <HiOutlineRefresh className="w-4 h-4 mr-2" />
                                 Save & Close
@@ -601,7 +601,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                         </div>
 
                         {/* Right Buttons */}
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 flex-wrap mr-2">
 
                             <button className="bg-yellow-600 text-white px-4 py-1 rounded-md hover:bg-yellow-700 flex items-center text-sm"
                                 onClick={() => setReadOnly(false)}
@@ -615,6 +615,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                 </div>
 
             </div>
+
         </>
     )
 }
