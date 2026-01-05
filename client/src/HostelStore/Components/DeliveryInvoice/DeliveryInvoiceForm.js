@@ -321,8 +321,12 @@ const InvoiceForm = ({
                 // }
                 setId(returnData?.data?.id)
 
-                setIsPrintOpen(true)
-                console.log(returnData?.data?.id, "returnData?.data?.id")
+                if (nextProcess == "new") {
+                    setIsPrintOpen(true)
+                } else {
+                    syncFormWithDb(undefined);
+                    onClose()
+                } console.log(returnData?.data?.id, "returnData?.data?.id")
             }
         } catch (error) {
             console.log("handle");
@@ -882,7 +886,7 @@ const InvoiceForm = ({
                hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:bg-indigo-500
                transition"
                         >
-                            View 
+                            View
                         </button>
                     </div>
 

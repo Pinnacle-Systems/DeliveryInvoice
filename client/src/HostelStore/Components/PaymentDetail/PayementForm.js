@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import FormHeader from "../../../Basic/components/FormHeader"
-import { amountInWords, getCommonParams, getDateFromDateTime } from "../../../Utils/helper";
+import { amountInWords, formatAmountIN, getCommonParams, getDateFromDateTime } from "../../../Utils/helper";
 import { paymentModes, PaymentType } from "../../../Utils/DropdownData";
 import { useDispatch } from "react-redux";
 import { useAddPaymentMutation, useDeletePaymentMutation, useGetPaymentByIdQuery, useGetPaymentQuery, useUpdatePaymentMutation } from "../../../redux/services/PaymentService";
@@ -533,7 +533,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 <input
                                     type="text"
 
-                                    value={(Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0)).toFixed(2)}
+                                    value={formatAmountIN((Number(totalBillAmount || 0) - Number(PartyData?.data?.totalDiscount || 0)).toFixed(2))}
                                     onChange={(e) => setTotalBillAmount(e.target.value)}
                                     className="w-full px-3 py-1 border border-gray-300 bg-slate-100 text-red-500 font-semibold rounded-lg focus:outline-none focus:ring-emerald-500"
                                     placeholder="0"
@@ -554,7 +554,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
                                 <label className="block text-xs font-bold text-gray-600 mb-1">Balance Amount</label>
                                 <input
                                     type="text"
-                                    value={((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2)}
+                                    value={formatAmountIN(((Number(totalBillAmount) - Number(paidAmount) - Number(discount) - (Number(PartyData?.data?.totalDiscount) || 0)) || 0).toFixed(2))}
                                     onChange={(e) => setBalanceAmount(e.target.value)}
                                     className={`w-full px-3 py-1 border border-gray-300 bg-slate-100 rounded-lg ${(Number(totalBillAmount) - Number(paidAmount)) < 0 ? 'text-red-500' : 'text-green-800'
                                         } focus:outline-none focus:ring-emerald-500 font-semibold`}

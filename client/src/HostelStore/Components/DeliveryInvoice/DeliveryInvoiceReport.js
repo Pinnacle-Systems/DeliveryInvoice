@@ -208,7 +208,7 @@ const DeliveryInvoiceFormReport = ({
 
 
 
-                  <th className="w-96  px-3   font-medium text-[13px] text-gray-900  text-center ">
+                  <th className="w-2/4  px-3   font-medium text-[13px] text-gray-900  text-center ">
                     <div>Customer</div>
                   </th>
 

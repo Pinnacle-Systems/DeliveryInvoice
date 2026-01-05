@@ -73,23 +73,23 @@ async function get(req) {
             Party: {
                 select: {
                     name: true,
-                    BranchType : {
-                        select : {
-                            name : true
+                    BranchType: {
+                        select: {
+                            name: true
                         }
                     },
-                    City : {
-                        select : {
-                            name : true
+                    City: {
+                        select: {
+                            name: true
                         }
                     }
                 }
             }
         },
-        orderBy : {
-            id : "desc"
+        orderBy: {
+            id: "desc"
         }
-        
+
     });
 
 
@@ -377,16 +377,22 @@ async function update(id, body) {
             },
 
             Ledger: {
-                create: {
-                    LedgerType: "Supplier",
-                    creditOrDebit: "Credit",
-                    partyId: parseInt(supplierId),
-                    amount: parseFloat(netBillValue),
-                    // dcNo: dcNo,
-                    // dcDate: new Date(dcDate)
-
-                }
+                upsert: {
+                    update: {
+                        amount: parseFloat(netBillValue),
+                    },
+                    create: {
+                        LedgerType: "Supplier",
+                        creditOrDebit: "Credit",
+                        partyId: parseInt(supplierId),
+                        amount: parseFloat(netBillValue),
+                    },
+                },
             }
+
+
+
+
         },
     })
     return { statusCode: 0, data };
