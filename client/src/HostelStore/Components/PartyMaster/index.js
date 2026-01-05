@@ -209,7 +209,9 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
     const syncFormWithDbNew = useCallback((data) => {
 
-        if (id) return
+        if (!parentId) return
+
+        console.log("HJittttttt")
 
         setPanNo(data?.panNo ? data?.panNo : "");
         // setAliasName(data?.aliasName ? data?.aliasName : "");
@@ -1588,7 +1590,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                 onClick={() => {
                                     setForm(true);
                                     onNew();
-                                    syncFormWithDb(undefined)
+                                    // syncFormWithDb(undefined)
                                     // syncFormWithDbNew(undefined)
                                     setParentId("")
                                 }}
