@@ -273,7 +273,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
     }
 
     const validateData = (data) => {
-        return data.name && data?.active && data?.address && data?.cityId && data?.pincode && (data?.isCustomer || data?.isSupplier) && data?.gstNo
+        return data.name && data?.active && data?.address && data?.cityId && data?.pincode && data?.gstNo
 
     }
 
@@ -417,6 +417,14 @@ export default function Form({ partyId, onCloseForm, childId }) {
             });
             return
         }
+        if (!isCustomer && !isSupplier) {
+            Swal.fire({
+                title: 'Please Select Customer or Supplier',
+                icon: 'error',
+            });
+            return;
+        }
+
 
         let foundItem;
         if (id) {

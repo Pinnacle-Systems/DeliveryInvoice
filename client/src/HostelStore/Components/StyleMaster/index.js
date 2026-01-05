@@ -23,7 +23,13 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
     const [code, setCode] = useState("")
     const [active, setActive] = useState(true);
 
+   const countryNameRef = useRef(null);
 
+    useEffect(() => {
+        if (form && countryNameRef.current) {
+            countryNameRef.current.focus();
+        }
+    }, [form]);
 
     const [searchValue, setSearchValue] = useState("");
 
@@ -55,7 +61,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
             setCode(data?.code ? data?.code : "");
             setActive(id ? (data?.active ? data.active : false) : true);
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
-
+            countryNameRef?.current?.focus()
         },
         [id]
     );
@@ -105,6 +111,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
             } else {
                 setForm(false)
             }
+            countryNameRef.current.focus()
         } catch (error) {
             console.log("handle");
         }
@@ -255,13 +262,7 @@ const StyleMaster = ({ dynamicForm, setDynamicForm }) => {
 
     ];
 
-    const countryNameRef = useRef(null);
-
-    useEffect(() => {
-        if (form && countryNameRef.current) {
-            countryNameRef.current.focus();
-        }
-    }, [form]);
+ 
 
     // const openPartyModal = useSelector((state) => state?.party);
 
