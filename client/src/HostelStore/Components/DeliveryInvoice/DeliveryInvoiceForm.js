@@ -815,16 +815,16 @@ const InvoiceForm = ({
 
 
                 </div> */}
-                <div className="grid grid-cols-8 gap-3">
+                <div className="grid grid-cols-9 gap-3">
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-2">
+                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-3">
                         <div className="w-56">
                             <TextInputNew1 name="Transporter"
                                 value={transporter} setValue={setTransporter} readOnly={readOnly} />
 
                         </div>
                         <div className="flex flex-col gap-1 w-32">
-                            <label className="block text-xs font-bold text-gray-600 ">
+                            <label className="block text-xs font-bold text-gray-600 w-full">
                                 Transport Mode
                             </label>
                             <select className="w-full text-xs border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -870,25 +870,40 @@ const InvoiceForm = ({
                     </div>
 
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
+                    {/* <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm col-span-2">
                         <h2 className="font-bold text-slate-800 mb-2 text-base">
                             Tax Summary
                         </h2>
 
-                        <button className="text-sm bg-sky-500 hover:text-white font-semibold hover:bg-sky-800 transition p-1 ml-5 rounded"
+                        <button className="text-sm bg-sky-500 hover:text-white font-semibold hover:bg-sky-800 transition p-1 rounded"
                             onClick={() => {
 
                                 setSummary(true)
                             }}>
                             View Tax Summary
                         </button>
+                    </div> */}
+
+                    <div className="border border-slate-200 bg-white rounded-md shadow-sm p-5 space-y-2">
+
+                        <div className="flex justify-between text-sm ">
+                            <span className="text-md text-slate-700" >Gross Amount</span>
+                            <span className="text-sm text-slate-700 ">{totalAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm ">
+                            <span className="text-md text-slate-700">Tax Amount</span>
+                            <span className="text-sm text-slate-700 "> </span>
+                        </div>
+                        <div className="flex justify-between text-sm h-5 ">
+
+                        </div>
+                        <div className="flex justify-between border-t pt-2 font-semibold">
+                            <span className="font-medium text-slate-700 mb-2 text-base ">Net Amount</span>
+                            <span className="" >{netAmount.toFixed(2)}</span>
+                        </div>
                     </div>
 
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
-                            
 
-                  
-                    </div>
 
 
                 </div>
