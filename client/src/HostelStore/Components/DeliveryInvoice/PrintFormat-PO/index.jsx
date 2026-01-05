@@ -24,7 +24,8 @@ Font.register({
   family: "Roboto",
   src: "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,600;1,400;1,600&display=swap",
 });
-
+const BORDER_GREY = "#9ca3af";
+const ZEBRA_BROWN = "#F4EEE9";
 const styles = StyleSheet.create({
   // page: {
   //   fontFamily: "Helvetica",
@@ -154,8 +155,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 8,
     textAlign: "center",
-    borderRight: "1 solid #000",
-    borderBottom: "1 solid #000",
+     borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderRightColor: BORDER_GREY,
+    borderBottomColor: BORDER_GREY,
     padding: 3,
   },
   totalRow: {
@@ -312,11 +315,14 @@ const DeliveryInvoice = ({
     poItems.reduce((acc, item) => {
       const key = [
         item?.styleId,
-        item?.styleItemsId,
+        item?.styleItemId,
         item?.colorId,
         item?.uomId,
         item?.price,
       ].join("_");
+
+      console.log({key},"keuche");
+      
 
       if (!acc[key]) {
         acc[key] = {
@@ -453,7 +459,7 @@ const DeliveryInvoice = ({
               // color: "#1D3A76",
               fontWeight: "bold",
               marginBottom: 4,
-              marginTop: 10,
+              marginTop: 4,
               flexDirection: 'row',
               width: '52%',
             }}>
@@ -538,7 +544,7 @@ const DeliveryInvoice = ({
                     </View>                  </View>
 
                   <View style={{ flexDirection: "row", marginBottom: 3 }}>
-                    <Text style={[styles.companyText, { width: 120, textAlign: "left" }]}>DELIVARY NOTE NO</Text>
+                    <Text style={[styles.companyText, { width: 120, textAlign: "left" }]}>DELIVERY NOTE NO</Text>
                     <View style={styles.valueContainer}>
                       <Text style={styles.colon}>:</Text>
                       <Text style={styles.ValueText}>NA</Text>
@@ -717,23 +723,23 @@ const DeliveryInvoice = ({
 
 
           {filledPoItems?.map((row, index) => (
-            <View key={index} style={{ flexDirection: "row", borderBottom: "1 solid #d1d5db" }}>
+            <View key={index} style={{ flexDirection: "row",    backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F4EEE9",  }}>
               <Text style={[styles.td, { flex: 1 }]}>{index + 1}</Text>
               <Text style={[styles.td, { flex: 5, textAlign: "left" }]}>
                 {row?.Style?.name}
               </Text>
-              <Text style={[styles.td, { flex: 4 }]}>
+              <Text style={[styles.td, { flex: 4 ,textAlign: "left"  }]}>
                 {row?.StyleItem?.name}
               </Text>
-              <Text style={[styles.td, { flex: 4 }]}>
+              <Text style={[styles.td, { flex: 4 ,textAlign: "left"  }]}>
                 {row?.Color?.name}
               </Text>
-              <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
+              <Text style={[styles.td, { flex: 1, textAlign: "center" }]}>
                 {row?.Hsn?.name}
               </Text>
 
 
-              <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
+              <Text style={[styles.td, { flex: 1, textAlign: "left" }]}>
                 {row?.Uom?.name}
               </Text>
               <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
@@ -754,7 +760,8 @@ const DeliveryInvoice = ({
 
             </View>
           ))}
-          <View style={{ flexDirection: "row", borderBottom: "1 solid #d1d5db" }}>
+          {/* {kldklsf} */}
+          <View style={{ flexDirection: "row", borderBottom: "1 solid #000" ,     borderTop: "1 solid #000", }}>
             <Text style={[{
               flex: 1, padding: 3,
             }]}></Text>
