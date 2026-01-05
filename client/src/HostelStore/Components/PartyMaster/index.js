@@ -181,6 +181,8 @@ export default function Form({ partyId, onCloseForm, childId }) {
         setPartyCode(data?.partyCode ? data?.partyCode : "")
         setIsBranch(data?.isBranch ? data?.isBranch : false)
         childRecord.current = data?.childRecord ? data?.childRecord : 0;
+        console.log( data?.childRecord," data?.childRecord");
+        
         setParentId(data?.parentId ? data?.parentId : "")
         setBranchTypeId(data?.branchTypeId ? data?.branchTypeId : "")
         setIsBranch(data?.isBranch ? data?.isBranch : "")
@@ -419,13 +421,13 @@ export default function Form({ partyId, onCloseForm, childId }) {
         if (id) {
             foundItem = allData?.data
                 ?.filter((i) => i.id != id)
-                ?.some((item) => item.name == name && item.gstNo == gstNo);
+                ?.some((item) => item?.parentId && item.name == name && item.gstNo == gstNo);
         } else {
-            foundItem = allData?.data?.some((item) => item.name == name && item.gstNo == gstNo);
+            foundItem = allData?.data?.some((item) =>item?.parentId && item.name == name && item.gstNo == gstNo);
         }
         if (foundItem) {
             Swal.fire({
-                text: `The ${isSupplier ? "Supplier" : "Customer"} name is already  exists `,
+                text: `The ${isSupplier ? "Branch" : "Branch"} name is already  exists `,
                 icon: "warning",
                 customClass: {
                     popup: 'swal-custom-height'
@@ -445,6 +447,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
             handleSubmitCustom(addData, data, "Added", nextProcess);
         }
     }
+console.log(childRecord,"childRecord");
 
 
     const deleteData = async (id, childRecord) => {
@@ -615,6 +618,11 @@ export default function Form({ partyId, onCloseForm, childId }) {
             accessor: (item, index) => index + 1,
             className: "font-medium text-gray-900 w-12  text-center",
         },
+        {
+            header: "Category",
+            accessor: (item, index) => item?.isCustomer ? "Customer" : "Supplier",
+            className: "font-medium text-gray-900 w-18 uppercase text-left pl-2",
+        },
 
 
 
@@ -623,6 +631,12 @@ export default function Form({ partyId, onCloseForm, childId }) {
             accessor: (item) => item?.name,
             //   cellClass: () => "font-medium text-gray-900",
             className: "font-medium text-gray-900 text-left uppercase w-2/4",
+        },
+        {
+            header: "Branch Type",
+            accessor: (item) => item?.BranchType?.name || "-",
+            //   cellClass: () => "font-medium text-gray-900",
+            className: "font-medium text-gray-900 text-left uppercase w-40 pl-2",
         },
 
 
@@ -906,7 +920,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
                                                     inputClass="h-10" value={name}
                                                     setValue={setName} required={true}
                                                     readOnly={readOnly}
-                                                    isabled={(childRecord.current > 0)} />
+                                                    disabled={(childRecord.current > 0)} />
                                             </div>
                                         )}
                                         {/* <div className="col-span-2">
