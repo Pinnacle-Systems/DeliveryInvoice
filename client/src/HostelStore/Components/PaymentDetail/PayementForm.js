@@ -227,7 +227,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
         syncFormWithDb(undefined);
 
     }
-    const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId } });
+    const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId , isAddessCombined : true } });
 
     const supplierData = supplierList?.data ? supplierList.data : [];
 
