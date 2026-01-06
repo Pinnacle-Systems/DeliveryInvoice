@@ -224,24 +224,24 @@ const DeliveryChallanPrint = ({
   colorList, uomList, yarnList, sizeList, term, termsData, useTaxDetailsHook, docId, totalQty,
   transportMode, transporter, vehicleNo, deliveryItems
 }) => {
-  // const filledPoItems = [
-  //   ...deliveryItems,
-  //   ...Array(Math.max(0, 15 - deliveryItems.length)).fill({}), // empty rows
-  // ];
+  const filledPoItems = [
+    ...deliveryItems,
+    ...Array(Math.max(0, 15 - deliveryItems.length)).fill({}), // empty rows
+  ];
 
-  const baseRow = {
-    colorId: "4",
-    hsnId: 1,
-    noOfBox: "10000.000",
-    qty: 10000,
-    styleId: "1",
-    styleItemId: "1",
-    uomId: 10,
-  };
+  // const baseRow = {
+  //   colorId: "4",
+  //   hsnId: 1,
+  //   noOfBox: "10000.000",
+  //   qty: 10000,
+  //   styleId: "1",
+  //   styleItemId: "1",
+  //   uomId: 10,
+  // };
 
-  const filledPoItems = Array.from({ length: 40 }, () => ({
-    ...baseRow,
-  }));
+  // const filledPoItems = Array.from({ length: 40 }, () => ({
+  //   ...baseRow,
+  // }));
 
   if (isTaxHookDetailsLoading) return <Loader />;
 
