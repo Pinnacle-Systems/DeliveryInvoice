@@ -186,11 +186,11 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                    Delivery Qty
+                                    Invoice Qty
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                    Balance Delivery Qty
+                                    Balance Invoice Qty
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-20 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
