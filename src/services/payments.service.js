@@ -126,6 +126,11 @@ async function create(body) {
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
         let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startDateStartTime, finYearDate?.endDateEndTime)) : "";
 
+        const dateOnly = new Date(cvv);
+        dateOnly.setHours(0, 0, 0, 0);
+
+        console.log(dateOnly, "dateOnly")
+
         await prisma.$transaction(async (tx) => {
             data = await tx.payment.create({
                 data: {
@@ -137,7 +142,7 @@ async function create(body) {
                     discount: parseFloat(discount),
                     paymentRefNo: paymentRefNo,
                     createdById: parseInt(userId),
-                    cvv: cvv ? new Date(cvv) : undefined,
+                    cvv: dateOnly ? dateOnly : undefined,
                     paymentType,
                     totalBillAmount: totalBillAmount ? parseInt(totalBillAmount) : undefined,
                     totalAmount: totalAmount ? parseInt(totalAmount) : undefined
@@ -157,7 +162,13 @@ async function create(body) {
 async function update(id, body) {
     let data
     const {
-        branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId ,totalAmount } = await body
+        branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId, totalAmount } = await body
+
+
+    const dateOnly = new Date(cvv);
+    dateOnly.setHours(0, 0, 0, 0);
+
+    console.log(dateOnly, "dateOnly")
     const dataFound = await prisma.payment.findUnique({
         where: {
             id: parseInt(id)
@@ -176,7 +187,7 @@ async function update(id, body) {
                 paidAmount: parseFloat(paidAmount),
                 discount: parseFloat(discount),
                 createdById: parseInt(userId),
-                cvv: cvv ? new Date(cvv) : undefined,
+                cvv: dateOnly ? dateOnly : undefined,
                 paymentType,
                 totalAmount: totalAmount ? parseInt(totalAmount) : undefined
 

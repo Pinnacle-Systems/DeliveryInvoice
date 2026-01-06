@@ -59,7 +59,7 @@ export default function Form() {
   const { branchId, companyId, finYearId, userId } = getCommonParams()
 
   const params = {
-    branchId, companyId, finYearId
+    branchId, companyId, finYearId , isAddessCombined : true
   };
 
 
