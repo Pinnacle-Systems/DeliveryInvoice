@@ -41,5 +41,7 @@ export const PARTY_BRANCH_API = "partyBranch"
 export const BRANCH_TYPE_MASTER = "branchType"
 
 
+export const OPENING_BALANCE = "openingBalance"
+
 
 

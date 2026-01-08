@@ -53,6 +53,7 @@ model Company {
   TaxTerm         TaxTerm[]
   TaxTemplate     TaxTemplate[]
   PartyBranch     PartyBranch[]
+  openingBalances OpeningBalance[]
 }
 
 model Subscription {
@@ -93,6 +94,7 @@ model Branch {
   Payment          Payment[]
   DeliveryChallan  DeliveryChallan[]
   DeliveryInvoice  DeliveryInvoice[]
+  openingBalances  OpeningBalance[]
 }
 
 model UserOnBranch {
@@ -152,6 +154,8 @@ model User {
   DeliveryInvoiceUpdatedBy DeliveryInvoice[] @relation(name: "updatedBy")
   partyBranchCreatedBy     PartyBranch[]     @relation(name: "createdBy")
   partyBranchUpdatedBy     PartyBranch[]     @relation(name: "updatedBy")
+  openingBalanceCreatedBy  OpeningBalance[]  @relation(name: "createdBy")
+  openingBalancesUpdatedBy OpeningBalance[]  @relation(name: "updatedBy")
 }
 
 model Employee {
@@ -212,6 +216,7 @@ model FinYear {
   active          Boolean           @default(true)
   DeliveryChallan DeliveryChallan[]
   DeliveryInvoice DeliveryInvoice[]
+  openingBalances OpeningBalance[]
 }
 
 model EmployeeCategory {
@@ -322,41 +327,41 @@ model PartyCategory {
 }
 
 model Party {
-  id                   Int               @id @default(autoincrement())
-  name                 String
-  code                 String?
-  aliasName            String?
-  displayName          String?
-  address              String?
-  City                 City?             @relation(fields: [cityId], references: [id])
-  cityId               Int?
-  pincode              Int?
-  panNo                String?
-  tinNo                String?
-  cstNo                String?
-  cstDate              DateTime?         @db.Date
-  cinNo                String?
-  faxNo                String?
-  email                String?
-  website              String?
-  contactPersonName    String?
-  gstNo                String?
-  costCode             String?
-  active               Boolean?          @default(true)
-  contactMobile        BigInt?           @default(0)
-  Company              Company?          @relation(fields: [companyId], references: [id])
-  companyId            Int?
-  yarn                 Boolean?          @default(false)
-  fabric               Boolean?          @default(false)
-  accessoryGroup       Boolean?          @default(false)
-  createdAt            DateTime?         @default(now())
-  updatedAt            DateTime?         @updatedAt
-  createdBy            User?             @relation("createdBy", fields: [createdById], references: [id])
-  createdById          Int?
-  updatedBy            User?             @relation("updatedBy", fields: [updatedById], references: [id])
-  updatedById          Int?
-  isSupplier           Boolean?          @default(false)
-  isCustomer           Boolean?          @default(false)
+  id                Int       @id @default(autoincrement())
+  name              String
+  code              String?
+  aliasName         String?
+  displayName       String?
+  address           String?
+  City              City?     @relation(fields: [cityId], references: [id])
+  cityId            Int?
+  pincode           Int?
+  panNo             String?
+  tinNo             String?
+  cstNo             String?
+  cstDate           DateTime? @db.Date
+  cinNo             String?
+  faxNo             String?
+  email             String?
+  website           String?
+  contactPersonName String?
+  gstNo             String?
+  costCode          String?
+  active            Boolean?  @default(true)
+  contactMobile     BigInt?   @default(0)
+  Company           Company?  @relation(fields: [companyId], references: [id])
+  companyId         Int?
+  yarn              Boolean?  @default(false)
+  fabric            Boolean?  @default(false)
+  accessoryGroup    Boolean?  @default(false)
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+  createdBy         User?     @relation("createdBy", fields: [createdById], references: [id])
+  createdById       Int?
+  updatedBy         User?     @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById       Int?
+  isSupplier        Boolean?  @default(false)
+  isCustomer        Boolean?  @default(false)
 
   isBranch             Boolean?          @default(false)
   landMark             String?
@@ -381,7 +386,7 @@ model Party {
   partyCode            String?
   parentId             String?
   BranchType           BranchType?       @relation(fields: [branchTypeId], references: [id])
-  branchTypeId           Int?
+  branchTypeId         Int?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
@@ -389,6 +394,7 @@ model Party {
   ledgers              Ledger[]
   attachments          attachments[]
   PartyBranch          PartyBranch[]
+  openingBalances      OpeningBalance[]
 }
 
 model PartyBranch {
@@ -1003,4 +1009,26 @@ model BranchType {
   active    Boolean? @default(false)
   aliasName String?
   Party     Party[]
+}
+
+model OpeningBalance {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  Company      Company?  @relation(fields: [companyId], references: [id])
+  companyId    Int?
+  branch       Branch?   @relation(fields: [branchId], references: [id])
+  branchId     Int?
+  createdBy    User?     @relation("createdBy", fields: [createdById], references: [id])
+  createdById  Int?
+  updatedBy    User?     @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById  Int?
+  finYear      FinYear?  @relation(fields: [finYearId], references: [id])
+  finYearId    Int?
+  docId        String?
+  date         DateTime?
+  partCategory String?
+  Party        Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  partyId      Int
+  amount       Int?
 }
