@@ -26,6 +26,7 @@ const DeliveryItems = ({
     uomList,
     colorList,
     hsnList,
+    sizeList
 
 }) => {
 
@@ -545,7 +546,7 @@ const DeliveryItems = ({
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-52 px-4 py-2 text-center font-medium text-[13px]">
-                                    Item<span className="text-red-500">*</span>
+                                    Style Item<span className="text-red-500">*</span>
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-9 px-4 py-2 text-center font-medium text-[13px]">
@@ -554,6 +555,9 @@ const DeliveryItems = ({
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-52 px-4 py-2 text-center font-medium text-[13px]">
                                     Color<span className="text-red-500">*</span>
+                                </th>
+                                <th className="sticky top-0 z-10 bg-gray-200 w-10 px-4 py-2 text-center font-medium text-[13px]">
+                                    Size<span className="text-red-500">*</span>
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-16 px-3 py-2 text-center font-medium text-[13px]">
@@ -658,7 +662,21 @@ const DeliveryItems = ({
                                             ))}
                                         </select>
                                     </td>
-
+                                    <td className="py-0.5 border border-gray-300 text-[11px] focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px]">
+                                        <select
+                                            className="w-full rounded py-0.5 focus:outline-none focus:border-transparent"
+                                            value={row.sizeId}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "sizeId")}
+                                            disabled={!row.styleItemId || readOnly}
+                                        >
+                                            <option value="" />
+                                            {(id ? sizeList?.data : sizeList?.data?.filter(i => i.active))?.map(item => (
+                                                <option key={item.id} value={item.id}>{item.name}</option>
+                                            ))}
+                                        </select>
+                                    </td>
 
                                     <td className=" border border-gray-300 text-right text-[11px] py-0.5 px-2 text-xs focus-within:outline focus-within:outline-2
   focus-within:outline-blue-600
@@ -714,13 +732,13 @@ const DeliveryItems = ({
                                         <select
                                             onKeyDown={e => { if (e.key === "Delete") { handleInputChange("", index, "uomId") } }}
                                             className='text-left w-full rounded py-0.5 focus:outline-none focus:border-transparent'
-                                            value={row.colorId? row.uomId : ""}
+                                            value={row.colorId ? row.uomId : ""}
                                             onChange={(e) => handleInputChange(e.target.value, index, "uomId")}
                                             onBlur={(e) => {
                                                 handleInputChange((e.target.value), index, "uomId")
                                             }
                                             }
-                                            disabled={!row.noOfBox || readOnly}
+                                            disabled={!row.colorId || readOnly}
 
                                         >
 
@@ -743,7 +761,7 @@ const DeliveryItems = ({
                                             step="0.01"
                                             min="0"
                                             value={row?.qty}
-                                            disabled={!row.uomId || readOnly || !row.noOfBox}
+                                            disabled={!row.uomId || readOnly}
                                             onFocus={e => e.target.select()}
                                             onKeyDown={(e) => {
                                                 if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
@@ -772,7 +790,7 @@ const DeliveryItems = ({
                                                 }
 
 
-                                                const formatted = val.toFixed(3);
+                                                const formatted = val.toFixed(2);
 
                                                 e.target.value = formatted;
                                                 handleInputChange(val, index, "qty", invoiceQty);

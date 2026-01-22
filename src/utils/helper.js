@@ -374,3 +374,23 @@ export function getDateTimeRange(date) {
   return { startTime, endTime };
 }
 
+export function attachCurrentTime(dateOnlyStr) {
+  console.log(dateOnlyStr, "dateOnlyStr");
+
+  // dateOnlyStr format: "YYYY-MM-DD"
+  const [year, month, day] = dateOnlyStr.split('-').map(Number);
+
+  const now = new Date();
+
+  const finalDate = new Date(
+    year,
+    month - 1,
+    day,
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds(),
+    now.getMilliseconds()
+  );
+
+  return finalDate; // ✅ Return Date object for Prisma
+}

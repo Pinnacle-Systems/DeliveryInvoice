@@ -168,7 +168,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                    Item
+                                    Style Item
                                 </th>
                                 <th className="sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Hsn
@@ -176,8 +176,10 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 <th className="sticky top-0 z-10 bg-gray-200 w-44 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Color
                                 </th>
-
-                                <th className= "sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                    Size
+                                </th>
+                                <th className="sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     No of Box
                                 </th>
 
@@ -237,6 +239,9 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                     </td>
                                     <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
                                         {row?.Color?.name}
+                                    </td>
+                                    <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
+                                        {row?.Size?.name}
                                     </td>
                                     <td className="p-0.5 w-16 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs bg-gray-100">
                                         {row.noOfBox}

@@ -24,7 +24,8 @@ import {
   TaxTermMaster,
   TaxTemplate,
   HsnMaster,
-  BranchTypeMaster
+  BranchTypeMaster,
+  SizeMaster
 } from "../../../HostelStore/Components";
 
 
@@ -81,6 +82,7 @@ const ActiveTabList = () => {
     "TAX TYPE MASTER": <TaxTermMaster />,
     "HSN MASTER": <HsnMaster />,
     "BRANCH TYPE MASTER": <BranchTypeMaster />,
+    "SIZE MASTER" : <SizeMaster/>
 
 
 

@@ -182,6 +182,12 @@ async function getOne(id) {
                             name: true,
                             tax: true
                         }
+                    },
+                    sizeId: true,
+                    Size: {
+                        select: {
+                            name: true
+                        }
                     }
 
 
@@ -261,6 +267,7 @@ async function create(body) {
                                     deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
                                     deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
                                     hsnId: sub?.hsnId ? sub?.hsnId : undefined,
+                                    sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
 
                                 })),
                             },
@@ -351,6 +358,8 @@ async function update(id, body) {
                             deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
                             deliveryChallanItemsId: sub?.deliveryChallanItemsId ? parseInt(sub?.deliveryChallanItemsId) : undefined,
                             hsnId: sub?.hsnId ? sub?.hsnId : undefined,
+                            sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
+
 
 
                         },
@@ -369,6 +378,7 @@ async function update(id, body) {
                         deliveryChallanId: sub?.deliveryChallanId ? parseInt(sub?.deliveryChallanId) : undefined,
                         deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
                         hsnId: sub?.hsnId ? sub?.hsnId : undefined,
+                        sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
 
 
 

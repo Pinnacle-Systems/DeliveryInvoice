@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
-import { useGetPartyQuery, useGetPartyByIdQuery } from "../../../redux/services/PartyMasterService";
+import partyMasterApi, { useGetPartyQuery, useGetPartyByIdQuery, useGetPartyNewQuery } from "../../../redux/services/PartyMasterService";
 
 import { toast } from "react-toastify";
 
@@ -68,7 +68,6 @@ export default function Form() {
 
 
 
-  const { data: supplierList } = useGetPartyQuery({ params: { ...params } });
   const { data: branchList } = useGetBranchQuery({ params: { ...params } });
 
 
@@ -77,12 +76,14 @@ export default function Form() {
 
 
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
 
 
 
-
+  const { data: partyList } = useGetPartyNewQuery({
+    params: { companyId, isAddessCombined: true, id, supplierId },
+  });
 
 
 
@@ -256,6 +257,7 @@ export default function Form() {
           icon: "success",
         });
         dispatch(DeliveryChallanApi.util.invalidateTags(["DeliveryChallan"]));
+        dispatch(partyMasterApi.util.invalidateTags(["Party"]));
 
       } catch (error) {
         Swal.fire({
@@ -285,8 +287,8 @@ export default function Form() {
     <>
       {purchaseOrderForm ? (
 
-        <InvoiceForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={supplierList}
-          branchList={branchList} docId={docId} params={params} id={id} setDocId={setDocId} onNew={onNew} setId={setId}
+        <InvoiceForm onClose={() => { setPurchaseOrderForm(false); setReadOnly(prev => !prev) }} supplierList={partyList}
+          branchList={branchList} docId={docId} params={params} id={id} setDocId={setDocId} onNew={onNew} setId={setId} partyList={partyList}
         />
       ) : (
         <div className="p-2 bg-[#F1F1F0] ">

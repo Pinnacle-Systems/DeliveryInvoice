@@ -31,7 +31,8 @@ import {
   taxTemplate,
   hsn,
   partyBranch,
-  branchType
+  branchType,
+  size
 } from './src/routes/index.js';
 
 import { socketMain } from './src/sockets/socket.js';
@@ -111,6 +112,7 @@ app.use("/taxTemplate", taxTemplate);
 app.use("/hsn", hsn);
 app.use("/partyBranch", partyBranch)
 app.use("/branchType", branchType)
+app.use("/size",size)
 
 
 

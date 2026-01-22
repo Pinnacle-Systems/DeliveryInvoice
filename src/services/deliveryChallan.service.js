@@ -78,15 +78,15 @@ async function get(req) {
             Party: {
                 select: {
                     name: true,
-                    isBranch : true,
-                    BranchType : {
-                        select : {
-                            name : true
+                    isBranch: true,
+                    BranchType: {
+                        select: {
+                            name: true
                         }
                     },
-                    City : {
-                        select : {
-                            name : true
+                    City: {
+                        select: {
+                            name: true
                         }
                     }
                 }
@@ -97,8 +97,8 @@ async function get(req) {
                 }
             }
         },
-        orderBy : {
-            id : "desc"
+        orderBy: {
+            id: "desc"
 
         }
     });
@@ -159,12 +159,17 @@ async function getDcItems(req) {
                 }
             },
             DeliveryInvoiceItems: true,
-            Hsn : {
-                select : {
-                    name : true ,
-                    tax : true
+            Hsn: {
+                select: {
+                    name: true,
+                    tax: true
                 }
-            }
+            },
+            Size: {
+                select: {
+                    name: true
+                }
+            },
 
         }
     });
@@ -249,6 +254,12 @@ async function getOne(id) {
                         select: {
                             name: true,
                             tax: true
+                        }
+                    },
+                    sizeId: true,
+                    Size: {
+                        select: {
+                            name: true
                         }
                     },
                     DeliveryInvoiceItems: {
@@ -340,7 +351,8 @@ async function create(body) {
                                 uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                                 colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                                 qty: sub?.qty ? parseFloat(sub.qty) : undefined,
-                                hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
+                                hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined,
+                                sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined
 
 
                             })),
@@ -401,7 +413,8 @@ async function update(id, body) {
                             uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                             colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                             qty: sub?.qty ? parseFloat(sub.qty) : undefined,
-                            hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
+                            hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined,
+                            sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined
 
 
                         },
@@ -416,7 +429,8 @@ async function update(id, body) {
                         uomId: sub?.uomId ? parseFloat(sub.uomId) : undefined,
                         colorId: sub?.colorId ? parseFloat(sub.colorId) : undefined,
                         qty: sub?.qty ? parseFloat(sub.qty) : undefined,
-                        hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined
+                        hsnId: sub?.hsnId ? parseInt(sub?.hsnId) : undefined,
+                        sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined
 
 
 

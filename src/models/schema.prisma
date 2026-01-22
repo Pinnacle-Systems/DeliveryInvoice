@@ -53,6 +53,7 @@ model Company {
   TaxTerm         TaxTerm[]
   TaxTemplate     TaxTemplate[]
   PartyBranch     PartyBranch[]
+  Size            Size[]
 }
 
 model Subscription {
@@ -322,41 +323,41 @@ model PartyCategory {
 }
 
 model Party {
-  id                   Int               @id @default(autoincrement())
-  name                 String
-  code                 String?
-  aliasName            String?
-  displayName          String?
-  address              String?
-  City                 City?             @relation(fields: [cityId], references: [id])
-  cityId               Int?
-  pincode              Int?
-  panNo                String?
-  tinNo                String?
-  cstNo                String?
-  cstDate              DateTime?         @db.Date
-  cinNo                String?
-  faxNo                String?
-  email                String?
-  website              String?
-  contactPersonName    String?
-  gstNo                String?
-  costCode             String?
-  active               Boolean?          @default(true)
-  contactMobile        BigInt?           @default(0)
-  Company              Company?          @relation(fields: [companyId], references: [id])
-  companyId            Int?
-  yarn                 Boolean?          @default(false)
-  fabric               Boolean?          @default(false)
-  accessoryGroup       Boolean?          @default(false)
-  createdAt            DateTime?         @default(now())
-  updatedAt            DateTime?         @updatedAt
-  createdBy            User?             @relation("createdBy", fields: [createdById], references: [id])
-  createdById          Int?
-  updatedBy            User?             @relation("updatedBy", fields: [updatedById], references: [id])
-  updatedById          Int?
-  isSupplier           Boolean?          @default(false)
-  isCustomer           Boolean?          @default(false)
+  id                Int       @id @default(autoincrement())
+  name              String
+  code              String?
+  aliasName         String?
+  displayName       String?
+  address           String?
+  City              City?     @relation(fields: [cityId], references: [id])
+  cityId            Int?
+  pincode           Int?
+  panNo             String?
+  tinNo             String?
+  cstNo             String?
+  cstDate           DateTime? @db.Date
+  cinNo             String?
+  faxNo             String?
+  email             String?
+  website           String?
+  contactPersonName String?
+  gstNo             String?
+  costCode          String?
+  active            Boolean?  @default(true)
+  contactMobile     BigInt?   @default(0)
+  Company           Company?  @relation(fields: [companyId], references: [id])
+  companyId         Int?
+  yarn              Boolean?  @default(false)
+  fabric            Boolean?  @default(false)
+  accessoryGroup    Boolean?  @default(false)
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+  createdBy         User?     @relation("createdBy", fields: [createdById], references: [id])
+  createdById       Int?
+  updatedBy         User?     @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedById       Int?
+  isSupplier        Boolean?  @default(false)
+  isCustomer        Boolean?  @default(false)
 
   isBranch             Boolean?          @default(false)
   landMark             String?
@@ -381,7 +382,7 @@ model Party {
   partyCode            String?
   parentId             String?
   BranchType           BranchType?       @relation(fields: [branchTypeId], references: [id])
-  branchTypeId           Int?
+  branchTypeId         Int?
   Payment              Payment[]
   Supplier             DeliveryChallan[] @relation(name: "supplier")
   DeliveryTo           DeliveryChallan[] @relation(name: "deliveryTo")
@@ -848,6 +849,8 @@ model DeliveryChallanItems {
   colorId              Int?
   Hsn                  Hsn?                   @relation(fields: [hsnId], references: [id], onDelete: Restrict)
   hsnId                Int?
+  Size                 Size?                  @relation(fields: [sizeId], references: [id], onDelete: Restrict)
+  sizeId               Int?
   qty                  Float?
   active               Boolean?               @default(false)
   isInvoice            Boolean?               @default(false)
@@ -916,6 +919,8 @@ model DeliveryInvoiceItems {
   invoiceQty             Float?
   Hsn                    Hsn?                  @relation(fields: [hsnId], references: [id], onDelete: Restrict)
   hsnId                  Int?
+  Size                   Size?                 @relation(fields: [sizeId], references: [id], onDelete: Restrict)
+  sizeId                 Int?
 }
 
 enum LedgerEntryType {
@@ -1003,4 +1008,14 @@ model BranchType {
   active    Boolean? @default(false)
   aliasName String?
   Party     Party[]
+}
+
+model Size {
+  id                   Int                    @id @default(autoincrement())
+  name                 String?
+  Company              Company?               @relation(fields: [companyId], references: [id])
+  companyId            Int?
+  active               Boolean?
+  DeliveryChallanItems DeliveryChallanItems[]
+  DeliveryInvoiceItems DeliveryInvoiceItems[]
 }

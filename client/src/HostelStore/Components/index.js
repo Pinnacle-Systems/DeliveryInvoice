@@ -34,6 +34,7 @@ export { default as TaxTermMaster } from './TaxTermMaster'
 export { default as TaxTemplate } from './TaxTemplate'
 export { default as HsnMaster } from './HsnMaster'
 export { default as BranchTypeMaster } from './BranchTypeMaster'
+export { default as SizeMaster } from './SizeMaster'
 
 
 

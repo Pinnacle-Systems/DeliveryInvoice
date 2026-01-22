@@ -1,6 +1,6 @@
 import prisma from '../models/getPrisma.js';
 import { NoRecordFound } from '../configs/Responses.js';
-import { getDateFromDateTime, getYearShortCodeForFinYear } from '../utils/helper.js';
+import { attachCurrentTime, getDateFromDateTime, getYearShortCodeForFinYear } from '../utils/helper.js';
 import { getTableRecordWithId } from '../utils/helperQueries.js';
 import { getFinYearStartTimeEndTime } from '../utils/finYearHelper.js';
 
@@ -125,9 +125,8 @@ async function create(body) {
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
         let newDocId = finYearDate ? (await getNextDocId(branchId, shortCode, finYearDate?.startDateStartTime, finYearDate?.endDateEndTime)) : "";
+        const dateOnly = attachCurrentTime(cvv)
 
-        const dateOnly = new Date(cvv);
-        dateOnly.setHours(0, 0, 0, 0);
 
         console.log(dateOnly, "dateOnly")
 
@@ -165,8 +164,7 @@ async function update(id, body) {
         branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId, totalAmount } = await body
 
 
-    const dateOnly = new Date(cvv);
-    dateOnly.setHours(0, 0, 0, 0);
+    const dateOnly = attachCurrentTime(cvv)
 
     console.log(dateOnly, "dateOnly")
     const dataFound = await prisma.payment.findUnique({

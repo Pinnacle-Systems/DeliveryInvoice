@@ -12,13 +12,13 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
 
 
 
-  const filledPoItems = [
-    ...tempInvoiceItems,
-    ...Array(Math.max(0, 15 - tempInvoiceItems.length)).fill({}), // empty rows
-  ];
+    const filledPoItems = [
+        ...tempInvoiceItems,
+        ...Array(Math.max(0, 15 - tempInvoiceItems.length)).fill({}), // empty rows
+    ];
 
 
-  console.log(filledPoItems,"filledPoItems",invoiceItems)
+    console.log(filledPoItems, "filledPoItems", invoiceItems)
 
 
 
@@ -188,6 +188,12 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
                                                     </th>
                                                     <th
 
+                                                        className={`w-14 px-4 py-2 text-center font-medium text-[13px] `}
+                                                    >
+                                                        Size
+                                                    </th>
+                                                    <th
+
                                                         className={`w-20 px-4 py-2 text-center font-medium text-[13px] `}
                                                     >
                                                         No of Box
@@ -227,7 +233,7 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
                                                                 }`}
                                                             onClick={() => {
                                                                 handleChange(item.id, item)
-                                                                 
+
                                                             }}
                                                         >
                                                             <td className='py-1 text-center'>
@@ -253,6 +259,9 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
 
                                                             <td className=" border border-gray-300 text-[11px] py-1.5 px-2">
                                                                 {item?.Color?.name}
+                                                            </td>
+                                                            <td className=" border border-gray-300 text-[11px] py-1.5 px-2">
+                                                                {item?.Size?.name}
                                                             </td>
                                                             <td className=" border text-right border-gray-300 text-[11px] py-1.5 px-1">
                                                                 {item?.noOfBox}

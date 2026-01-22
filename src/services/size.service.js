@@ -51,7 +51,7 @@ async function create(body) {
     const data = await prisma.size.create(
         {
             data: {
-                name, companyId: parseInt(companyId), active, isAccessory: accessory
+                name, companyId: parseInt(companyId), active, 
             }
         }
     )
@@ -73,7 +73,6 @@ async function update(id, body) {
         data:
         {
             name, active, 
-            isAccessory: accessory
         },
     })
     return { statusCode: 0, data };

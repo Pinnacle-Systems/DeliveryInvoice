@@ -34,7 +34,7 @@ import PopUp from "./Pop";
 import pageDetailsApi from "../../../redux/services/PageMasterService";
 
 const InvoiceForm = ({
-    onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, supplierList, params, termsData, branchList, hsnData,
+    onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, supplierList, params, termsData, branchList, hsnData, partyList
 }) => {
 
     const today = new Date()
@@ -67,13 +67,18 @@ const InvoiceForm = ({
     const [transporter, setTransporter] = useState("");
     const [vehicleNo, setVechileNo] = useState("");
     const [transportMode, setTransportMode] = useState("")
-    const allSuppliers = supplierList ? supplierList.data : []
     const [termsandcondtions, setTermsAndConditions] = useState("")
     const [nextprocess, setNextProcess] = useState("")
     const [isPrintOpen, setIsPrintOpen] = useState(false)
 
 
     const { branchId, finYearId, companyId } = params;
+
+
+    let allSuppliers;
+
+
+
 
 
     const { data: styleList } = useGetStyleMasterQuery({ params: { ...params } });
@@ -156,9 +161,14 @@ const InvoiceForm = ({
 
 
 
-    const { data: partyList } = useGetPartyNewQuery({
-        params: { companyId, isAddessCombined: true, id, supplierId },
-    });
+    if (id) {
+        allSuppliers = supplierList?.data?.filter(i => i.id == singleData?.data?.supplierId)
+    } else {
+        allSuppliers = supplierList?.data
+
+    }
+    console.log(allSuppliers,"allSuppliers");
+    
 
     const syncFormWithDb = useCallback((data) => {
 
@@ -348,7 +358,7 @@ const InvoiceForm = ({
 
 
     const validateData = (data) => {
-        let mandatoryFields = ["styleId", "styleItemId", "noOfBox", "uomId", "qty", "price"];
+        let mandatoryFields = ["styleId", "styleItemId", "uomId", "qty", "price"];
 
 
 
@@ -557,7 +567,7 @@ const InvoiceForm = ({
                                     nextRef={customerRef}
                                     id={id}
                                     supplierId={supplierId}
-                                    partyList={partyList}
+                                    partyList={allSuppliers}
                                 />
 
 

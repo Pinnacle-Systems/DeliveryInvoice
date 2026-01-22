@@ -360,8 +360,7 @@ export async function getPartyLedgerReport(partyId, startDate, endDate) {
     //   AND createdAt >=  '${startDateFormatted}' 
     //   AND createdAt <  DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
     //         `
-
-    const sql = `
+const sql  = `
 WITH opening AS (
     SELECT
         p.id AS partyId,
@@ -372,34 +371,31 @@ WITH opening AS (
     LEFT JOIN (
         SELECT partyId, SUM(amount) AS totalLedger
         FROM Ledger
-        WHERE createdAt <  '${startDateFormatted}' 
+        WHERE createdAt < '${startDateFormatted}'
         GROUP BY partyId
     ) ld ON ld.partyId = p.id
     LEFT JOIN (
         SELECT partyId, SUM(totalAmount) AS totalPaid
         FROM Payment
-        WHERE cvv <  '${startDateFormatted}' 
+        WHERE cvv < '${startDateFormatted}'
         GROUP BY partyId
     ) pmt ON pmt.partyId = p.id
-    WHERE p.id = ${partyId} 
+    WHERE p.id = ${partyId}
 ),
 
 txns AS (
     -- 🔹 INVOICE / LEDGER (DEBIT)
-
-
-
-          SELECT
+    SELECT
         I.docId AS transactionId,
-        L.createdAt AS txnDate,
+        L.createdAt AS txnDateTime,      -- FULL DATETIME
         'INVOICE' AS txnType,
         L.amount AS debit,
         0 AS credit
     FROM Ledger L
     LEFT JOIN deliveryinvoice I
            ON I.id = L.deliveryInvoiceId
-    WHERE L.partyId =  ${partyId} 
-      AND L.createdAt >='${startDateFormatted}' 
+    WHERE L.partyId = ${partyId}
+      AND L.createdAt >= '${startDateFormatted}'
       AND L.createdAt < DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
 
     UNION ALL
@@ -407,20 +403,20 @@ txns AS (
     -- 🔹 PAYMENT (CREDIT)
     SELECT
         docId AS transactionId,
-        cvv AS txnDate,
+        cvv AS txnDateTime,             -- FULL DATETIME
         'PAYMENT' AS txnType,
         0 AS debit,
         totalAmount AS credit
     FROM Payment
-    WHERE partyId = ${partyId} 
-      AND cvv >=  '${startDateFormatted}' 
-      AND cvv <  DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
+    WHERE partyId = ${partyId}
+      AND cvv >= '${startDateFormatted}'
+      AND cvv < DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
 )
 
 -- 🔹 OPENING BALANCE ROW
 SELECT
     NULL AS transactionId,
-    DATE_SUB('${startDateFormatted}', INTERVAL 1 DAY) AS txnDate,
+    CONCAT('${startDateFormatted}', ' 00:00:00') AS txnDateTime,
     'OPENING BALANCE' AS txnType,
     CASE WHEN openingBalance > 0 THEN openingBalance ELSE 0 END AS debit,
     CASE WHEN openingBalance < 0 THEN ABS(openingBalance) ELSE 0 END AS credit,
@@ -432,20 +428,20 @@ UNION ALL
 -- 🔹 TRANSACTIONS WITH RUNNING BALANCE
 SELECT
     t.transactionId,
-    t.txnDate,
+    t.txnDateTime,
     t.txnType,
     t.debit,
     t.credit,
     o.openingBalance
     + SUM(t.debit - t.credit)
         OVER (
-            ORDER BY t.txnDate, t.transactionId
+            ORDER BY t.txnDateTime, t.transactionId
             ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS runningBalance
 FROM txns t
 CROSS JOIN opening o
 
-ORDER BY txnDate, transactionId
+ORDER BY txnDateTime, transactionId;
 
 `
 

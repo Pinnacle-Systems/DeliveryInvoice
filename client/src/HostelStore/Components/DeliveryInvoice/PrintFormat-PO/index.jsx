@@ -2481,7 +2481,7 @@ const DeliveryInvoice = ({
       </View>
     </>
   );
- const EmptyTableRow = ({ index }) => (
+  const EmptyTableRow = ({ index }) => (
     <View
       key={`empty-row-${index}`}
       style={{
@@ -2607,7 +2607,6 @@ const DeliveryInvoice = ({
     </View>
   );
 
-  // Summary Section Component (for last page)
   const SummarySection = () => (
     <>
 
@@ -2665,14 +2664,61 @@ const DeliveryInvoice = ({
           )} Only
         </Text>
       </View>
+      <View>
+        <View style={{
+          marginTop: 1, borderWidth: 1,
+          borderColor: "#9ca3af", borderRadius: 4, overflow: "hidden"
+        }}>
 
+          <View style={{ flexDirection: "row", borderTop: "1 solid #9ca3af", borderLeft: "1 solid #9ca3af", borderRight: "1 solid #9ca3af" }}>
+            <View style={{ width: 250, borderRight: "1 solid #9ca3af" }}>
+              <View style={{ flexDirection: "row", borderBottom: "1 solid #9ca3af" }}>
+                <Text style={{ width: 90, fontSize: 8, padding: 4, fontWeight: "bold", backgroundColor: "#f0f4ff", borderRight: "1 solid #9ca3af" }}>Bank Name</Text>
+                <Text style={{ flex: 1, fontSize: 8, padding: 4, textAlign: "left", flexWrap: "wrap" }}>IDBI BANK</Text>
+              </View>
+              <View style={{ flexDirection: "row", borderBottom: "1 solid #9ca3af" }}>
+                <Text style={{ width: 90, fontSize: 8, padding: 4, fontWeight: "bold", backgroundColor: "#f0f4ff", borderRight: "1 solid #9ca3af" }}>A/C No</Text>
+                <Text style={{ flex: 1, fontSize: 8, padding: 4, textAlign: "left", flexWrap: "wrap" }}>1622651100000897</Text>
+              </View>
+              <View style={{ flexDirection: "row", borderBottom: "1 solid #9ca3af" }}>
+                <Text style={{ width: 90, fontSize: 8, padding: 4, fontWeight: "bold", backgroundColor: "#f0f4ff", borderRight: "1 solid #9ca3af" }}>Branch</Text>
+                <Text style={{ flex: 1, fontSize: 8, padding: 4, textAlign: "left", flexWrap: "wrap" }}>
+                  Palladam Road Veerapandi Privu, Tirupur-5
+                </Text>
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={{ width: 90, fontSize: 8, padding: 4, fontWeight: "bold", backgroundColor: "#f0f4ff", borderRight: "1 solid #9ca3af" }}>IFSC Code</Text>
+                <Text style={{ flex: 1, fontSize: 8, padding: 4, textAlign: "left", flexWrap: "wrap" }}>IBKL0001622</Text>
+              </View>
+            </View>
+
+            <View style={{ flex: 1, padding: 6 }}>
+              <Text style={{ fontSize: 8, fontWeight: "bold", color: "#946657", marginBottom: 2 }}>
+                Terms & Conditions:
+              </Text>
+              <Text style={{ fontSize: 8, flexWrap: "wrap" }}>
+                {termsAndCondition || "—"}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={{
+          backgroundColor: "#f0f4ff", paddingVertical: 6, paddingHorizontal: 8, borderWidth: 1,
+          borderColor: "#9ca3af",
+        }}>
+          <Text style={{ fontSize: 8, lineHeight: 1.4, textAlign: "left", flexWrap: "wrap" }}>
+            Certified that the above particulars are true and correct and are issued under our authority.
+          </Text>
+        </View>
+      </View>
 
     </>
   );
 
   // Calculate starting index for each chunk
   let globalIndex = 0;
- 
+
 
   return (
     <Document>
@@ -2725,18 +2771,30 @@ const DeliveryInvoice = ({
                 </View>
               )}
             </View>
-            <Text style={styles.pageNumber} render={({ pageNumber }) => `${pageNumber}`} fixed />
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={styles.pageNumber}
+                render={({ pageNumber }) => `${pageNumber}`}
+                fixed
+              />
+            </View>
+
           </Page>
         );
       })}
 
       {/* Separate page for summary section to prevent wrapping */}
-      <Page size="A4" style={styles.page}>
+      {/* <Page size="A4" style={styles.page}>
         <View style={styles.pageBorder}>
 
           <View>
             <View style={{
-              marginTop: 6, borderWidth: 1,
+              marginTop: 1, borderWidth: 1,
               borderColor: "#9ca3af", borderRadius: 4, overflow: "hidden"
             }}>
 
@@ -2794,9 +2852,10 @@ const DeliveryInvoice = ({
                 </Text>
               ))}
             </View>
-          </View>        </View>
+          </View>
+        </View>
 
-      </Page>
+      </Page> */}
     </Document>
   );
 };

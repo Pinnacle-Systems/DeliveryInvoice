@@ -2285,14 +2285,14 @@ export const ShowInvoicPendingCustomers = forwardRef(
     /* ---------------------------- FILTER PARTIES ---------------------------- */
 
     useEffect(() => {
-      if (!partyList?.data) return;
+      if (!partyList) return;
 
       if (!search.trim()) {
-        setFilteredPages(partyList?.data);
+        setFilteredPages(partyList);
         return;
       }
 
-      const filtered = partyList?.data?.filter((item) =>
+      const filtered = partyList?.filter((item) =>
 
         item?.name?.toLowerCase().includes(search.toLowerCase())
       );
@@ -2402,7 +2402,7 @@ export const ShowInvoicPendingCustomers = forwardRef(
                   placeholder={placeholder}
                   value={findFromList(
                     searchTerm,
-                    partyList?.data?.filter(i => i.isCustomer),
+                    partyList?.filter(i => i.isCustomer),
                     "name"
                   )}
                   onFocus={() => {

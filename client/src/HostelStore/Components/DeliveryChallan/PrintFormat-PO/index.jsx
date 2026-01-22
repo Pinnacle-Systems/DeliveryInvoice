@@ -269,13 +269,16 @@ const DeliveryChallanPrint = ({
           <Text style={[styles.td, { flex: 2, textAlign: "left" }]}>
             {row?.Color?.name}
           </Text>
-          <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
-            {row?.styleId ? 9988 : ""}
+          <Text style={[styles.td, { flex: 1, textAlign: "left" }]}>
+            {row?.Size?.name ? row?.Size?.name : ""}
           </Text>
+          {/* <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
+            {row?.styleId ? 9988 : ""}
+          </Text> */}
           <Text style={[styles.td, { flex: 1, textAlign: "left" }]}>
             {row?.Uom?.name}
           </Text>
-          <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
+          <Text style={[styles.td, { flex: 1, textAlign: "right" }]}>
             {row?.noOfBox ? (Number(row?.noOfBox)).toFixed(3) : ""}
           </Text>
           <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
@@ -459,9 +462,11 @@ const DeliveryChallanPrint = ({
           <Text style={[styles.th, { flex: 5 }]}>STYLE NO</Text>
           <Text style={[styles.th, { flex: 3 }]}>ITEM</Text>
           <Text style={[styles.th, { flex: 2 }]}>COLOR</Text>
-          <Text style={[styles.th, { flex: 1 }]}>HSN</Text>
+          <Text style={[styles.th, { flex: 1 }]}>Size</Text>
+          {/* <Text style={[styles.th, { flex: 1 }]}>HSN</Text> */}
           <Text style={[styles.th, { flex: 1 }]}>UOM</Text>
-          <Text style={[styles.th, { flex: 2 }]}>NO OF BOX</Text>
+          <Text style={[styles.th, { flex: 1 }]}>NO OF BOX</Text>
+
           <Text style={[styles.th, { flex: 2 }]}>QTY</Text>
         </View>
 

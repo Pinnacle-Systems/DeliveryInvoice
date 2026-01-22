@@ -23,6 +23,7 @@ import DeliveryChallanPrint from "./PrintFormat-PO";
 import { useGetBranchByIdQuery } from "../../../redux/services/BranchMasterService";
 import { useGetHsnMasterQuery } from "../../../redux/services/HsnMasterServices";
 import PopUp from "./Pop";
+import { useGetSizeMasterQuery } from "../../../redux/services/SizeMasterService";
 
 const ChallanForm = ({
     onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, taxTypeList, supplierList, params, termsData, branchList, hsnData,
@@ -68,6 +69,7 @@ const ChallanForm = ({
     const { data: uomList } = useGetUomQuery({ params: { ...params } });
     const { data: colorList } = useGetColorMasterQuery({ params: { ...params } });
     const { data: hsnList } = useGetHsnMasterQuery({ params: { ...params } });
+    const { data: sizeList } = useGetSizeMasterQuery({ params: { ...params } });
 
     const { data: supplierDetails } =
         useGetPartyByIdQuery(supplierId, { skip: !supplierId });
@@ -228,7 +230,7 @@ const ChallanForm = ({
 
 
     const validateData = (data) => {
-        let mandatoryFields = ["styleId", "styleItemId", "uomId", "qty"];
+        let mandatoryFields = ["styleId", "styleItemId", "uomId", "qty","sizeId"];
 
 
 
@@ -525,7 +527,7 @@ const ChallanForm = ({
 
                     <DeliveryItems deliveryItems={deliveryItems} setDeliveryItems={setDeliveryItems} styleList={styleList}
                         styleItemList={styleItemList} uomList={uomList} colorList={colorList} readOnly={readOnly} setReadOnly={setReadOnly}
-                        hsnList={hsnList} id={id}
+                        hsnList={hsnList} id={id} sizeList={sizeList}
                     />
 
                 </fieldset>
@@ -560,7 +562,7 @@ const ChallanForm = ({
                             <span className="text-md font-semibold text-slate-800 ">
                                 {deliveryItems?.reduce((sum, next) => {
                                     return sum + (Number(next?.qty) || 0);
-                                }, 0).toFixed(3)} PCS
+                                }, 0).toFixed(2)} PCS
                             </span>
                         </div>
                     </div>
