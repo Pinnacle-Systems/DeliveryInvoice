@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import FormHeader from "../../../Basic/components/FormHeader"
 import { amountInWords, formatAmountIN, getCommonParams, getDateFromDateTime } from "../../../Utils/helper";
-import { paymentModes, PaymentType } from "../../../Utils/DropdownData";
+import { PaymentFlow, paymentModes, PaymentType } from "../../../Utils/DropdownData";
 import { useDispatch } from "react-redux";
 import { useAddPaymentMutation, useDeletePaymentMutation, useGetPaymentByIdQuery, useGetPaymentQuery, useUpdatePaymentMutation } from "../../../redux/services/PaymentService";
 import { useGetPartyByIdQuery, useGetPartyQuery } from "../../../redux/services/PartyMasterService";
@@ -38,6 +38,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
     const [totalBillAmount, setTotalBillAmount] = useState('');
     const [totalPayAmount, setTotalPayAmount] = useState('')
     const [purchaseOrderForm, setPurchaseOrderForm] = useState("")
+    const [paymentFlow, setPaymentFlow] = useState("Receipt");
 
     const [searchValue, setSearchValue] = useState("");
     const [supplierId, setSupplierId] = useState("");
@@ -84,6 +85,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
             setPartyId(data?.partyId || '');
             setTotalBillAmount(data?.totalBillAmount || '')
             setCvv(data?.cvv ? moment.utc(data?.cvv).format("YYYY-MM-DD") : moment.utc(new Date()).format("YYYY-MM-DD"))
+            setPaymentFlow(data?.paymentFlow  ? data?.paymentFlow  : "Receipt")
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
         }, [id])
@@ -107,7 +109,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
     const [removeData] = useDeletePaymentMutation();
 
 
-console.log(cvv,"datecheck");
+    console.log(cvv, "datecheck");
 
     const data = {
         id,
@@ -122,11 +124,12 @@ console.log(cvv,"datecheck");
         finYearId,
         userId,
         totalBillAmount,
-        totalAmount: parseFloat(paidAmount) + parseFloat(discount)
+        totalAmount: parseFloat(paidAmount) + parseFloat(discount),
+        paymentFlow,
 
     }
     const validateData = (data) => {
-        return data?.supplierId && data?.paidAmount && data?.paymentType && data?.paymentMode && data?.cvv
+        return data?.supplierId && data?.paidAmount && data?.paymentType && data?.paymentMode && data?.cvv && data?.paymentFlow
     }
 
     const handleSubmitCustom = async (callback, data, text, nextProcess) => {
@@ -228,7 +231,7 @@ console.log(cvv,"datecheck");
         syncFormWithDb(undefined);
 
     }
-    const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId , isAddessCombined : true } });
+    const { data: supplierList } = useGetPartyQuery({ params: { branchId, finYearId, isAddessCombined: true } });
 
     const supplierData = supplierList?.data ? supplierList.data : [];
 
@@ -461,9 +464,26 @@ console.log(cvv,"datecheck");
                                 ref={inputRef}
 
                             />
+                            <div className="mb-2">
+                                <label htmlFor="paymentType" className="block text-xs font-bold text-gray-600 mb-1">
+                                    Payment Flow <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={paymentFlow}
+                                    onChange={(e) => setPaymentFlow(e.target.value)}
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg  bg-white focus:outline-none focus:ring-emerald-500 block text-xs font-bold text-gray-600 mb-1"
+                                >
+                                    <option value="" disabled>Select a payment Flow</option>
+                                    {PaymentFlow.map((type) => (
+                                        <option key={type.value} value={type.value}>
+                                            {type.show}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className="mb-2 col-span-2">
                                 <label htmlFor="paymentType" className="block text-xs font-bold text-gray-600 mb-1 ">
-                                    Customer <span className="text-red-500">*</span>
+                                   {paymentFlow == "Receipt" ? "Customer" : "Supplier"} <span className="text-red-500">*</span>
                                 </label>
                                 <DropdownInputNew
                                     ref={inputRef}
@@ -472,9 +492,9 @@ console.log(cvv,"datecheck");
                                     options={dropDownListObject(
                                         id
                                             ? supplierData
-                                            : paymentType === "PURCHASEBILL"
-                                                ? supplierData.filter((value) => value.isSupplier && value.active)
-                                                : supplierData.filter((value) => value.isCustomer && value.active),
+                                            : paymentFlow == "Receipt"
+                                                ? supplierData.filter((value) => value.isCustomer && value.active)
+                                                : supplierData.filter((value) => value.isSupplier && value.active),
                                         "name",
                                         "id"
                                     )}

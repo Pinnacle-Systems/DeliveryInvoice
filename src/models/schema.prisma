@@ -788,6 +788,7 @@ model Payment {
   discount        Int?     @default(0)
   paymentRefNo    String?
   totalAmount     Int?
+  paymentFlow    String?
 }
 
 model Style {

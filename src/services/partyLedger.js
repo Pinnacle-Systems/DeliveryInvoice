@@ -466,31 +466,34 @@ WITH opening AS (
         SELECT partyId, SUM(amount) AS totalLedger
     
         FROM Ledger
-        WHERE createdAt < '${startDateFormatted}'
+        WHERE createdAt <  '${startDateFormatted}' 
         GROUP BY partyId
     ) ld ON ld.partyId = p.id
     LEFT JOIN (
         SELECT partyId, SUM(totalAmount) AS totalPaid
         FROM Payment
-        WHERE cvv < '${startDateFormatted}'
+        WHERE cvv <  '${startDateFormatted}' 
         GROUP BY partyId
     ) pmt ON pmt.partyId = p.id
-    WHERE p.id = ${partyId}
+    WHERE p.id = ${partyId} 
 ),
 
 txns AS (
     -- 🔹 INVOICE / LEDGER (DEBIT)
-    SELECT
+
+
+
+          SELECT
         I.docId AS transactionId,
-        L.createdAt AS txnDateTime,      -- FULL DATETIME
+        L.createdAt AS txnDate,
         'INVOICE' AS txnType,
         L.amount AS debit,
         0 AS credit
     FROM Ledger L
     LEFT JOIN deliveryinvoice I
            ON I.id = L.deliveryInvoiceId
-    WHERE L.partyId = ${partyId}
-      AND L.createdAt >= '${startDateFormatted}'
+    WHERE L.partyId =  ${partyId} 
+      AND L.createdAt >='${startDateFormatted}' 
       AND L.createdAt < DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
 
     UNION ALL
@@ -498,20 +501,20 @@ txns AS (
     -- 🔹 PAYMENT (CREDIT)
     SELECT
         docId AS transactionId,
-        cvv AS txnDateTime,             -- FULL DATETIME
+        cvv AS txnDate,
         'PAYMENT' AS txnType,
         0 AS debit,
         totalAmount AS credit
     FROM Payment
-    WHERE partyId = ${partyId}
-      AND cvv >= '${startDateFormatted}'
-      AND cvv < DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
+    WHERE partyId = ${partyId} 
+      AND cvv >=  '${startDateFormatted}' 
+      AND cvv <  DATE_ADD('${endDateFormatted}', INTERVAL 1 DAY)
 )
 
 -- 🔹 OPENING BALANCE ROW
 SELECT
     NULL AS transactionId,
-    CONCAT('${startDateFormatted}', ' 00:00:00') AS txnDateTime,
+    DATE_SUB('${startDateFormatted}', INTERVAL 1 DAY) AS txnDate,
     'OPENING BALANCE' AS txnType,
     CASE WHEN openingBalance > 0 THEN openingBalance ELSE 0 END AS debit,
     CASE WHEN openingBalance < 0 THEN ABS(openingBalance) ELSE 0 END AS credit,
@@ -523,20 +526,20 @@ UNION ALL
 -- 🔹 TRANSACTIONS WITH RUNNING BALANCE
 SELECT
     t.transactionId,
-    t.txnDateTime,
+    t.txnDate,
     t.txnType,
     t.debit,
     t.credit,
     o.openingBalance
     + SUM(t.debit - t.credit)
         OVER (
-            ORDER BY t.txnDateTime, t.transactionId
+            ORDER BY t.txnDate, t.transactionId
             ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS runningBalance
 FROM txns t
 CROSS JOIN opening o
 
-ORDER BY txnDateTime, transactionId;
+ORDER BY txnDate, transactionId
 
 `
 

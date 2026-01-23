@@ -141,3 +141,9 @@ export const partyType = [
         show:"Supplier",value:"supplier"
     },
 ]
+
+
+export const PaymentFlow = [
+    { show: "Receipt", value: "Receipt" },
+    { show: "Payout", value: "Payout" },
+]

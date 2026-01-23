@@ -120,7 +120,7 @@ async function getSearch(req) {
 async function create(body) {
     let data;
     try {
-        const { branchId, id, paymentMode, cvv, paymentType, paidAmount, discount, paymentRefNo, supplierId, userId, finYearId, totalBillAmount, totalAmount } = body;
+        const { branchId, id, paymentMode, cvv, paymentType, paidAmount, discount, paymentRefNo, supplierId, userId, finYearId, totalBillAmount, totalAmount ,paymentFlow } = body;
 
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
@@ -144,7 +144,8 @@ async function create(body) {
                     cvv: cvv ? new Date(cvv) : null,
                     paymentType,
                     totalBillAmount: totalBillAmount ? parseInt(totalBillAmount) : undefined,
-                    totalAmount: totalAmount ? parseInt(totalAmount) : undefined
+                    totalAmount: totalAmount ? parseInt(totalAmount) : undefined,
+                    paymentFlow: paymentFlow ? paymentFlow : ""
                 }
             });
         });
@@ -161,7 +162,9 @@ async function create(body) {
 async function update(id, body) {
     let data
     const {
-        branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId, totalAmount } = await body
+        branchId, paymentMode, cvv, paymentType, paidAmount, discount, supplierId, userId, paymentRefNo, partyId, finYearId, totalAmount ,
+        paymentFlow
+    } = await body
 
 
     const dateOnly = attachCurrentTime(cvv)
@@ -187,7 +190,9 @@ async function update(id, body) {
                 createdById: parseInt(userId),
                 cvv: cvv ? new Date(cvv) : null,
                 paymentType,
-                totalAmount: totalAmount ? parseInt(totalAmount) : undefined
+                totalAmount: totalAmount ? parseInt(totalAmount) : undefined,
+                paymentFlow: paymentFlow ? paymentFlow : ""
+
 
             },
         })
