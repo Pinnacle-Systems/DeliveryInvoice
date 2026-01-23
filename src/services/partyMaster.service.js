@@ -220,11 +220,19 @@ async function getOne(id) {
                 }
             },
             ledgers: true,
+            openingBalances: true
 
         }
     });
 
     if (!data) return NoRecordFound("party");
+
+
+    const totalOpeningBalance = data?.openingBalances?.reduce(
+        (sum, val) => sum + (val?.amount ?? 0),
+        0
+    ); console.log(totalOpeningBalance, "openingBalancessssdddd");
+
 
     const totalPurchaseNetBillValue = data.PurchaseBillSupplier.reduce((acc, bill) => acc + (bill.ourPrice || 0), 0);
     const totalSalesNetBillValue = data.SalesBillSupplier.reduce((acc, bill) =>
@@ -239,10 +247,11 @@ async function getOne(id) {
         payment.paymentType === 'PURCHASEBILL' ? acc + (payment.paidAmount || 0) : acc, 0);
 
 
-    const totaloutstanding = data?.ledgers?.reduce((acc, next) =>
+    const outstanding = data?.ledgers?.reduce((acc, next) =>
         next?.creditOrDebit === "Credit" ? acc + (next.amount || 0) : acc, 0
     )
 
+    const totaloutstanding = outstanding + (totalOpeningBalance)
 
     const totalPaymentAgainstInvoice = data?.Payment?.reduce((acc, next) =>
         acc + (next.paidAmount || 0), 0

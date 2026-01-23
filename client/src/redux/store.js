@@ -11,7 +11,8 @@ import {
   TaxTermMasterApi,
   TaxTemplateApi,
   HsnMasterApi,
-  branchTypeMasterApi
+  branchTypeMasterApi,
+  openingBalanceApi
 } from "./services"
 import paymentApi from "./services/PaymentService";
 import StyleMasterApi from "./services/StyleMasterService";
@@ -61,6 +62,7 @@ const commonReducers = {
   hsnMaster: HsnMasterApi.reducer,
   partyBranchMaster: partyBranchMasterApi.reducer,
   branchTypeMaster: branchTypeMasterApi.reducer,
+  [openingBalanceApi.reducerPath]:openingBalanceApi.reducer,
   sizeMaster: SizeMasterApi.reducer
 
 }
@@ -101,6 +103,7 @@ TaxTemplateApi.middleware,
 HsnMasterApi.middleware,
 partyBranchMasterApi.middleware,
 branchTypeMasterApi.middleware,
+openingBalanceApi.middleware,,
 SizeMasterApi.middleware
 ];
 

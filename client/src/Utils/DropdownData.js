@@ -133,3 +133,11 @@ export const PaymentType = [
     { show: "Advance Payment", value: "ADVANCE" },
 ]
 
+export const partyType = [
+    {
+        show:"Customer",value:"customer"
+    },
+    {
+        show:"Supplier",value:"supplier"
+    },
+]

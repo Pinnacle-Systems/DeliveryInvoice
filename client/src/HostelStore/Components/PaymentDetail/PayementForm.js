@@ -107,6 +107,7 @@ const PaymentForm = ({ id, setId, onClose }) => {
     const [removeData] = useDeletePaymentMutation();
 
 
+console.log(cvv,"datecheck");
 
     const data = {
         id,
