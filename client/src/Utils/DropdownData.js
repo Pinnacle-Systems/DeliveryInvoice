@@ -147,3 +147,7 @@ export const PaymentFlow = [
     { show: "Receipt", value: "Receipt" },
     { show: "Payout", value: "Payout" },
 ]
+export const CreditOrDebit = [
+    { show: "Debit", value: "Debit" },
+    { show: "Credit", value: "Credit" },
+]

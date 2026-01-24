@@ -132,7 +132,7 @@ async function create(body) {
             branchId,
             companyId,
             finYearId,
-            userId, } = body;
+            userId, creditDebit } = body;
 
         let finYearDate = await getFinYearStartTimeEndTime(finYearId);
         const shortCode = finYearDate ? getYearShortCodeForFinYear(finYearDate?.startDateStartTime, finYearDate?.endDateEndTime) : "";
@@ -146,11 +146,12 @@ async function create(body) {
                     date: date ? new Date(date) : null,
                     partCategory: partCategory || '',
                     partyId: partyId ? parseInt(partyId) : undefined,
-                    amount: parseInt(amount),
+                    amount: amount ? parseInt(amount) : 0,
                     branchId: branchId ? parseInt(branchId) : undefined,
                     companyId: companyId ? parseInt(companyId) : undefined,
                     finYearId: finYearId ? parseInt(finYearId) : undefined,
                     createdById: userId ? parseInt(userId) : undefined,
+                    creditDebit: creditDebit ? creditDebit : ""
                 }
             });
         });
@@ -172,7 +173,7 @@ async function update(id, body) {
         partyId,
         amount,
 
-        userId, } = await body
+        userId, creditDebit } = await body
     const dataFound = await prisma.openingBalance.findUnique({
         where: {
             id: parseInt(id)
@@ -189,9 +190,10 @@ async function update(id, body) {
                 date: date ? new Date(date) : null,
                 partCategory: partCategory || '',
                 partyId: partyId ? parseInt(partyId) : undefined,
-                amount: parseInt(amount),
-
+                amount: amount ? parseInt(amount) : 0,
+                creditDebit: creditDebit ? creditDebit : "",
                 updatedById: userId ? parseInt(userId) : undefined,
+
 
             },
         })

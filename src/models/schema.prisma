@@ -1037,6 +1037,7 @@ model OpeningBalance {
   Party        Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
   partyId      Int
   amount       Int?
+  creditDebit  String?
 }
 
 model Size {

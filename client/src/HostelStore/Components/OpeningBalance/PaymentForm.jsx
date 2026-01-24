@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { amountInWords } from "../../../Utils/helper";
-import { partyType } from "../../../Utils/DropdownData";
+import { CreditOrDebit, partyType } from "../../../Utils/DropdownData";
 
 
 import { DropdownInputNew, TextInputNew } from "../../../Inputs";
@@ -12,7 +12,8 @@ import { FaFileAlt } from "react-icons/fa";
 
 const PaymentForm = ({ onClose, docId, date, setDate, partCategory, setPartyCategory,
     dropDownData,
-    partyId, setPartyId, amount, setAmount, readOnly, setReadOnly, paidAmount, setPaidAmount, childRecord, saveData
+    partyId, setPartyId, amount, setAmount, readOnly, setReadOnly, paidAmount, setPaidAmount, childRecord, saveData,
+    creditDebit, setCreditDebit
 
 }) => {
 
@@ -91,6 +92,7 @@ const PaymentForm = ({ onClose, docId, date, setDate, partCategory, setPartyCate
 
                                 />
                             </div>
+
                             <div className="w-36">
                                 <label htmlFor="paymentType" className="block text-xs font-bold text-gray-600 mb-1 ">
                                     Customer / Supplier <span className="text-red-500">*</span>
@@ -139,6 +141,27 @@ const PaymentForm = ({ onClose, docId, date, setDate, partCategory, setPartyCate
                                     readOnly={readOnly}
                                     disabled={childRecord.current > 0}
                                 />
+                            </div>
+                            <div className="w-36">
+                                <label htmlFor="paymentType" className="block text-xs font-bold text-gray-600 mb-1 ">
+                                    Credit Or Debit <span className="text-red-500">*</span>
+                                </label>
+                                <select name="" id="" className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
+                                          focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                                          transition-all duration-150 shadow-sm ${readOnly ? "bg-slate-100" : ""}
+                                         `} value={creditDebit} onChange={(e) => setCreditDebit(e.target.value)}>
+
+                                    {/* <option value="" >
+                                        Select
+                                    </option> */}
+                                    {CreditOrDebit?.map((val, index) => (
+                                        <option key={index} value={val.value}>
+                                            {val.show}
+                                        </option>
+                                    ))
+
+                                    }
+                                </select>
                             </div>
                             <div className="w-40">
                                 <label className="block text-xs font-bold text-gray-600 mb-1">Amount <span className="text-red-500">*</span>

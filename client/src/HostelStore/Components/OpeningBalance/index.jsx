@@ -26,6 +26,7 @@ const OpeningBalance = () => {
     const [readOnly, setReadOnly] = useState(false);
     const [paidAmount, setPaidAmount] = useState('')
     const childRecord = useRef(0);
+    const [creditDebit, setCreditDebit] = useState("Debit")
     const dispatch = useDispatch()
     const { data: allData } = useGetOpeningBalanceQuery({ params })
     const { data: singleData } = useGetOpeningBalanceByIdQuery(id, { skip: !id });
@@ -39,12 +40,13 @@ const OpeningBalance = () => {
 
     const syncFormWithDb = useCallback(
         (data) => {
-
+            if(!id) return
             setDocId(data?.docId ? data?.docId : "New");
             setDate(data?.date ? moment.utc(data?.date).format("YYYY-MM-DD") : moment.utc(new Date()).format("YYYY-MM-DD"))
             setPartyCategory(data?.partCategory || '')
             setPartyId(data?.partyId || '')
             setAmount(data?.amount || '')
+            setCreditDebit(data?.creditDebit ? data?.creditDebit : "")
             childRecord.current = data?.childRecord ? data?.childRecord : 0;
 
         }, [id])
@@ -71,9 +73,10 @@ const OpeningBalance = () => {
         companyId,
         finYearId,
         userId,
+        creditDebit
     }
-    const validateData = (data) => {
-        return data?.date && data?.partCategory && data?.partyId && data?.amount
+    const validateData = (data) => { 
+        return data?.date && data?.partCategory && data?.partyId && data?.amount && data?.creditDebit
     }
 
     const handleSubmitCustom = async (callback, data, text, nextProcess) => {
@@ -120,15 +123,15 @@ const OpeningBalance = () => {
 
             }); return
         }
-        if (data?.amount < 0) {
-            // toast.info("Amount Cannot be Negative...!!!", { position: "top-center" })
-            Swal.fire({
-                title: "Amount Cannot be Negative...!!!",
-                icon: "error",
+        // if (data?.amount < 0) {
+        //     // toast.info("Amount Cannot be Negative...!!!", { position: "top-center" })
+        //     Swal.fire({
+        //         title: "Amount Cannot be Negative...!!!",
+        //         icon: "error",
 
-            });
-            return
-        }
+        //     });
+        //     return
+        // }
         if (!window.confirm("Are you sure save the details ...?")) {
             return
         }
@@ -220,7 +223,7 @@ const OpeningBalance = () => {
                     setPartyCategory={setPartyCategory} partyId={partyId} setPartyId={setPartyId}
                     setAmount={setAmount} readOnly={readOnly} setReadOnly={setReadOnly} paidAmount={paidAmount}
                     amount={amount} setPaidAmount={setPaidAmount} childRecord={childRecord} PartyData={PartyData}
-                    dropDownData={dropDownData}
+                    dropDownData={dropDownData} creditDebit={creditDebit} setCreditDebit={setCreditDebit}
                     saveData={saveData}
 
 

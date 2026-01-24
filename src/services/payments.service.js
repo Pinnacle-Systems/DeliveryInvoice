@@ -141,7 +141,7 @@ async function create(body) {
                     discount: parseFloat(discount),
                     paymentRefNo: paymentRefNo,
                     createdById: parseInt(userId),
-                    cvv: cvv ? new Date(cvv) : null,
+                    cvv: dateOnly ? new Date(dateOnly) : null,
                     paymentType,
                     totalBillAmount: totalBillAmount ? parseInt(totalBillAmount) : undefined,
                     totalAmount: totalAmount ? parseInt(totalAmount) : undefined,
@@ -188,7 +188,7 @@ async function update(id, body) {
                 paidAmount: parseFloat(paidAmount),
                 discount: parseFloat(discount),
                 createdById: parseInt(userId),
-                cvv: cvv ? new Date(cvv) : null,
+                cvv: dateOnly ? new Date(dateOnly) : null,
                 paymentType,
                 totalAmount: totalAmount ? parseInt(totalAmount) : undefined,
                 paymentFlow: paymentFlow ? paymentFlow : ""
