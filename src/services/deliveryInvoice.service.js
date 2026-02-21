@@ -147,6 +147,12 @@ async function getOne(id) {
                     price: true,
                     invoiceQty: true,
                     hsnId: true,
+                    processId: true,
+                    Process: {
+                        select: {
+                            name: true
+                        }
+                    },
                     Style: {
                         select: {
                             name: true
@@ -268,6 +274,7 @@ async function create(body) {
                                     deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
                                     hsnId: sub?.hsnId ? sub?.hsnId : undefined,
                                     sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
+                            processId: sub?.processId ? parseInt(sub?.processId) : undefined,
 
                                 })),
                             },
@@ -359,7 +366,7 @@ async function update(id, body) {
                             deliveryChallanItemsId: sub?.deliveryChallanItemsId ? parseInt(sub?.deliveryChallanItemsId) : undefined,
                             hsnId: sub?.hsnId ? sub?.hsnId : undefined,
                             sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
-
+                            processId: sub?.processId ? parseInt(sub?.processId) : undefined,
 
 
                         },
@@ -379,6 +386,7 @@ async function update(id, body) {
                         deliveryChallanItemsId: sub?.id ? parseInt(sub?.id) : undefined,
                         hsnId: sub?.hsnId ? sub?.hsnId : undefined,
                         sizeId: sub?.sizeId ? parseInt(sub?.sizeId) : undefined,
+                            processId: sub?.processId ? parseInt(sub?.processId) : undefined,
 
 
 

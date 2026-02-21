@@ -32,9 +32,10 @@ import { useGetTaxTermMasterQuery } from "../../../redux/services/TaxTermMasterS
 import { useDispatch } from "react-redux";
 import PopUp from "./Pop";
 import pageDetailsApi from "../../../redux/services/PageMasterService";
+import { useGetprocessMasteresQuery } from "../../../redux/services/ProcessMasterService";
 
 const InvoiceForm = ({
-    onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, supplierList, params, termsData, branchList, hsnData, partyList
+    onClose, id, setId, readOnly, setReadOnly, docId, setDocId, poItems, setPoItems, setTempPoItems, onNew, params, termsData, branchList, hsnData
 }) => {
 
     const today = new Date()
@@ -77,8 +78,12 @@ const InvoiceForm = ({
 
     let allSuppliers;
 
+  const { data: supplierList } = useGetPartyNewQuery({
+    params: { companyId, isAddessCombined: true, id, supplierId },
+  });
 
 
+    const { data: processList } = useGetprocessMasteresQuery({ params: { ...params } });
 
 
     const { data: styleList } = useGetStyleMasterQuery({ params: { ...params } });
@@ -450,7 +455,7 @@ const InvoiceForm = ({
                         discountValue={discountValue}
                         // ref={componentRef}
                         poNumber={docId} poDate={date} payTermId={payTermId}
-                        poItems={invoiceItems}
+                    poItems={invoiceItems?.filter(i => i.price && i.styleId)}
                         supplierDetails={supplierDetails ? supplierDetails?.data : null}
                         deliveryType={deliveryType}
                         deliveryToId={deliveryToId}
@@ -502,7 +507,7 @@ const InvoiceForm = ({
                     setDiscountType={setDiscountType}
                     discountValue={discountValue}
                     setDiscountValue={setDiscountValue}
-                    poItems={invoiceItems?.filter(i => i.price)}
+                    poItems={invoiceItems?.filter(i => i.price && i.styleId)}
 
                     taxTypeId={taxTemplateId} readOnly={readOnly} />
             </Modal>
@@ -700,135 +705,11 @@ const InvoiceForm = ({
                 <fieldset className=''>
 
                     <InvoiceItems invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} styleList={styleList}
-                        styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList} customerRef={customerRef}
+                        styleItemList={styleItemList} uomList={uomList} supplierId={supplierId} id={id} onClose={() => setTableDataView(false)} setTableDataView={setTableDataView} colorList={colorList} customerRef={customerRef} processList={processList}
                     />
 
                 </fieldset>
 
-                {/* <div className="grid grid-cols-5 gap-3">
-
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm">
-                        <h2 className="font-medium text-slate-700 mb-2">
-                            Transport Details
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div className="col-span-2">
-                                <TextInputNew1 name="Transporter"
-                                    value={transporter} setValue={setTransporter} readOnly={readOnly} />
-
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-gray-600 mb-1">
-                                    Transport Mode
-                                </label>
-                                <select className="w-full text-xs border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    onChange={(e) => {
-                                        setTransportMode(e.target.value)
-                                    }}
-                                    value={transportMode}
-                                >
-                                    <option value="">Select</option>
-                                    <option value="Road">By Road</option>
-                                    <option value="Rail">By Rail</option>
-                                    <option value="Air">By Air</option>
-                                    <option value="Ship">By Ship</option>
-                                </select>
-                            </div>
-
-
-                            <div className="col-span-1">
-                                <TextInputNew1 name="Vehicle No"
-                                    value={vehicleNo} setValue={setVechileNo} readOnly={readOnly} />
-
-                            </div>
-
-                        </div>
-                    </div>
-
-
-
-
-
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">Remarks</h2>
-                        <textarea
-                            readOnly={readOnly}
-                            value={remarks}
-                            onChange={(e) => {
-                                setRemarks(e.target.value)
-                            }}
-                            className="w-full h-36 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
-                            placeholder="Additional notes..."
-                        />
-                    </div>
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm ">
-                        <h2 className="font-medium text-slate-700 mb-2 text-base">Terms & Conditions </h2>
-                        <textarea
-                            readOnly={readOnly}
-                            value={termsandcondtions}
-                            onChange={(e) => {
-                                setTermsAndConditions(e.target.value)
-                            }}
-                            className="w-full h-36 overflow-auto px-2.5 py-2 text-xs border border-slate-300 rounded-md  focus:ring-1 focus:ring-indigo-200 focus:border-indigo-500"
-                            placeholder="Additional notes..."
-                        />
-                    </div>
-                    <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm">
-
-                        <h2 className="font-medium text-slate-700 mb-2 text-base ">
-                            Tax Details
-                        </h2>
-
-                        <div className="flex justify-between text-sm">
-                            <span className="text-xs    text-slate-700  ">CGST @ {halfGST}%</span>
-                            <span>₹ {cgst.toFixed(2)}</span>
-                        </div>
-
-                        <div className="flex justify-between text-sm ">
-                            <span className=" text-slate-700  text-xs">SGST @ {halfGST}%</span>
-                            <span>₹ {sgst.toFixed(2)}</span>
-                        </div>
-
-                        <div className="flex justify-between text-sm">
-                            <span className=" text-slate-700 text-xs">IGST @ {igst}%</span>
-                            <span>₹ {igst.toFixed(2)}</span>
-                        </div>
-
-                        <div className="border-t border-slate-200 my-2" />
-
-                        <div className="flex justify-between text-slate-700 text-sm font-medium">
-                            <span className="font-medium text-slate-700 mb-2 text-base">Total GST Amount</span>
-                            <span>₹ {totalGstAmount.toFixed(2)}</span>
-                        </div>
-
-
-                    </div>
-
-
-                    <div className="border border-slate-200 bg-white rounded-md shadow-sm p-5 space-y-2">
-
-                        <div className="flex justify-between text-sm ">
-                            <span className="text-md text-slate-700" >Taxable Amount</span>
-                            <span className="text-sm text-slate-700 ">{taxableAmount.toFixed(3)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm ">
-                            <span className="text-md text-slate-700">Toatl GST Amount</span>
-                            <span className="text-sm text-slate-700 "> {totalGstAmount.toFixed(3)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm h-5 ">
-
-                        </div>
-                        <div className="flex justify-between border-t pt-2 font-semibold">
-                            <span className="font-medium text-slate-700 mb-2 text-base ">Net Amount</span>
-                            <span className="" >{netAmount.toFixed(2)}</span>
-                        </div>
-                    </div>
-
-
-
-
-                </div> */}
                 <div className="grid grid-cols-10 gap-3">
 
                     <div className="border border-slate-200 p-2 bg-white rounded-md shadow-sm flex flex-row gap-3 col-span-3">

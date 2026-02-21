@@ -270,7 +270,7 @@ export default function DeliveryItemsSelection({ transactionId, onClose, readOnl
                                                                 {item?.Uom?.name}
                                                             </td>
                                                             <td className=" border border-gray-300 text-[11px] text-right py-1.5 px-2">
-                                                                {item?.qty?.toFixed(3)}
+                                                                {item?.qty?.toFixed(2)}
                                                             </td>
 
 

@@ -34,6 +34,7 @@ export { default as HsnMasterApi } from './HsnMasterServices'
 export { default as branchTypeMasterApi } from './BranchTypeMaster'
 
 export {default as openingBalanceApi} from './OpeningBalanceService'
+export {default as processMasterApi} from './ProcessMasterService'
 
 
 

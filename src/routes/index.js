@@ -45,6 +45,7 @@ export { default as hsn } from "./hsn.route.js"
 export { default as partyBranch } from "./partyBranch.route.js"
 export { default as branchType } from "./BranchType.route.js"
 export { default as size } from "./size.route.js"
+export { default as Process } from "./process.route.js"
 
 export {default as openingBalance} from './openingBalance.route.js'
 

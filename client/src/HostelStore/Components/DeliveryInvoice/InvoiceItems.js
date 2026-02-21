@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { formatAmountIN } from "../../../Utils/helper";
 
 const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceItems, readOnly,
-    styleItemList, colorList,
+    styleItemList, processList,
     yarnList, id,
     uomList, customerRef }) => {
 
@@ -25,7 +25,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                     price: "",
                     colorId: "",
                     id: "",
-                    invoiceQty: ""
+                    invoiceQty: "",
 
 
 
@@ -38,49 +38,10 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
 
     const handleInputChange = (value, index, field,) => {
-
-
-
         const newBlend = structuredClone(invoiceItems);
-
-
-
-
         newBlend[index][field] = value;
-
-
-
-
         setInvoiceItems(newBlend);
-
     };
-
-
-
-
-
-
-
-    const addNewRow = () => {
-        const newRow = {
-            yarnId: "",
-            qty: "0",
-            tax: "0",
-            colorId: "",
-            uomId: "",
-            price: "0",
-            discountValue: "0.00",
-            noOfBags: 0,
-            weightPerBag: 0,
-        };
-        setInvoiceItems([...invoiceItems, newRow]);
-    };
-
-
-
-
-
-
 
 
     const handleDeleteRow = (id) => {
@@ -179,8 +140,8 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                 <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
                                     Size
                                 </th>
-                                <th className="sticky top-0 z-10 bg-gray-200 w-16 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
-                                    No of Box
+                                <th className="sticky top-0 z-10 bg-gray-200 w-40 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
+                                    Process
                                 </th>
 
                                 <th className="sticky top-0 z-10 bg-gray-200 w-12 px-4 py-2 text-center font-medium text-[13px] border border-gray-300">
@@ -243,8 +204,20 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                     <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100">
                                         {row?.Size?.name}
                                     </td>
-                                    <td className="p-0.5 w-16 border border-gray-300 text-right text-[11px] py-1.5 px-2 text-xs bg-gray-100">
-                                        {row.noOfBox}
+                                    <td className="py-0.5 border border-gray-300 focus-within:outline focus-within:outline-2
+  focus-within:outline-blue-600
+  focus-within:outline-offset-[-2px] text-[11px]">
+                                        <select
+                                            className="w-full rounded py-0.5  focus:outline-none focus:border-transparent "
+                                            value={row.processId}
+                                            onChange={(e) => handleInputChange(e.target.value, index, "processId")}
+                                            disabled={!row.styleId}
+                                        >
+                                            <option value="" />
+                                            {(id ? processList?.data : processList?.data?.filter(i => i.active))?.map(item => (
+                                                <option key={item.id} value={item.id}>{item.name}</option>
+                                            ))}
+                                        </select>
                                     </td>
 
 
@@ -267,7 +240,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            value={parseFloat(row?.qty).toFixed(3)}
+                                            value={parseFloat(row?.qty).toFixed(2)}
                                             disabled={true}
 
 
@@ -290,7 +263,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                             onBlur={(e) => {
                                                 const balanceQty = Math.max(0, (parseFloat(row?.requiredQty) || 0) - (parseFloat(row?.alreadyPoqty) || 0));
                                                 const val = e.target.value;
-                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(3);
+                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(2);
                                                 e.target.value = formatted;
                                                 handleInputChange(val === "" ? 0 : formatted, index, "qty", row.requiredQty, balanceQty);
                                             }}
@@ -300,7 +273,7 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
 
 
                                     <td className="p-0.5 w-12 border border-gray-300 text-[11px] py-0.5 bg-gray-100  text-right">
-                                        {row.balanceQty ? parseFloat(row.balanceQty).toFixed(3) : ""}
+                                        {row.balanceQty ? parseFloat(row.balanceQty).toFixed(2) : ""}
                                     </td>
 
                                     <td className="p-0.5 border border-gray-300 bg-white text-right text-[11px] px-2 text-xs">
@@ -324,26 +297,22 @@ const InvoiceItems = ({ supplierId, setTableDataView, setInvoiceItems, invoiceIt
                                             onChange={(e) => {
                                                 const numVal = parseFloat(e.target.value) || 0;
 
-
                                                 if (numVal > row.balanceQty) {
                                                     Swal.fire({
                                                         title: "Invoice quantity cannot be more than balance quantity",
-                                                        icon: 'error',
-
+                                                        icon: "error",
                                                     });
+
+                                                    // Force correct value
+                                                    handleInputChange(row.balanceQty, index, "invoiceQty", row.balanceQty);
                                                     return;
                                                 }
-                                                else {
-                                                    handleInputChange(numVal, index, "invoiceQty", row.requiredQty,);
 
-                                                }
-
-
-
+                                                handleInputChange(numVal, index, "invoiceQty", row.requiredQty);
                                             }}
                                             onBlur={(e) => {
                                                 const val = e.target.value;
-                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(3);
+                                                const formatted = e.target.value === "" ? "" : parseFloat(e.target.value).toFixed(2);
                                                 e.target.value = formatted;
                                                 if (val > row.balanceQty) {
                                                     Swal.fire({

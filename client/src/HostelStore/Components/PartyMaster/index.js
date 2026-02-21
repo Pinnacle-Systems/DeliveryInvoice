@@ -209,7 +209,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
     const syncFormWithDbNew = useCallback((data) => {
 
-        if (!parentId) return
+        if (!parentId || id) return
 
         console.log("HJittttttt")
 
@@ -1700,41 +1700,7 @@ export default function Form({ partyId, onCloseForm, childId }) {
 
 
                                 <div className="flex gap-2">
-                                    {/* <div className="  ">
-                                        <button
-                                            onClick={() => {
-                                                if (id) {
-                                                    setBranchModelOpen(true)
-                                                    setBranchForm(false)
-                                                }
-
-                                                else {
-                                                    Swal.fire({
-                                                        icon: 'warning',
-                                                        title: `Save the ${isSupplier ? "Supplier Details" : "Customer Details"} `,
-                                                        showConfirmButton: false,
-                                                    });
-                                                }
-
-                                            }}
-                                            readOnly={readOnly}
-                                            className="bg-white border text-xs border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white px-4 py-1 rounded-md shadow transition-colors duration-200 flex items-center gap-2"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-4 w-4"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                            Add Branch
-                                        </button>
-                                    </div> */}
+                            
                                     <div className="flex gap-2">
                                         <div>
                                             {readOnly && (

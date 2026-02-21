@@ -788,7 +788,7 @@ model Payment {
   discount        Int?     @default(0)
   paymentRefNo    String?
   totalAmount     Int?
-  paymentFlow    String?
+  paymentFlow     String?
 }
 
 model Style {
@@ -928,6 +928,9 @@ model DeliveryInvoiceItems {
   hsnId                  Int?
   Size                   Size?                 @relation(fields: [sizeId], references: [id], onDelete: Restrict)
   sizeId                 Int?
+  Process                Process?              @relation(fields: [processId], references: [id], onDelete: Restrict)
+
+  processId Int?
 }
 
 enum LedgerEntryType {
@@ -1034,7 +1037,7 @@ model OpeningBalance {
   docId        String?
   date         DateTime?
   partCategory String?
-  Party        Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  Party        Party     @relation(fields: [partyId], references: [id], onDelete: Cascade)
   partyId      Int
   amount       Int?
   creditDebit  String?
@@ -1047,5 +1050,12 @@ model Size {
   companyId            Int?
   active               Boolean?
   DeliveryChallanItems DeliveryChallanItems[]
+  DeliveryInvoiceItems DeliveryInvoiceItems[]
+}
+
+model Process {
+  id                   Int                    @id @default(autoincrement())
+  name                 String?
+  active               Boolean?
   DeliveryInvoiceItems DeliveryInvoiceItems[]
 }

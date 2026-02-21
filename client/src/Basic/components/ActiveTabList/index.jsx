@@ -4,7 +4,8 @@ import { push, remove } from "../../../redux/features/opentabs";
 import {
   CountryMaster, PageMaster, StateMaster, CityMaster,
   DepartmentMaster, EmployeeCategoryMaster, FinYearMaster, UserAndRolesMaster, PageGroupMaster,
-  AccountSettings, ControlPanel, EmployeeMaster, TermsAndCondition
+  AccountSettings, ControlPanel, EmployeeMaster, TermsAndCondition,
+  ProcessMaster
 } from "..";
 
 
@@ -83,8 +84,10 @@ const ActiveTabList = () => {
     "TAX TYPE MASTER": <TaxTermMaster />,
     "HSN MASTER": <HsnMaster />,
     "BRANCH TYPE MASTER": <BranchTypeMaster />,
-    "OPENING BALANCE":<OpeningBalance/>,
-    "SIZE MASTER" : <SizeMaster/>
+    "OPENING BALANCE": <OpeningBalance />,
+    "SIZE MASTER": <SizeMaster />,
+    "PROCESS MASTER": <ProcessMaster />,
+
 
 
 

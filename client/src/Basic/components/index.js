@@ -17,5 +17,6 @@ export {default as AccountSettings} from "./AccountSettings";
 export {default as ControlPanel} from "./ControlPanel";
 export {default as EmployeeMaster} from "./EmployeeMaster";
 export {default as PageGroupMaster} from './PageGroupMaster';
+export {default as ProcessMaster } from './ProcessMaster';
 
 

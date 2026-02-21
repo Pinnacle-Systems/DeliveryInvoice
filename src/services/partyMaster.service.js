@@ -142,7 +142,7 @@ export async function getNew(req) {
     });
 
     let filteredParties
-    if (supplierId && id) {
+    if (id) {
         filteredParties = data.filter(party => party.id == supplierId);
     } else {
         filteredParties = data.filter(party => {
@@ -333,7 +333,7 @@ async function create(body) {
                 companyId: parseInt(companyId),
                 active: active ? JSON.parse(active) : false,
                 coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
-                contactMobile: contactMobile ? parseInt(contactMobile) : undefined,
+                contactMobile: contactMobile ? parseInt(contactMobile) : null,
                 landMark: landMark ? landMark : undefined,
                 contact: contact ? contact : undefined,
                 designation: designation ? designation : undefined,
@@ -414,7 +414,9 @@ async function update(id, body) {
             createdById: userId ? parseInt(userId) : undefined,
             companyId: parseInt(companyId),
             active: active ? JSON.parse(active) : false,
-            contactMobile: contactMobile ? parseInt(contactMobile) : undefined, coa: coa ? parseInt(coa) : parseInt(0), soa: soa ? parseInt(soa) : parseInt(0),
+            contactMobile: contactMobile ? parseInt(contactMobile) : null,
+             coa: coa ? parseInt(coa) : parseInt(0), 
+             soa: soa ? parseInt(soa) : parseInt(0),
             landMark: landMark ? landMark : "",
             contact: contact ? contact : undefined,
             designation: designation ? designation : undefined,

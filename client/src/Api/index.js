@@ -43,6 +43,7 @@ export const SIZE_API = "size"
 
 
 export const OPENING_BALANCE = "openingBalance"
+export const PROCESS_API = "process"
 
 
 

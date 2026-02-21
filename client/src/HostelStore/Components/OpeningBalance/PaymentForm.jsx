@@ -100,7 +100,8 @@ const PaymentForm = ({ onClose, docId, date, setDate, partCategory, setPartyCate
                                 <select name="" id="" className={`w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg
                                           focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
                                           transition-all duration-150 shadow-sm ${readOnly ? "bg-slate-100" : ""}
-                                         `} value={partCategory} onChange={(e) => setPartyCategory(e.target.value)}>
+                                         `} 
+                                         value={partCategory} onChange={(e) => setPartyCategory(e.target.value)}>
 
                                     <option value="" >
                                         Select

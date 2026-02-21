@@ -72,6 +72,9 @@ async function get(req) {
                     name: true
                 }
             }
+        },
+        orderBy : {
+            id : "desc"
         }
     });
     data = manualFilterSearchData(searchDate, searchMobileNo, searchType, searchDueDate, data)
