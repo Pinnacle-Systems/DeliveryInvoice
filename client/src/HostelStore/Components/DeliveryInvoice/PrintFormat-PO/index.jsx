@@ -204,8 +204,8 @@ const DeliveryInvoice = ({
         <View style={{
           fontSize: 10,
           fontWeight: "bold",
-          marginBottom: 4,
-          marginTop: 4,
+          // marginBottom: 4,
+          // marginTop: 4,
           flexDirection: 'row',
           width: '52%',
         }}>
@@ -216,8 +216,8 @@ const DeliveryInvoice = ({
               fontWeight: "extrabold",
               paddingVertical: 3,
               paddingHorizontal: 6,
-              marginBottom: 4,
-              marginTop: 10,
+              marginBottom: 2,
+              marginTop: 5,
               textAlign: "left",
               color: "#000000"
             }}>
@@ -296,7 +296,7 @@ const DeliveryInvoice = ({
         </View>
       </View>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 1 }}>
         {/* Bill To */}
         <View style={{ flex: 1 }}>
           <Text style={styles.sectionTitle}>Bill To :</Text>
@@ -399,7 +399,7 @@ const DeliveryInvoice = ({
         minHeight: 25, // important: keeps row height consistent
       }}
     >
-      {[0.5, 9, 1, 1, 2, 2, 2.5].map((flex, i) => (
+      {[0.5, 9, 1, 1, 1.1, 1.1, 1.7].map((flex, i) => (
         <Text
           key={i}
           style={[
@@ -420,24 +420,24 @@ const DeliveryInvoice = ({
       {/* <Text style={[styles.th, { flex: 4 }]}>Color</Text> */}
       <Text style={[styles.th, { flex: 1 }]}>Hsn</Text>
       <Text style={[styles.th, { flex: 1 }]}>Uom</Text>
-      <Text style={[styles.th, { flex: 2 }]}>Qty</Text>
-      <Text style={[styles.th, { flex: 2 }]}>Price</Text>
-      <Text style={[styles.th, { flex: 2.5 }]}>Amount</Text>
+      <Text style={[styles.th, { flex: 1.1 }]}>Qty</Text>
+      <Text style={[styles.th, { flex: 1.1 }]}>Price</Text>
+      <Text style={[styles.th, { flex: 1.7 }]}>Amount</Text>
     </View>
   );
 
   const TableRow = ({ row, index, absoluteIndex }) => (
     <View key={`row-${absoluteIndex}`} style={{
       flexDirection: "row",
-      minHeight : 25
+      minHeight: 25
       // backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F4EEE9"
     }}>
       <Text style={[styles.td, { flex: 0.5 }]}>{absoluteIndex + 1}</Text>
       <Text style={[styles.td, { flex: 9, textAlign: "left" }]}>
         <Text style={{ fontWeight: "bold", color: "#000000" }}>
           Style Ref :  {row?.Style?.name} </Text> {"\n"}
-       {row?.StyleItem?.name} ( {row?.Color?.name} ) -  {row?.Process?.name}
-     
+        {row?.StyleItem?.name} ( {row?.Color?.name} ) -  {row?.Process?.name}
+
       </Text>
       {/* <Text style={[styles.td, { flex: 5, textAlign: "left" }]}>
         {row?.Process?.name}
@@ -451,13 +451,13 @@ const DeliveryInvoice = ({
       <Text style={[styles.td, { flex: 1, textAlign: "left" }]}>
         {row?.Uom?.name}
       </Text>
-      <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
+      <Text style={[styles.td, { flex: 1.1, textAlign: "right" }]}>
         {row?.invoiceQty ? (Number(row?.invoiceQty)).toFixed(3) : ""}
       </Text>
-      <Text style={[styles.td, { flex: 2, textAlign: "right" }]}>
+      <Text style={[styles.td, { flex: 1.1, textAlign: "right" }]}>
         {row?.price ? (Number(row?.price)).toFixed(2) : ""}
       </Text>
-      <Text style={[styles.td, { flex: 2.5, textAlign: "right" }]}>
+      <Text style={[styles.td, { flex: 1.7, textAlign: "right" }]}>
         {row?.invoiceQty * row?.price ? (
           (Number(row?.invoiceQty) || 0) *
           (Number(row?.price) || 0)
@@ -581,7 +581,10 @@ const DeliveryInvoice = ({
         <View style={{
           flex: 1, padding: 1, width: "35%",
         }}>
-          <View style={{ flexDirection: "row" ,              padding: 2, }}>
+          <View style={{
+            flexDirection: "row", padding: 2, borderLeftWidth: 1,
+            borderColor: "#9ca3af",
+          }}>
             <Text style={{ flex: 2, fontSize: 8 }}>Taxable Amount</Text>
             <Text style={{ flex: 1, textAlign: "right", fontSize: 8 }}>
               {Number(totalAmount || 0).toFixed(2)}
@@ -594,8 +597,9 @@ const DeliveryInvoice = ({
                 style={{
                   flexDirection: "row",
                   borderTopWidth: 1,
+                  borderLeftWidth: 1,
                   borderColor: "#9ca3af",
-                  marginTop: 2,
+                  // marginTop: 2,
                   padding: 2,
 
                 }}
@@ -613,6 +617,8 @@ const DeliveryInvoice = ({
                   flexDirection: "row",
                   borderTopWidth: 1,
                   borderColor: "#9ca3af",
+                  borderLeftWidth: 1,
+
                 }}
               >
                 <Text style={{ flex: 2, fontSize: 8 }}>
@@ -630,8 +636,9 @@ const DeliveryInvoice = ({
               flexDirection: "row",
               borderTopWidth: 1,
               borderColor: "#9ca3af",
-              marginTop: 2,
+              // marginTop: 2,
               padding: 2,
+              borderLeftWidth: 1,
 
             }}
           >
@@ -682,7 +689,7 @@ const DeliveryInvoice = ({
       <View
         style={{
           flexDirection: "row",
-          height: 50,
+          height: 30  ,
           borderBottom: "1 solid #9ca3af"
         }}
       >
@@ -693,7 +700,7 @@ const DeliveryInvoice = ({
             backgroundColor: "#f0f4ff",
             paddingVertical: 5,
             paddingHorizontal: 6,
-            minHeight: 40,
+            minHeight: 30,
             width: 40
 
           }}
@@ -719,7 +726,7 @@ const DeliveryInvoice = ({
             flex: 0.7,
             paddingVertical: 5,
             paddingHorizontal: 6,
-            minHeight: 40,
+            minHeight: 30,
             width: 100
 
           }}
@@ -805,7 +812,7 @@ const DeliveryInvoice = ({
               })}
               {pageIndex === 0 &&
                 chunk.length < 9 &&
-                Array.from({ length: 9  - chunk.length }).map((_, i) => (
+                Array.from({ length: 9 - chunk.length }).map((_, i) => (
                   <EmptyTableRow key={`filler-${i}`} index={i} />
                 ))}
 
@@ -850,8 +857,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: "#9ca3af",
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 1,
   },
   borderWrapper: {
     borderWidth: 1,
@@ -863,10 +870,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     textAlign: "center",
-    marginBottom: 7,
+    // marginBottom: 7,
     flexDirection: "row",
-    padding: 7,
-    height: 130
+    // padding: 7,
+    // paddingHorizontal : 7,
+    // paddingVertical : 3 ,
+    height: 100
   },
   logo: {
     width: 80,
@@ -898,8 +907,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFF",
     backgroundColor: "#946657",
-    padding: 6,
-    marginBottom: 2
+    padding: 3,
+    marginBottom: 0
   },
   valueContainer: {
     flexDirection: 'row',
@@ -925,11 +934,13 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   td: {
-    flex: 1,
+    // flex: 1,
     fontSize: 8,
     textAlign: "center",
+    alignContent: "center",
+    // alignSelf : "center",
     borderRightWidth: 1,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     borderRightColor: BORDER_GREY,
     // borderBottomColor: BORDER_GREY,
     padding: 3,
