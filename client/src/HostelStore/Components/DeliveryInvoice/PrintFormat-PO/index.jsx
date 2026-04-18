@@ -716,7 +716,7 @@ const DeliveryInvoice = ({
           )} Only */}
           Amount in Words: Rs. {numberToIndianWords(
             (overallAmount) ? Math.round(overallAmount) : 0
-          )} On
+          )} Only
         </Text>
       </View>
       <View style={{ borderBottom: "1 solid #9ca3af", backgroundColor: "#946657", paddingVertical: 5, paddingHorizontal: 6, marginBottom: 4 }}>
