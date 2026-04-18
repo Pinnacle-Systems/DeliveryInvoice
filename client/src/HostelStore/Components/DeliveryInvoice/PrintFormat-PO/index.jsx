@@ -195,6 +195,41 @@ const DeliveryInvoice = ({
   }, {});
 
 
+  const numberToIndianWords = (num) => {
+    if (num === 0) return 'Zero';
+
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+      'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    const getTwoDigits = (n) => {
+      if (n < 20) return ones[n];
+      return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');
+    };
+
+    const getThreeDigits = (n) => {
+      if (n >= 100) {
+        return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + getTwoDigits(n % 100) : '');
+      }
+      return getTwoDigits(n);
+    };
+
+    let result = '';
+    let crore = Math.floor(num / 10000000);
+    let lakh = Math.floor((num % 10000000) / 100000);
+    let thousand = Math.floor((num % 100000) / 1000);
+    let remainder = num % 1000;
+
+    if (crore > 0) result += getThreeDigits(crore) + ' Crore ';
+    if (lakh > 0) result += getThreeDigits(lakh) + ' Lakh ';
+    if (thousand > 0) result += getThreeDigits(thousand) + ' Thousand ';
+    if (remainder > 0) result += getThreeDigits(remainder);
+
+    return result.trim();
+  };
+
+
   if (isTaxHookDetailsLoading) return <Loader />;
 
   const Header = () => (
@@ -673,12 +708,15 @@ const DeliveryInvoice = ({
             </Text>
           </View>
         </View>
-      </View>
+      </View>{console.log(Math.round(overallAmount), "amount in words")}
       <View style={{ backgroundColor: "", paddingVertical: 5, paddingHorizontal: 6, marginBottom: 4 }}>
         <Text style={{ fontSize: 9, fontWeight: "bold", color: "", flexWrap: "wrap" }}>
-          Amount in Words: Rs. {numberToWords.toWords(
+          {/* Amount in Words: Rs. {numberToWords.toWords(
             (overallAmount) ? Math.round(overallAmount) : 0
-          )} Only
+          )} Only */}
+          Amount in Words: Rs. {numberToIndianWords(
+            (overallAmount) ? Math.round(overallAmount) : 0
+          )} On
         </Text>
       </View>
       <View style={{ borderBottom: "1 solid #9ca3af", backgroundColor: "#946657", paddingVertical: 5, paddingHorizontal: 6, marginBottom: 4 }}>
@@ -689,7 +727,7 @@ const DeliveryInvoice = ({
       <View
         style={{
           flexDirection: "row",
-          height: 30  ,
+          height: 40,
           borderBottom: "1 solid #9ca3af"
         }}
       >
@@ -700,7 +738,7 @@ const DeliveryInvoice = ({
             backgroundColor: "#f0f4ff",
             paddingVertical: 5,
             paddingHorizontal: 6,
-            minHeight: 30,
+            minHeight: 40,
             width: 40
 
           }}
@@ -726,7 +764,7 @@ const DeliveryInvoice = ({
             flex: 0.7,
             paddingVertical: 5,
             paddingHorizontal: 6,
-            minHeight: 30,
+            minHeight: 40,
             width: 100
 
           }}
