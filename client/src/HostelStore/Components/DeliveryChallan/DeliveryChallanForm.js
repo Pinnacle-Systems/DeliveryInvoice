@@ -545,7 +545,7 @@ const ChallanForm = ({
                     <div className="w-[600px]">
                         <TextAreaNew
                             name="Remarks"
-                            placeholder="Addres"
+                            placeholder="Remarks"
                             value={remarks}
                             setValue={setRemarks}
                         />

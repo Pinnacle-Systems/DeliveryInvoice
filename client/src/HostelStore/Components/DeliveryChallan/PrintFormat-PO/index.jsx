@@ -416,14 +416,14 @@ const DeliveryChallanPrint = ({
         <View style={{
           flex: 3,
           justifyContent: "center",
-          alignItems: "center",
+          alignItems: "flex-start",
           borderRightWidth: 1,
           borderRightColor: BORDER_GREY,
 
           // padding: 5,
         }}>
-          <Text style={{ fontSize: 9, fontWeight: "bold", textAlign: "center" }}>
-            Thank You For Your Business
+          <Text style={{ fontSize: 9, fontWeight: "bold", textAlign: "left", paddingLeft: 5 }}>
+            {remarks ? `Remarks: ${remarks}` : ''}
           </Text>
         </View>
 
