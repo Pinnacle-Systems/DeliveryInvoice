@@ -575,7 +575,7 @@ const DeliveryInvoice = ({
         >
           {[
             ["Bank Name", "IDBI BANK"],
-            ["A/C No", "1622651100000897"],
+            ["A/C No", "1622651100001892"],
             ["Branch", "Palladam Road Veerapandi Privu, Tirupur-5"],
             ["IFSC Code", "IBKL0001622"],
           ].map(([label, value], index) => (
